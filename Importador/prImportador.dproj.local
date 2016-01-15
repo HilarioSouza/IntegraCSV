@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2016/01/13 18:38:07.000.730,=C:\Projetos\Importador\New1.sql</Transaction>
+    <Transaction>2016/01/13 18:38:31.000.378,C:\Projetos\Importador\New1.sql=C:\Projetos\Importador\Dados\Update.sql</Transaction>
+  </Transactions>
+</BorlandProject>
