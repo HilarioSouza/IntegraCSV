@@ -1,0 +1,72 @@
+unit uFrmImportacao;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ufrmStandard, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Vcl.Buttons;
+
+type
+  TfrmImportacao = class(TFrmStandard)
+    Panel1: TPanel;
+    edtCaminhoArquivo: TLabeledEdit;
+    SpeedButton1: TSpeedButton;
+    Button1: TButton;
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmImportacao: TfrmImportacao;
+
+implementation
+
+{$R *.dfm}
+
+function GetCaminhoArquivo: String;
+var
+  odlCaminho: TOpenDialog;
+begin
+  odlCaminho := TOpenDialog.Create(nil);
+  try
+    odlCaminho.InitialDir := 'C:\';
+    odlCaminho.Filter := '*.csv';
+    odlCaminho.FilterIndex := 1;
+    odlCaminho.Execute;
+    Result := odlCaminho.FileName;
+  finally
+    FreeAndNil(odlCaminho);
+  end;
+end;
+
+procedure TfrmImportacao.Button1Click(Sender: TObject);
+begin
+  ImportarArquivo;
+end;
+
+procedure TfrmImportacao.SpeedButton1Click(Sender: TObject);
+begin
+  edtCaminhoArquivo.Text := GetCaminhoArquivo;
+end;
+
+procedure TfrmImportacao.ImportarArquivo;
+var
+  Leitor: ILeitor;
+begin
+  Leitor := TLeitorCSV.Create;
+  try
+    Leitor.LerArquivo('C:\Users\Hilario\Dropbox\Projetos\Importador\Dados\csv.txt');
+    //Leitor.LerArquivo('C:\Projetos\Importador\Dados\csv.txt');
+    ShowMessage('Teste Ok');
+  except
+    on E: Exception do
+      raise Exception.Create('Falha no teste: ' + E.Message);
+  end;
+end;
+
+end.

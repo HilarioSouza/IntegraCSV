@@ -1,0 +1,26 @@
+unit uFrmImportacao;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ufrmStandard, Vcl.StdCtrls, Vcl.ExtCtrls;
+
+type
+  TfrmImportacao = class(TFrmStandard)
+    Panel1: TPanel;
+    edtCaminhoArquivo: TLabeledEdit;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmImportacao: TfrmImportacao;
+
+implementation
+
+{$R *.dfm}
+
+end.

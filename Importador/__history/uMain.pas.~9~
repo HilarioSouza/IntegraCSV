@@ -1,0 +1,58 @@
+unit uMain;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, uFTDI;
+
+type
+  TfrmMain = class(TForm)
+    Button1: TButton;
+    procedure Button1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+  private
+    { Private declarations }
+    FFTDI: TFTDI;
+  public
+    { Public declarations }
+    property FTDI: TFTDI read FFTDI write FFTDI;
+  end;
+
+var
+  frmMain: TfrmMain;
+
+implementation
+
+uses
+  KrImportador;
+
+{$R *.dfm}
+
+procedure TfrmMain.Button1Click(Sender: TObject);
+var
+  Leitor: ILeitor;
+begin
+  Leitor := TLeitorCSV.Create;
+  try
+    Leitor.LerArquivo('C:\Users\Hilario\Dropbox\Projetos\Importador\Dados\csv.txt');
+    //Leitor.LerArquivo('C:\Projetos\Importador\Dados\csv.txt');
+    ShowMessage('Teste Ok');
+  except
+    on E: Exception do
+      raise Exception.Create('Falha no teste: ' + E.Message);
+  end;
+end;
+
+procedure TfrmMain.FormCreate(Sender: TObject);
+begin
+  FFTDI := TFTDI.Create(Self, TfImportacao);
+end;
+
+procedure TfrmMain.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(FFTDI);
+end;
+
+end.
