@@ -2,7 +2,7 @@ unit uUtils;
 
 interface
 
-uses System.SysUtils;
+uses System.SysUtils, System.Types;
 
 type
   TUtil = class
@@ -12,9 +12,14 @@ type
     class function IIf(Expressao, ParteTRUE, ParteFALSE: Variant): Variant;
     class function TrocaVirgPPto(Valor: string): String;
     class function LPad(S: string; Ch: char; Len: Integer): string;
+    class function Split(const aStr: string; aSeparator: char = '|'): TStringDynArray;
+    class function GetCaminhoArquivo: String; static;
   end;
 
 implementation
+
+uses
+  Dialogs;
 
 class function TUtil.Parse(S: string; Count: Integer;
   char: String = ';'): string;
@@ -70,6 +75,52 @@ begin
   if RestLen < 1 then
     Exit;
   Result := StringOfChar(Ch, RestLen) + S;
+end;
+
+class function TUtil.Split(const aStr: string; aSeparator: char = '|'): TStringDynArray;
+var
+  I, Count, Last, Index: Integer;
+begin
+  if aStr = '' then
+  begin
+    SetLength(Result, 0);
+    Exit;
+  end;
+
+  Count := 1;
+  for I := 1 to Length(aStr) do
+    if aStr[I] = aSeparator then
+      Inc(Count);
+
+  SetLength(Result, Count);
+  Index := 0;
+  I := 1;
+
+  while I <= Length(aStr) do
+  begin
+    Last := I;
+    while (I <= Length(aStr)) and (aStr[I] <> aSeparator) do
+      Inc(I);
+    Result[Index] := Copy(aStr, Last, I - Last);
+    Inc(I);
+    Inc(Index);
+  end;
+end;
+
+class function TUtil.GetCaminhoArquivo: String;
+var
+  odlCaminho: TOpenDialog;
+begin
+  odlCaminho := TOpenDialog.Create(nil);
+  try
+    odlCaminho.InitialDir := 'C:\';
+    odlCaminho.Filter := '*.csv';
+    odlCaminho.FilterIndex := 1;
+    odlCaminho.Execute;
+    Result := odlCaminho.FileName;
+  finally
+    FreeAndNil(odlCaminho);
+  end;
 end;
 
 end.

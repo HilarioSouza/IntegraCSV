@@ -76,14 +76,13 @@ type
   private
     LinhaRegistro: String;
     procedure PopularObjetoComRegistro(Registro: TRegistro);
-    function Split(const aStr: string; aSeparator: char = '|'): TStringDynArray;
   published
     procedure LerArquivo(Filename: String);
   end;
 
 implementation
 
-uses SysUtils, System.Generics.Collections;
+uses SysUtils, System.Generics.Collections, uUtils;
 
 const
   IdxProtocolo        = 0;
@@ -110,6 +109,8 @@ var
   Arquivo: Textfile;
   Lista: TObjectList<TRegistro>;
 begin
+  if (Filename = '') then
+    raise Exception.Create('Arquivo não informado. Por favor informe o caminho do arquivo.');
   AssignFile(Arquivo, FileName);
   try
   Lista := TObjectList<TRegistro>.Create;
@@ -131,7 +132,7 @@ procedure TLeitorCSV.PopularObjetoComRegistro(Registro: TRegistro);
 var
   ArrayDados: TStringDynArray;
 begin
-  ArrayDados := Self.Split(LinhaRegistro, ';');
+  ArrayDados := TUtil.Split(LinhaRegistro, ';');
   Registro.Protocolo        := ArrayDados[IdxProtocolo];
   Registro.DataCadastro     := ArrayDados[IdxDataCadastro];
   Registro.VlrXimenes       := StrToFloatDef(ArrayDados[IdxVlrXimenes], 0);
@@ -164,59 +165,6 @@ end;
 function TClasseBase.QueryInterface(const IID: TGUID; out Obj): HRESULT;
 begin
   Result := 0;
-end;
-
-function TLeitorCSV.Split(const aStr: string; aSeparator: char = '|'): TStringDynArray;
-var
-  I, Count, Last, Index: Integer;
-begin
-  if aStr = '' then
-  begin
-    SetLength(Result, 0);
-    Exit;
-  end;
-
-  Count := 1;
-  for I := 1 to Length(aStr) do
-    if aStr[I] = aSeparator then
-      Inc(Count);
-
-  SetLength(Result, Count);
-  Index := 0;
-  I := 1;
-
-  while I <= Length(aStr) do
-  begin
-    Last := I;
-    while (I <= Length(aStr)) and (aStr[I] <> aSeparator) do
-      Inc(I);
-    Result[Index] := Copy(aStr, Last, I - Last);
-    Inc(I);
-    Inc(Index);
-  end;
-end;
-
-//Utilidades - Remover?
-function TokenN(aTokenList: String; aIndex: Integer; aTokenSeparator: char = ';'): String;
-var
-  i,m,count:integer;
-begin
-  Result:='';
-  count:=0;
-  i:=1;
-  while i<=Length(aTokenList) do
-  begin
-    m:=i;
-    while (i<=Length(aTokenList)) and (aTokenList[i]<>aTokenSeparator) do
-      Inc(i);
-    Inc(count);
-    if count=aIndex then
-    begin
-      Result:=Copy(aTokenList,m,i-m);
-      Break;
-    end;
-    Inc(i);
-  end;
 end;
 
 end.

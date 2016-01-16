@@ -4,41 +4,41 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls;
+  Dialogs, StdCtrls, uFTDI, Vcl.Menus;
 
 type
-  TForm1 = class(TForm)
-    Button1: TButton;
-    procedure Button1Click(Sender: TObject);
+  TfrmMain = class(TForm)
+    MainMenu1: TMainMenu;
+    Configuraes1: TMenuItem;
+    Sair1: TMenuItem;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
+    FFTDI: TFTDI;
   public
     { Public declarations }
+    property FTDI: TFTDI read FFTDI write FFTDI;
   end;
 
 var
-  Form1: TForm1;
+  frmMain: TfrmMain;
 
 implementation
 
 uses
-  KrImportador;
+  uFrmImportacao;
 
 {$R *.dfm}
 
-procedure TForm1.Button1Click(Sender: TObject);
-var
-  Leitor: ILeitor;
+procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-  Leitor := TLeitorCSV.Create;
-  try
-    Leitor.LerArquivo('C:\Users\Hilario\Dropbox\Projetos\Importador\Dados\csv.txt');
-    //Leitor.LerArquivo('C:\Projetos\Importador\Dados\csv.txt');
-    ShowMessage('Teste Ok');
-  except
-    on E: Exception do
-      raise Exception.Create('Falha no teste: ' + E.Message);
-  end;
+  FFTDI := TFTDI.Create(Self, TfrmImportacao);
+end;
+
+procedure TfrmMain.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(FFTDI);
 end;
 
 end.
