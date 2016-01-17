@@ -20,12 +20,14 @@ type
     procedure Banco1Click(Sender: TObject);
     procedure Sair1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
     FFTDI: TFTDI;
     procedure SetFTDI(const Value: TFTDI);
     function GetFTDI: TFTDI;
     procedure AbrirConfiguracaobanco;
+    procedure Atualizarbanco;
   public
     { Public declarations }
     property FTDI: TFTDI read GetFTDI write SetFTDI;
@@ -37,7 +39,7 @@ var
 implementation
 
 uses
-  uFrmImportacao, uFrmCdEmp, ufConfiguracaoBD;
+  uFrmImportacao, uFrmCdEmp, ufConfiguracaoBD, uAtualizaBanco;
 
 {$R *.dfm}
 
@@ -64,6 +66,23 @@ end;
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FFTDI);
+end;
+
+procedure TfrmMain.FormShow(Sender: TObject);
+begin
+  AtualizarBanco;
+end;
+
+procedure TfrmMain.Atualizarbanco;
+var
+  AtualizaBD: TAtualizabanco;
+begin
+  AtualizaBD := TAtualizaBanco.Create;
+  try
+    AtualizaBD.AtualizarBanco;
+  finally
+    FreeAndNil(AtualizaBD);
+  end;
 end;
 
 function TfrmMain.GetFTDI: TFTDI;

@@ -120,6 +120,8 @@
             <Form>frmCdEmp</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="Externo\uAtualizaBanco.pas"/>
+        <DCCReference Include="Externo\uInterfaceQuery.pas"/>
         <None Include="Dados\Update.sql"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

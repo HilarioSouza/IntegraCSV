@@ -39,7 +39,7 @@ end;
 
 procedure TfrmImportacao.SpeedButton1Click(Sender: TObject);
 begin
-  edtCaminhoArquivo.Text := TUtil.GetCaminhoArquivo;
+  edtCaminhoArquivo.Text := TUtilArquivo.GetCaminhoArquivo;
 end;
 
 procedure TfrmImportacao.ImportarArquivo;

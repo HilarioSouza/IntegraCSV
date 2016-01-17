@@ -3,7 +3,7 @@ unit KrImportador;
 interface
 
 uses
-  Classes, System.Types;
+  Classes, System.Types, System.Generics.Collections;
 
 type
   ILeitor = Interface
@@ -75,14 +75,16 @@ type
   TLeitorCSV = class(TClasseBase, ILeitor)
   private
     LinhaRegistro: String;
-    procedure PopularObjetoComRegistro(Registro: TRegistro);
+    procedure PopularDadosRegistro(Registro: TRegistro);
+    procedure GravarRegistrosNoBanco(ListaRegistros: TObjectList<TRegistro>);
+    procedure GravarRegistro(Registro: TRegistro);
   published
     procedure LerArquivo(Filename: String);
   end;
 
 implementation
 
-uses SysUtils, System.Generics.Collections, uUtils;
+uses SysUtils, uUtils, uInterfaceQuery, FireDAC.Comp.Client;
 
 const
   IdxProtocolo        = 0;
@@ -121,14 +123,51 @@ begin
       Readln(Arquivo, LinhaRegistro);
       Registro := TRegistro.Create;
       Lista.Add(TRegistro(Registro));
-      PopularObjetoComRegistro(Registro);
+      PopularDadosRegistro(Registro);
     end;
+    GravarRegistrosNoBanco(Lista);
   finally
     CloseFile(Arquivo);
   end;
 end;
 
-procedure TLeitorCSV.PopularObjetoComRegistro(Registro: TRegistro);
+procedure TLeitorCSV.GravarRegistrosNoBanco(ListaRegistros: TObjectList<TRegistro>);
+var
+  I: Integer;
+begin
+  for I := 0 to ListaRegistros.Count-1 do
+  begin
+    GravarRegistro(ListaRegistros[I]);
+  end;
+end;
+
+procedure TLeitorCSV.GravarRegistro(Registro: TRegistro);
+const
+  SQL = 'INSERT INTO REG';
+var
+  Query: TFDQuery;
+begin
+  Query := NewQuery;
+  Query.SQL.Text := SQL;
+  Query.ParamByName('Protocolo').AsString := Registro.Protocolo;
+  Query.ParamByName('DataCadastro').AsString := Registro.DataCadastro;
+  Query.ParamByName('VlrXimenes').AsFloat := Registro.VlrXimenes;
+  Query.ParamByName('Despachante').AsString := Registro.Despachante;
+  Query.ParamByName('Distribuidor').AsString := Registro.Distribuidor;
+  Query.ParamByName('VlrCartorio').AsFloat := Registro.VlrCartorio;
+  Query.ParamByName('DAJ').AsString := Registro.DAJ;
+  Query.ParamByName('VlrTotalCustas').AsFloat := Registro.VlrTotalCustas;
+  Query.ParamByName('Convenio').AsString := Registro.Convenio;
+  Query.ParamByName('CustasFechadas').AsString := Registro.CustasFechadas;
+  Query.ParamByName('VlrXimenesGestao').AsFloat := Registro.VlrXimenesGestao;
+  Query.ParamByName('VlrXimenesAut').AsFloat := Registro.VlrXimenesAut;
+  Query.ParamByName('VlrXimenesRec').AsFloat := Registro.VlrXimenesRec;
+  Query.ParamByName('VlrXimenesOutros').AsFloat := Registro.VlrXimenesOutros;
+  Query.ParamByName('Representante').AsString := Registro.Representante;
+  Query.ExecSQL;
+end;
+
+procedure TLeitorCSV.PopularDadosRegistro(Registro: TRegistro);
 var
   ArrayDados: TStringDynArray;
 begin

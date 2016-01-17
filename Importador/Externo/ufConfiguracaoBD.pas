@@ -19,7 +19,7 @@ type
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
-    SpeedButton2: TSpeedButton;
+    sbtCaminhoBanco: TSpeedButton;
     Label9: TLabel;
     ImgGAC: TImage;
     edtCaminho: TEdit;
@@ -34,8 +34,10 @@ type
     procedure btnConectarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure sbtCaminhoBancoClick(Sender: TObject);
   private
     function TestarConexao(User, Pass, DataBase: String): Boolean;
+    procedure SetCaminhoBanco;
     { Private declarations }
   public
     { Public declarations }
@@ -48,7 +50,7 @@ implementation
 
 {$R *.dfm}
 
-uses uMensagem, uFuncoesIni;
+uses uMensagem, uFuncoesIni, uUtils;
 
 procedure TfConfiguracaoBD.btnConectarClick(Sender: TObject);
 begin
@@ -74,6 +76,21 @@ begin
   edtUser.Text := TFuncoesIni.LerIni('BANCO', 'User_name');
   edtSenha.Text := TFuncoesIni.LerIni('BANCO', 'Pass');
   edtCaminho.Text := TFuncoesIni.LerIni('BANCO', 'Database');
+end;
+
+procedure TfConfiguracaoBD.SetCaminhoBanco;
+var
+  sCaminho: String;
+begin
+  sCaminho := TUtilArquivo.GetCaminhoArquivo;
+  if not TUtil.Empty(sCaminho) then
+    edtCaminho.Text := sCaminho;
+end;
+
+procedure TfConfiguracaoBD.sbtCaminhoBancoClick(Sender: TObject);
+begin
+  inherited;
+  SetCaminhoBanco;
 end;
 
 function TfConfiguracaoBD.TestarConexao(User, Pass, DataBase: String): Boolean;

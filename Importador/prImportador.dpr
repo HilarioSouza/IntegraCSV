@@ -15,7 +15,9 @@ uses
   uFuncoesIni in 'Externo\uFuncoesIni.pas',
   ufConfiguracaoBD in 'Externo\ufConfiguracaoBD.pas' {fConfiguracaoBD},
   ufrmCrudbasic in 'Externo\ufrmCrudbasic.pas' {frmCrudbasic},
-  uFrmCdEmp in 'uFrmCdEmp.pas' {frmCdEmp};
+  uFrmCdEmp in 'uFrmCdEmp.pas' {frmCdEmp},
+  uAtualizaBanco in 'Externo\uAtualizaBanco.pas',
+  uInterfaceQuery in 'Externo\uInterfaceQuery.pas';
 
 {$R *.res}
 

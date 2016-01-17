@@ -17,16 +17,18 @@
     <Transaction>2016/01/16 15:42:48.000.652,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
     <Transaction>2016/01/16 15:45:23.000.510,D:\Projetos\IntegraCSV\Importador\Unit1.pas=D:\Projetos\IntegraCSV\Importador\IntfFormPrincipal.pas</Transaction>
     <Transaction>2016/01/16 16:35:01.000.708,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
-    <Transaction>2016/01/16 16:50:06.000.359,D:\Projetos\IntegraCSV\Importador\Unit1.dfm=D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.dfm</Transaction>
     <Transaction>2016/01/16 16:50:06.000.359,D:\Projetos\IntegraCSV\Importador\Unit1.pas=D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.pas</Transaction>
-    <Transaction>2016/01/17 10:38:50.037,=D:\Projetos\IntegraCSV\Importador\Externo\udmConnect.pas</Transaction>
-    <Transaction>2016/01/17 10:39:47.744,=D:\Projetos\IntegraCSV\Importador\Externo\uFuncoesIni.pas</Transaction>
-    <Transaction>2016/01/17 11:50:30.934,=D:\Projetos\IntegraCSV\Importador\Externo\ufConfiguracaoBD.pas</Transaction>
-    <Transaction>2016/01/17 13:35:58.582,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
-    <Transaction>2016/01/17 13:46:13.422,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
-    <Transaction>2016/01/17 13:46:48.868,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
-    <Transaction>2016/01/17 13:47:16.241,D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.pas=</Transaction>
-    <Transaction>2016/01/17 13:47:26.833,D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.dfm=D:\Projetos\IntegraCSV\Importador\Unit1.dfm</Transaction>
-    <Transaction>2016/01/17 13:47:26.833,D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.pas=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
+    <Transaction>2016/01/16 16:50:06.000.359,D:\Projetos\IntegraCSV\Importador\Unit1.dfm=D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.dfm</Transaction>
+    <Transaction>2016/01/17 10:38:50.000.037,=D:\Projetos\IntegraCSV\Importador\Externo\udmConnect.pas</Transaction>
+    <Transaction>2016/01/17 10:39:47.000.744,=D:\Projetos\IntegraCSV\Importador\Externo\uFuncoesIni.pas</Transaction>
+    <Transaction>2016/01/17 11:50:30.000.934,=D:\Projetos\IntegraCSV\Importador\Externo\ufConfiguracaoBD.pas</Transaction>
+    <Transaction>2016/01/17 13:35:58.000.582,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
+    <Transaction>2016/01/17 13:46:13.000.422,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
+    <Transaction>2016/01/17 13:46:48.000.868,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
+    <Transaction>2016/01/17 13:47:16.000.241,D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.pas=</Transaction>
+    <Transaction>2016/01/17 13:47:26.000.833,D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.dfm=D:\Projetos\IntegraCSV\Importador\Unit1.dfm</Transaction>
+    <Transaction>2016/01/17 13:47:26.000.833,D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.pas=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
+    <Transaction>2016/01/17 18:44:07.000.865,=D:\Projetos\IntegraCSV\Importador\Externo\uAtualizaBanco.pas</Transaction>
+    <Transaction>2016/01/17 18:47:00.000.182,=D:\Projetos\IntegraCSV\Importador\Externo\uInterfaceQuery.pas</Transaction>
   </Transactions>
 </BorlandProject>

@@ -37,12 +37,13 @@ inherited fConfiguracaoBD: TfConfiguracaoBD
       Height = 13
       Caption = 'Usu'#225'rio:'
     end
-    object SpeedButton2: TSpeedButton
-      Left = 486
+    object sbtCaminhoBanco: TSpeedButton
+      Left = 490
       Top = 29
       Width = 23
       Height = 22
       Caption = '...'
+      OnClick = sbtCaminhoBancoClick
     end
     object Label9: TLabel
       Left = 186

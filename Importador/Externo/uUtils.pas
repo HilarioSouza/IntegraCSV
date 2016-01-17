@@ -13,6 +13,11 @@ type
     class function TrocaVirgPPto(Valor: string): String;
     class function LPad(S: string; Ch: char; Len: Integer): string;
     class function Split(const aStr: string; aSeparator: char = '|'): TStringDynArray;
+    class function Empty(const sStr: string): Boolean;
+  end;
+
+  TUtilArquivo = class
+  public
     class function GetCaminhoArquivo: String; static;
   end;
 
@@ -55,6 +60,11 @@ begin
     end;
   end;
   Result := Valor;
+end;
+
+class function TUtil.Empty(const sStr: string): Boolean;
+begin
+  Result := (Trim(sStr) = '');
 end;
 
 class function TUtil.IIf(Expressao: Variant;
@@ -107,7 +117,7 @@ begin
   end;
 end;
 
-class function TUtil.GetCaminhoArquivo: String;
+class function TUtilArquivo.GetCaminhoArquivo: String;
 var
   odlCaminho: TOpenDialog;
 begin
