@@ -9,15 +9,15 @@ uses
   uFrmImportacao in 'uFrmImportacao.pas' {frmImportacao},
   ufrmStandard in 'Externo\ufrmStandard.pas' {frmStandard},
   uUtils in 'Externo\uUtils.pas',
-  ufrmCrudbasic in 'Externo\ufrmCrudbasic.pas' {frmCrudbasic},
-  uMensagem in 'Externo\uMensagem.pas',
-  IntfFormPrincipal in 'IntfFormPrincipal.pas',
-  uFrmCdEmp in 'uFrmCdEmp.pas' {frmCdEmp};
+  ufrmCrudbasic in 'Externo\ufrmCrudbasic.pas' {frmCrudbasic};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.CreateForm(TfrmMain, frmMain);
+  Application.CreateForm(TfrmImportacao, frmImportacao);
+  Application.CreateForm(TfrmStandard, frmStandard);
+  Application.CreateForm(TfrmCrudbasic, frmCrudbasic);
   Application.Run;
 end.

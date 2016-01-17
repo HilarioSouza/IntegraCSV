@@ -11,8 +11,7 @@ uses
   uUtils in 'Externo\uUtils.pas',
   ufrmCrudbasic in 'Externo\ufrmCrudbasic.pas' {frmCrudbasic},
   uMensagem in 'Externo\uMensagem.pas',
-  IntfFormPrincipal in 'IntfFormPrincipal.pas',
-  uFrmCdEmp in 'uFrmCdEmp.pas' {frmCdEmp};
+  IntfFormPrincipal in 'IntfFormPrincipal.pas';
 
 {$R *.res}
 

@@ -8,16 +8,14 @@ uses
   cTDI in 'Externo\cTDI.pas',
   uFrmImportacao in 'uFrmImportacao.pas' {frmImportacao},
   ufrmStandard in 'Externo\ufrmStandard.pas' {frmStandard},
-  uUtils in 'Externo\uUtils.pas',
-  ufrmCrudbasic in 'Externo\ufrmCrudbasic.pas' {frmCrudbasic},
-  uMensagem in 'Externo\uMensagem.pas',
-  IntfFormPrincipal in 'IntfFormPrincipal.pas',
-  uFrmCdEmp in 'uFrmCdEmp.pas' {frmCdEmp};
+  uUtils in 'Externo\uUtils.pas';
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.CreateForm(TfrmMain, frmMain);
+  Application.CreateForm(TfrmImportacao, frmImportacao);
+  Application.CreateForm(TfrmStandard, frmStandard);
   Application.Run;
 end.

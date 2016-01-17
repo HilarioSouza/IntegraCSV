@@ -43,7 +43,7 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-  FFTDI := TFTDI.Create(Self, TfrmImportacao);
+  FFTDI := TFTDI.Create(Self, TfrmMain);
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);

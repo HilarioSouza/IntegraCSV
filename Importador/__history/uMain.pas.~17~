@@ -38,7 +38,7 @@ uses
 
 procedure TfrmMain.Empresa1Click(Sender: TObject);
 begin
-  FFTDI.GetTDI.MostrarFormulario(TfrmCdEmp, False);
+  TFTDI.create(Self, TfrmCdEmp);
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);

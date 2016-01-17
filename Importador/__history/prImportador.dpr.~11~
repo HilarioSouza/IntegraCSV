@@ -12,7 +12,7 @@ uses
   ufrmCrudbasic in 'Externo\ufrmCrudbasic.pas' {frmCrudbasic},
   uMensagem in 'Externo\uMensagem.pas',
   IntfFormPrincipal in 'IntfFormPrincipal.pas',
-  uFrmCdEmp in 'uFrmCdEmp.pas' {frmCdEmp};
+  uFrmCdEmp in 'uFrmCdEmp.pas' {Form1};
 
 {$R *.res}
 

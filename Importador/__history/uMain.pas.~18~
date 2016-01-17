@@ -38,12 +38,12 @@ uses
 
 procedure TfrmMain.Empresa1Click(Sender: TObject);
 begin
-  FFTDI.GetTDI.MostrarFormulario(TfrmCdEmp, False);
+  FFTDI.;
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-  FFTDI := TFTDI.Create(Self, TfrmImportacao);
+  FFTDI := TFTDI.Create(Self, TfrmMain);
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);

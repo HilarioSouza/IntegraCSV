@@ -19,13 +19,6 @@ object frmMain: TfrmMain
   object MainMenu1: TMainMenu
     Left = 984
     Top = 8
-    object Cadastros1: TMenuItem
-      Caption = 'Cadastros'
-      object Empresa1: TMenuItem
-        Caption = 'Empresa'
-        OnClick = Empresa1Click
-      end
-    end
     object Configuraes1: TMenuItem
       Caption = 'Configura'#231#245'es'
     end

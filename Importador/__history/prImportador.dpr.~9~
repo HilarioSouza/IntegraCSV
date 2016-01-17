@@ -11,13 +11,15 @@ uses
   uUtils in 'Externo\uUtils.pas',
   ufrmCrudbasic in 'Externo\ufrmCrudbasic.pas' {frmCrudbasic},
   uMensagem in 'Externo\uMensagem.pas',
-  IntfFormPrincipal in 'IntfFormPrincipal.pas',
-  uFrmCdEmp in 'uFrmCdEmp.pas' {frmCdEmp};
+  IntfFormPrincipal in 'IntfFormPrincipal.pas';
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.CreateForm(TfrmMain, frmMain);
+  Application.CreateForm(TfrmImportacao, frmImportacao);
+  Application.CreateForm(TfrmStandard, frmStandard);
+  Application.CreateForm(TfrmCrudbasic, frmCrudbasic);
   Application.Run;
 end.

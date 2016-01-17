@@ -48,7 +48,6 @@ type
   public
     { Public declarations }
     procedure StatusTela;
-    property fPrincipal: IFormPrincipal read FfPrincipal write FfPrincipal;
   protected
     procedure Incluir;
     procedure Salvar;

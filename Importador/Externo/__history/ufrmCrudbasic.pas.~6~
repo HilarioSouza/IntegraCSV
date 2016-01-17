@@ -48,7 +48,6 @@ type
   public
     { Public declarations }
     procedure StatusTela;
-    property fPrincipal: IFormPrincipal read FfPrincipal write FfPrincipal;
   protected
     procedure Incluir;
     procedure Salvar;
@@ -149,8 +148,6 @@ begin
 end;
 
 procedure TfrmCrudbasic.Sair;
-const
-  WM_CLOSE_TAB = WM_USER + 1;
 begin
   PostMessage(FfPrincipal.FTDI.GetHandleTDI, WM_CLOSE_TAB,
     TPageControl(Self.parent.parent).ActivePage.pageindex, 0);

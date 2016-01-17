@@ -11,8 +11,7 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Mask, Vcl.DBCtrls,
-  IntfFormPrincipal;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Mask, Vcl.DBCtrls;
 
 type
   TfrmCrudbasic = class(TfrmStandard)
@@ -44,11 +43,9 @@ type
     procedure btnSalvarClick(Sender: TObject);
   private
     { Private declarations }
-    FfPrincipal: IFormPrincipal;
   public
     { Public declarations }
     procedure StatusTela;
-    property fPrincipal: IFormPrincipal read FfPrincipal write FfPrincipal;
   protected
     procedure Incluir;
     procedure Salvar;
@@ -149,10 +146,8 @@ begin
 end;
 
 procedure TfrmCrudbasic.Sair;
-const
-  WM_CLOSE_TAB = WM_USER + 1;
 begin
-  PostMessage(FfPrincipal.FTDI.GetHandleTDI, WM_CLOSE_TAB,
+  PostMessage(fPrincipal.FTDI.GetHandleTDI, WM_CLOSE_TAB,
     TPageControl(Self.parent.parent).ActivePage.pageindex, 0);
 end;
 

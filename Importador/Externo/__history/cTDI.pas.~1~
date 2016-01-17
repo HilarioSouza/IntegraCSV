@@ -220,7 +220,7 @@ end;
 
 procedure TTDI.SetMostrarMenuPopup(const Value: Boolean);
 
-  procedure Add_Fechar;
+  function Add_Fechar: TMenuItem;
   begin
     FPopup.Items.Add(TMenuItem.Create(FPopup));
 
@@ -233,7 +233,7 @@ procedure TTDI.SetMostrarMenuPopup(const Value: Boolean);
     end;
   end;
 
-  procedure Add_FecharTodas;
+  function Add_FecharTodas: TMenuItem;
   begin
     FPopup.Items.Add(TMenuItem.Create(FPopup));
 
