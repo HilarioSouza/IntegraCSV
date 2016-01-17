@@ -59,11 +59,11 @@ type
     function NovaAba: TTabSheet;
     function Pagina(aClasseForm: TFormClass): TTabSheet;
     function Formulario(Pagina: Integer): TForm;
-    procedure PageChange(Sender: TObject);
-    procedure FormShow(Sender: TObject); virtual;
+//    procedure PageChange(Sender: TObject);
+//    procedure FormShow(Sender: TObject); virtual;
   public
     ppForm : TForm;
-    constructor Create(AOwner: TWinControl; aFormPadrao: TFormClass);
+    constructor Create(AOwner: TWinControl; aFormPadrao: TFormClass); reintroduce;
     destructor Destroy; override;
     procedure MostrarFormulario(Classe: TFormClass; Multi: Boolean; Primeiro:Boolean = false; pCaption : String = ''; pParam : String = '');
     procedure MostrarFormulario1(Classe: TFormClass; Multi: Boolean; Primeiro:Boolean = false; pCaption : String = ''; pMargemEsquerda : Integer = -1; pMargemDireita : Integer = -1);
@@ -158,11 +158,6 @@ begin
   PageControl.ActivePageIndex := vTab.PageIndex;
 
   Result := vTab;
-end;
-
-procedure TTDI.PageChange(Sender: TObject);
-begin
-
 end;
 
 function TTDI.Pagina(aClasseForm: TFormClass): TTabSheet;
@@ -288,11 +283,6 @@ begin
   end;
 end;
 
-procedure TTDI.FormShow(Sender: TObject);
-begin
-
-end;
-
 function TTDI.Formulario(Pagina: Integer): TForm;
 {retorna o fomulario da pagina em questao}
 begin
@@ -327,8 +317,8 @@ end;
 procedure TTDI.OnWm_Close_Tav(var Msg: TMessage);
 begin
 
-  if Msg.WParam < 0 then
-    Exit;
+//  if Msg.WParam < 0 then
+//    Exit;
 
   if Formulario(Msg.WParam) <> nil then
   begin

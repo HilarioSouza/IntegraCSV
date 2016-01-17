@@ -8,7 +8,7 @@ type
    TFTDI = Class
      private
         FTDI: TTDI;
-        property TDI : TTDI read FTDI write FTDI;
+        //property TDI : TTDI read FTDI write FTDI;
      public
        Constructor create(AOwner: TWinControl; aFormPadrao: TFormClass); overload;
        function GetTDI : TTDI;

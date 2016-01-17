@@ -1,0 +1,13 @@
+inherited frmCdEmp: TfrmCdEmp
+  Caption = 'Cadastro de Empresas'
+  PixelsPerInch = 96
+  TextHeight = 13
+  inherited pgCrud: TPageControl
+    inherited tsCad: TTabSheet
+      ExplicitLeft = 4
+      ExplicitTop = 24
+      ExplicitWidth = 609
+      ExplicitHeight = 259
+    end
+  end
+end

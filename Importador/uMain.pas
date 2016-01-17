@@ -13,14 +13,19 @@ type
     Sair1: TMenuItem;
     Cadastros1: TMenuItem;
     Empresa1: TMenuItem;
+    Banco1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Empresa1Click(Sender: TObject);
+    procedure Banco1Click(Sender: TObject);
+    procedure Sair1Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
     FFTDI: TFTDI;
     procedure SetFTDI(const Value: TFTDI);
     function GetFTDI: TFTDI;
+    procedure AbrirConfiguracaobanco;
   public
     { Public declarations }
     property FTDI: TFTDI read GetFTDI write SetFTDI;
@@ -32,13 +37,23 @@ var
 implementation
 
 uses
-  uFrmImportacao, uFrmCdEmp;
+  uFrmImportacao, uFrmCdEmp, ufConfiguracaoBD;
 
 {$R *.dfm}
+
+procedure TfrmMain.Banco1Click(Sender: TObject);
+begin
+  AbrirConfiguracaoBanco;
+end;
 
 procedure TfrmMain.Empresa1Click(Sender: TObject);
 begin
   FFTDI.GetTDI.MostrarFormulario(TfrmCdEmp, False);
+end;
+
+procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
@@ -56,9 +71,26 @@ begin
   Result := FFTDI;
 end;
 
+procedure TfrmMain.Sair1Click(Sender: TObject);
+begin
+  Close;
+end;
+
 procedure TfrmMain.SetFTDI(const Value: TFTDI);
 begin
   Self.FTDI := Value;
+end;
+
+procedure TfrmMain.AbrirConfiguracaobanco;
+var
+  FrmConfig: TfConfiguracaoBD;
+begin
+  FrmConfig := TfConfiguracaoBD.Create(nil);
+  try
+    FrmConfig.ShowModal;
+  finally
+    FreeAndNil(FrmConfig);
+  end;
 end;
 
 end.

@@ -8,7 +8,7 @@ uses
   Vcl.Buttons;
 
 type
-  TfrmImportacao = class(TFrmStandard)
+  TfrmImportacao = class(TfrmStandard)
     Panel1: TPanel;
     edtCaminhoArquivo: TLabeledEdit;
     SpeedButton1: TSpeedButton;

@@ -75,6 +75,9 @@
         <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_ExeOutput>.\bin</DCC_ExeOutput>
+        <DCC_DcuOutput>.\dcu</DCC_DcuOutput>
+        <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
     </PropertyGroup>
@@ -97,12 +100,22 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Externo\uUtils.pas"/>
+        <DCCReference Include="Externo\uMensagem.pas"/>
+        <DCCReference Include="IntfFormPrincipal.pas"/>
+        <DCCReference Include="Externo\udmConnect.pas">
+            <Form>dmConnect</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="Externo\uFuncoesIni.pas"/>
+        <DCCReference Include="Externo\ufConfiguracaoBD.pas">
+            <Form>fConfiguracaoBD</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <DCCReference Include="Externo\ufrmCrudbasic.pas">
             <Form>frmCrudbasic</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="Externo\uMensagem.pas"/>
-        <DCCReference Include="IntfFormPrincipal.pas"/>
         <DCCReference Include="uFrmCdEmp.pas">
             <Form>frmCdEmp</Form>
             <FormType>dfm</FormType>
@@ -141,6 +154,12 @@
                 <DeployFile LocalName="Dados\Update.sql" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="bin\prImportador.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>prImportador.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

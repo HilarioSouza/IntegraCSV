@@ -12,6 +12,7 @@ object frmMain: TfrmMain
   Font.Style = []
   Menu = MainMenu1
   OldCreateOrder = False
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
@@ -28,9 +29,14 @@ object frmMain: TfrmMain
     end
     object Configuraes1: TMenuItem
       Caption = 'Configura'#231#245'es'
+      object Banco1: TMenuItem
+        Caption = 'Banco'
+        OnClick = Banco1Click
+      end
     end
     object Sair1: TMenuItem
       Caption = 'Sair'
+      OnClick = Sair1Click
     end
   end
 end
