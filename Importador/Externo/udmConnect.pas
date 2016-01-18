@@ -23,10 +23,10 @@ type
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
-    procedure Conectar;
   public
     { Public declarations }
     procedure ConfiguraConexao(User, Pass, DataBase: String);
+    procedure Conectar;
   end;
 
 var

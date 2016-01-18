@@ -50,7 +50,7 @@ implementation
 
 {$R *.dfm}
 
-uses uMensagem, uFuncoesIni, uUtils;
+uses uMensagem, uFuncoesIni, uUtils, udmConnect;
 
 procedure TfConfiguracaoBD.btnConectarClick(Sender: TObject);
 begin
@@ -60,6 +60,7 @@ begin
     TFuncoesIni.GravarIni('BANCO', 'User_Name', edtUser.Text);
     TFuncoesIni.GravarIni('BANCO', 'Pass', edtSenha.Text);
     TFuncoesIni.GravarIni('BANCO', 'Database', edtCaminho.Text);
+    dmConnect.Conectar;
     Close;
   end;
 end;
@@ -83,7 +84,7 @@ var
   sCaminho: String;
 begin
   sCaminho := TUtilArquivo.GetCaminhoArquivo;
-  if not TUtil.Empty(sCaminho) then
+  if not (sCaminho.IsEmpty) then
     edtCaminho.Text := sCaminho;
 end;
 

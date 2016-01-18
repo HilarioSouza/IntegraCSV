@@ -6,7 +6,7 @@ inherited fConfiguracaoBD: TfConfiguracaoBD
   OnClose = FormClose
   OnShow = FormShow
   ExplicitWidth = 526
-  ExplicitHeight = 190
+  ExplicitHeight = 189
   PixelsPerInch = 96
   TextHeight = 13
   object Panel2: TPanel
