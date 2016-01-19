@@ -11,13 +11,14 @@ object frmImportacao: TfrmImportacao
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
     Left = 8
     Top = 8
     Width = 353
-    Height = 169
+    Height = 89
     BevelOuter = bvNone
     TabOrder = 0
     object SpeedButton1: TSpeedButton
@@ -42,9 +43,18 @@ object frmImportacao: TfrmImportacao
       Top = 56
       Width = 75
       Height = 25
-      Caption = 'Button1'
+      Caption = 'Importar'
       TabOrder = 1
       OnClick = Button1Click
+    end
+    object Button2: TButton
+      Left = 267
+      Top = 56
+      Width = 75
+      Height = 25
+      Caption = 'Sair'
+      TabOrder = 2
+      OnClick = Button2Click
     end
   end
 end

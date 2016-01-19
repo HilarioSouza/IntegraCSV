@@ -14,6 +14,9 @@ type
     Cadastros1: TMenuItem;
     Empresa1: TMenuItem;
     Banco1: TMenuItem;
+    Movimentos1: TMenuItem;
+    Importao1: TMenuItem;
+    Preferncias1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Empresa1Click(Sender: TObject);
@@ -21,6 +24,8 @@ type
     procedure Sair1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
+    procedure Importao1Click(Sender: TObject);
+    procedure Preferncias1Click(Sender: TObject);
   private
     { Private declarations }
     FFTDI: TFTDI;
@@ -39,7 +44,7 @@ var
 implementation
 
 uses
-  uFrmImportacao, uFrmCdEmp, ufConfiguracaoBD, uAtualizaBanco;
+  uFrmImportacao, uFrmCdEmp, ufConfiguracaoBD, uAtualizaBanco, uFrmPreferencias;
 
 {$R *.dfm}
 
@@ -60,7 +65,7 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-  FFTDI := TFTDI.Create(Self, TfrmImportacao);
+  FFTDI := TFTDI.Create(Self, nil);//TfrmImportacao);
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -88,6 +93,16 @@ end;
 function TfrmMain.GetFTDI: TFTDI;
 begin
   Result := FFTDI;
+end;
+
+procedure TfrmMain.Importao1Click(Sender: TObject);
+begin
+  FFTDi.GetTDI.MostrarFormulario(TfrmImportacao, False);
+end;
+
+procedure TfrmMain.Preferncias1Click(Sender: TObject);
+begin
+  FFTDi.GetTDI.MostrarFormulario(TfrmPreferencias, False);
 end;
 
 procedure TfrmMain.Sair1Click(Sender: TObject);

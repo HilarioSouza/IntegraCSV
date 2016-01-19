@@ -2,8 +2,8 @@ object frmMain: TfrmMain
   Left = 192
   Top = 124
   Caption = 'Integra'#231#227'o AG'
-  ClientHeight = 637
-  ClientWidth = 1289
+  ClientHeight = 553
+  ClientWidth = 826
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -28,8 +28,19 @@ object frmMain: TfrmMain
         OnClick = Empresa1Click
       end
     end
+    object Movimentos1: TMenuItem
+      Caption = 'Movimentos'
+      object Importao1: TMenuItem
+        Caption = 'Importa'#231#227'o'
+        OnClick = Importao1Click
+      end
+    end
     object Configuraes1: TMenuItem
       Caption = 'Configura'#231#245'es'
+      object Preferncias1: TMenuItem
+        Caption = 'Prefer'#234'ncias'
+        OnClick = Preferncias1Click
+      end
       object Banco1: TMenuItem
         Caption = 'Banco'
         OnClick = Banco1Click

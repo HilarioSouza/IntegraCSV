@@ -17,7 +17,8 @@ uses
   ufrmCrudbasic in 'Externo\ufrmCrudbasic.pas' {frmCrudbasic},
   uFrmCdEmp in 'uFrmCdEmp.pas' {frmCdEmp},
   uAtualizaBanco in 'Externo\uAtualizaBanco.pas',
-  uInterfaceQuery in 'Externo\uInterfaceQuery.pas';
+  uInterfaceQuery in 'Externo\uInterfaceQuery.pas',
+  uFrmPreferencias in 'uFrmPreferencias.pas' {frmPreferencias};
 
 {$R *.res}
 
@@ -25,5 +26,6 @@ begin
   Application.Initialize;
   Application.CreateForm(TdmConnect, dmConnect);
   Application.CreateForm(TfrmMain, frmMain);
+  Application.CreateForm(TfrmPreferencias, frmPreferencias);
   Application.Run;
 end.
