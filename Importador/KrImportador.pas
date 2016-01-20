@@ -3,7 +3,7 @@ unit KrImportador;
 interface
 
 uses
-  Classes, System.Types, System.Generics.Collections;
+  Classes, System.Types, System.Generics.Collections, IntfFinanceiro;
 
 type
   ILeitor = Interface
@@ -58,13 +58,13 @@ type
     Protocolo       : String;
     DataCadastro    : String;
     VlrXimenes      : Double;
-    Despachante     : String;
-    Distribuidor    : String;
+    Despachante     : Double;
+    Distribuidor    : Double;
     VlrCartorio     : Double;
-    DAJ             : String;
+    DAJ             : Double;
     VlrTotalCustas  : Double;
     Convenio        : String;
-    CustasFechadas  : String;//Boolean? Double?
+    CustasFechadas  : Integer;
     VlrXimenesGestao: Double;
     VlrXimenesAut   : Double;
     VlrXimenesRec   : Double;
@@ -82,9 +82,18 @@ type
     procedure LerArquivo(Filename: String);
   end;
 
+  TImportador = class
+  public
+    procedure GravarContasaReceber;
+  end;
+
 implementation
 
-uses SysUtils, uUtils, uInterfaceQuery, FireDAC.Comp.Client;
+uses SysUtils, uUtils, uInterfaceQuery, FireDAC.Comp.Client, iwSystem,
+  uFuncoesIni;
+
+var
+  FFinanceiro: IFinanceiro;
 
 const
   IdxProtocolo        = 0;
@@ -152,13 +161,13 @@ begin
   Query.ParamByName('Protocolo').AsString := Registro.Protocolo;
   Query.ParamByName('DataCadastro').AsString := Registro.DataCadastro;
   Query.ParamByName('VlrXimenes').AsFloat := Registro.VlrXimenes;
-  Query.ParamByName('Despachante').AsString := Registro.Despachante;
-  Query.ParamByName('Distribuidor').AsString := Registro.Distribuidor;
+  Query.ParamByName('Despachante').AsFloat := Registro.Despachante;
+  Query.ParamByName('Distribuidor').AsFloat := Registro.Distribuidor;
   Query.ParamByName('VlrCartorio').AsFloat := Registro.VlrCartorio;
-  Query.ParamByName('DAJ').AsString := Registro.DAJ;
+  Query.ParamByName('DAJ').AsFloat := Registro.DAJ;
   Query.ParamByName('VlrTotalCustas').AsFloat := Registro.VlrTotalCustas;
   Query.ParamByName('Convenio').AsString := Registro.Convenio;
-  Query.ParamByName('CustasFechadas').AsString := Registro.CustasFechadas;
+  Query.ParamByName('CustasFechadas').AsInteger := Registro.CustasFechadas;
   Query.ParamByName('VlrXimenesGestao').AsFloat := Registro.VlrXimenesGestao;
   Query.ParamByName('VlrXimenesAut').AsFloat := Registro.VlrXimenesAut;
   Query.ParamByName('VlrXimenesRec').AsFloat := Registro.VlrXimenesRec;
@@ -175,18 +184,40 @@ begin
   Registro.Protocolo        := ArrayDados[IdxProtocolo];
   Registro.DataCadastro     := ArrayDados[IdxDataCadastro];
   Registro.VlrXimenes       := StrToFloatDef(ArrayDados[IdxVlrXimenes], 0);
-  Registro.Despachante      := ArrayDados[IdxDespachante];
-  Registro.Distribuidor     := ArrayDados[IdxDistribuidor];
+  Registro.Despachante      := StrToFloatDef(ArrayDados[IdxDespachante], 0);
+  Registro.Distribuidor     := StrToFloatDef(ArrayDados[IdxDistribuidor], 0);
   Registro.VlrCartorio      := StrToFloatDef(ArrayDados[IdxVlrCartorio], 0);
-  Registro.DAJ              := ArrayDados[IdxDAJ];
+  Registro.DAJ              := StrToFloatDef(ArrayDados[IdxDAJ], 0);
   Registro.VlrTotalCustas   := StrToFloatDef(ArrayDados[IdxVlrTotalCustas], 0);
   Registro.Convenio         := ArrayDados[IdxConvenio];
-  Registro.CustasFechadas   := ArrayDados[IdxCustasFechadas];
+  Registro.CustasFechadas   := StrToIntDef(ArrayDados[IdxCustasFechadas], 0);
   Registro.VlrXimenesGestao := StrToFloatDef(ArrayDados[IdxVlrXimenesGestao], 0);
   Registro.VlrXimenesAut    := StrToFloatDef(ArrayDados[IdxVlrXimenesAut], 0);
   Registro.VlrXimenesRec    := StrToFloatDef(ArrayDados[IdxVlrXimenesRec], 0);
   Registro.VlrXimenesOutros := StrToFloatDef(ArrayDados[IdxVlrXimenesOutros], 0);
   Registro.Representante    := ArrayDados[IdxRepresentante];
+end;
+
+function GetEnderecoBanco: String;
+begin
+  Result := TFuncoesIni.LerIni('BANCO', 'Database');
+end;
+
+function GetFinanceiroAG: IFinanceiro;
+begin
+  FFinanceiro := GetFinanceiro(gsAppPath);
+  FFinanceiro.Empresa := '0001';
+  FFinanceiro.DriverNameBanco := '';
+  FFinanceiro.UsuarioBanco := '';
+  FFinanceiro.SenhaBanco := '';
+  FFinanceiro.Open(GetEnderecoBanco);
+end;
+
+procedure TImportador.GravarContasaReceber;
+var
+  CRE: IContasaReceber;
+begin
+  CRE := FFinanceiro.GetContasaReceber;
 end;
 
 { TClasseBase }

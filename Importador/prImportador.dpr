@@ -18,7 +18,8 @@ uses
   uFrmCdEmp in 'uFrmCdEmp.pas' {frmCdEmp},
   uAtualizaBanco in 'Externo\uAtualizaBanco.pas',
   uInterfaceQuery in 'Externo\uInterfaceQuery.pas',
-  uFrmPreferencias in 'uFrmPreferencias.pas' {frmPreferencias};
+  uFrmPreferencias in 'uFrmPreferencias.pas' {frmPreferencias},
+  IntfFinanceiro in 'Externo\IntfFinanceiro.pas';
 
 {$R *.res}
 

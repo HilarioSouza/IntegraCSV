@@ -57,4 +57,13 @@ object frmImportacao: TfrmImportacao
       OnClick = Button2Click
     end
   end
+  object Button3: TButton
+    Left = 288
+    Top = 160
+    Width = 75
+    Height = 25
+    Caption = 'Button3'
+    TabOrder = 1
+    OnClick = Button3Click
+  end
 end
