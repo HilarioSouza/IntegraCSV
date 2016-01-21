@@ -132,7 +132,7 @@ inherited frmCrudbasic: TfrmCrudbasic
     Top = 108
     Width = 617
     Height = 287
-    ActivePage = tsPsq
+    ActivePage = tsCad
     Align = alClient
     TabOrder = 2
     object tsPsq: TTabSheet

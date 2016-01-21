@@ -122,11 +122,11 @@
         </DCCReference>
         <DCCReference Include="Externo\uAtualizaBanco.pas"/>
         <DCCReference Include="Externo\uInterfaceQuery.pas"/>
+        <DCCReference Include="Externo\IntfFinanceiro.pas"/>
         <DCCReference Include="uFrmPreferencias.pas">
             <Form>frmPreferencias</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="Externo\IntfFinanceiro.pas"/>
         <None Include="Dados\Update.sql"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

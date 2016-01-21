@@ -3,12 +3,7 @@ inherited frmCdEmp: TfrmCdEmp
   PixelsPerInch = 96
   TextHeight = 13
   inherited pgCrud: TPageControl
-    ActivePage = tsCad
     inherited tsCad: TTabSheet
-      ExplicitLeft = 4
-      ExplicitTop = 24
-      ExplicitWidth = 609
-      ExplicitHeight = 259
       inherited lblCodigo: TLabel
         Width = 37
         Caption = 'C'#243'digo:'
