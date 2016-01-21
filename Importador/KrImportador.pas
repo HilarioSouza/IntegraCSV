@@ -90,7 +90,7 @@ type
 implementation
 
 uses SysUtils, uUtils, uInterfaceQuery, FireDAC.Comp.Client, iwSystem,
-  uFuncoesIni;
+  uFuncoesIni, System.Math;
 
 var
   FFinanceiro: IFinanceiro;
@@ -129,6 +129,7 @@ begin
     Reset(Arquivo);
     while not Eof(Arquivo) do
     begin
+      Readln(Arquivo);
       Readln(Arquivo, LinhaRegistro);
       Registro := TRegistro.Create;
       Lista.Add(TRegistro(Registro));
@@ -152,7 +153,12 @@ end;
 
 procedure TLeitorCSV.GravarRegistro(Registro: TRegistro);
 const
-  SQL = 'INSERT INTO REG';
+  SQL = ' INSERT INTO REG (Protocolo, DataCadastro, ValorXimenes, Despachante, Distribuidor, ValorCartorio, DAJ, '+
+        ' ValorTotalCustas, Convenio, CustasFechadas, ValorXimenesGestao, ValorXimenesAut, ValorXimenesRec, '+
+        ' ValorXimenesOutros, Representante) '+
+        ' values (:Protocolo, :DataCadastro, :VlrXimenes, :Despachante, :Distribuidor, :VlrCartorio, :DAJ, '+
+        ' :VlrTotalCustas, :Convenio, :CustasFechadas, :VlrXimenesGestao, :VlrXimenesAut, :VlrXimenesRec, '+
+        ' :VlrXimenesOutros, :Representante)';
 var
   Query: TFDQuery;
 begin
@@ -190,7 +196,7 @@ begin
   Registro.DAJ              := StrToFloatDef(ArrayDados[IdxDAJ], 0);
   Registro.VlrTotalCustas   := StrToFloatDef(ArrayDados[IdxVlrTotalCustas], 0);
   Registro.Convenio         := ArrayDados[IdxConvenio];
-  Registro.CustasFechadas   := StrToIntDef(ArrayDados[IdxCustasFechadas], 0);
+  Registro.CustasFechadas   := IfThen(ArrayDados[IdxCustasFechadas] = 'SIM', 1, 0);
   Registro.VlrXimenesGestao := StrToFloatDef(ArrayDados[IdxVlrXimenesGestao], 0);
   Registro.VlrXimenesAut    := StrToFloatDef(ArrayDados[IdxVlrXimenesAut], 0);
   Registro.VlrXimenesRec    := StrToFloatDef(ArrayDados[IdxVlrXimenesRec], 0);

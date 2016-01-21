@@ -2,23 +2,23 @@
 <BorlandProject>
 	<Transactions>
     <Transaction>2016/01/13 18:38:07.000.730,=C:\Projetos\Importador\New1.sql</Transaction>
-    <Transaction>2016/01/13 18:38:31.000.378,C:\Projetos\Importador\New1.sql=C:\Projetos\Importador\Dados\Update.sql</Transaction>
+    <Transaction>2016/01/13 18:38:31.000.378,C:\Projetos\Importador\Dados\Update.sql=C:\Projetos\Importador\New1.sql</Transaction>
     <Transaction>2016/01/16 09:20:56.000.491,=D:\Projetos\IntegraCSV\Importador\Externo\uFTDI.pas</Transaction>
     <Transaction>2016/01/16 09:21:01.000.705,=D:\Projetos\IntegraCSV\Importador\Externo\cTDI.pas</Transaction>
     <Transaction>2016/01/16 09:26:11.000.675,=D:\Projetos\IntegraCSV\Importador\Unit2.pas</Transaction>
-    <Transaction>2016/01/16 09:26:32.000.966,D:\Projetos\IntegraCSV\Importador\Unit2.pas=D:\Projetos\IntegraCSV\Importador\frmImportacao.pas</Transaction>
-    <Transaction>2016/01/16 09:26:32.000.966,D:\Projetos\IntegraCSV\Importador\Unit2.dfm=D:\Projetos\IntegraCSV\Importador\frmImportacao.dfm</Transaction>
-    <Transaction>2016/01/16 09:27:31.000.462,D:\Projetos\IntegraCSV\Importador\frmImportacao.dfm=D:\Projetos\IntegraCSV\Importador\uFrmImportacao.dfm</Transaction>
-    <Transaction>2016/01/16 09:27:31.000.462,D:\Projetos\IntegraCSV\Importador\frmImportacao.pas=D:\Projetos\IntegraCSV\Importador\uFrmImportacao.pas</Transaction>
+    <Transaction>2016/01/16 09:26:32.000.966,D:\Projetos\IntegraCSV\Importador\frmImportacao.pas=D:\Projetos\IntegraCSV\Importador\Unit2.pas</Transaction>
+    <Transaction>2016/01/16 09:26:32.000.966,D:\Projetos\IntegraCSV\Importador\frmImportacao.dfm=D:\Projetos\IntegraCSV\Importador\Unit2.dfm</Transaction>
+    <Transaction>2016/01/16 09:27:31.000.462,D:\Projetos\IntegraCSV\Importador\uFrmImportacao.pas=D:\Projetos\IntegraCSV\Importador\frmImportacao.pas</Transaction>
+    <Transaction>2016/01/16 09:27:31.000.462,D:\Projetos\IntegraCSV\Importador\uFrmImportacao.dfm=D:\Projetos\IntegraCSV\Importador\frmImportacao.dfm</Transaction>
     <Transaction>2016/01/16 09:28:38.000.428,=D:\Projetos\IntegraCSV\Importador\Externo\ufrmStandard.pas</Transaction>
     <Transaction>2016/01/16 11:00:28.000.490,=D:\Projetos\IntegraCSV\Importador\Externo\uUtils.pas</Transaction>
     <Transaction>2016/01/16 15:38:49.000.731,=D:\Projetos\IntegraCSV\Importador\Externo\ufrmCrudbasic.pas</Transaction>
     <Transaction>2016/01/16 15:40:22.000.986,=D:\Projetos\IntegraCSV\Importador\Externo\uMensagem.pas</Transaction>
     <Transaction>2016/01/16 15:42:48.000.652,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
-    <Transaction>2016/01/16 15:45:23.000.510,D:\Projetos\IntegraCSV\Importador\Unit1.pas=D:\Projetos\IntegraCSV\Importador\IntfFormPrincipal.pas</Transaction>
+    <Transaction>2016/01/16 15:45:23.000.510,D:\Projetos\IntegraCSV\Importador\IntfFormPrincipal.pas=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
     <Transaction>2016/01/16 16:35:01.000.708,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
-    <Transaction>2016/01/16 16:50:06.000.359,D:\Projetos\IntegraCSV\Importador\Unit1.pas=D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.pas</Transaction>
-    <Transaction>2016/01/16 16:50:06.000.359,D:\Projetos\IntegraCSV\Importador\Unit1.dfm=D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.dfm</Transaction>
+    <Transaction>2016/01/16 16:50:06.000.359,D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.pas=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
+    <Transaction>2016/01/16 16:50:06.000.359,D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.dfm=D:\Projetos\IntegraCSV\Importador\Unit1.dfm</Transaction>
     <Transaction>2016/01/17 10:38:50.000.037,=D:\Projetos\IntegraCSV\Importador\Externo\udmConnect.pas</Transaction>
     <Transaction>2016/01/17 10:39:47.000.744,=D:\Projetos\IntegraCSV\Importador\Externo\uFuncoesIni.pas</Transaction>
     <Transaction>2016/01/17 11:50:30.000.934,=D:\Projetos\IntegraCSV\Importador\Externo\ufConfiguracaoBD.pas</Transaction>
@@ -26,19 +26,19 @@
     <Transaction>2016/01/17 13:46:13.000.422,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
     <Transaction>2016/01/17 13:46:48.000.868,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
     <Transaction>2016/01/17 13:47:16.000.241,D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.pas=</Transaction>
-    <Transaction>2016/01/17 13:47:26.000.833,D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.dfm=D:\Projetos\IntegraCSV\Importador\Unit1.dfm</Transaction>
-    <Transaction>2016/01/17 13:47:26.000.833,D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.pas=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
+    <Transaction>2016/01/17 13:47:26.000.833,D:\Projetos\IntegraCSV\Importador\Unit1.dfm=D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.dfm</Transaction>
+    <Transaction>2016/01/17 13:47:26.000.833,D:\Projetos\IntegraCSV\Importador\Unit1.pas=D:\Projetos\IntegraCSV\Importador\uFrmCdEmp.pas</Transaction>
     <Transaction>2016/01/17 18:44:07.000.865,=D:\Projetos\IntegraCSV\Importador\Externo\uAtualizaBanco.pas</Transaction>
     <Transaction>2016/01/17 18:47:00.000.182,=D:\Projetos\IntegraCSV\Importador\Externo\uInterfaceQuery.pas</Transaction>
     <Transaction>2016/01/19 14:05:13.000.337,=C:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
-    <Transaction>2016/01/19 14:06:35.000.682,C:\Projetos\IntegraCSV\Importador\Unit1.dfm=C:\Projetos\IntegraCSV\Importador\uFrmPreferencias.dfm</Transaction>
-    <Transaction>2016/01/19 14:06:35.000.682,C:\Projetos\IntegraCSV\Importador\Unit1.pas=C:\Projetos\IntegraCSV\Importador\uFrmPreferencias.pas</Transaction>
+    <Transaction>2016/01/19 14:06:35.000.682,C:\Projetos\IntegraCSV\Importador\uFrmPreferencias.pas=C:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
+    <Transaction>2016/01/19 14:06:35.000.682,C:\Projetos\IntegraCSV\Importador\uFrmPreferencias.dfm=C:\Projetos\IntegraCSV\Importador\Unit1.dfm</Transaction>
     <Transaction>2016/01/19 20:46:59.000.321,=D:\Projetos\IntegraCSV\Importador\Externo\IntfFinanceiro.pas</Transaction>
-    <Transaction>2016/01/20 21:18:44.912,D:\Projetos\IntegraCSV\Importador\uFrmPreferencias.pas=</Transaction>
-    <Transaction>2016/01/20 21:18:58.521,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
-    <Transaction>2016/01/20 21:19:48.300,D:\Projetos\IntegraCSV\Importador\uFrmPreferencias.pas=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
-    <Transaction>2016/01/20 21:19:48.300,D:\Projetos\IntegraCSV\Importador\uFrmPreferencias.dfm=D:\Projetos\IntegraCSV\Importador\Unit1.dfm</Transaction>
-    <Transaction>2016/01/20 21:26:07.364,D:\Projetos\IntegraCSV\Importador\uFrmPreferencias.pas=</Transaction>
-    <Transaction>2016/01/20 21:26:43.936,=D:\Projetos\IntegraCSV\Importador\uFrmPreferencias.pas</Transaction>
+    <Transaction>2016/01/20 21:18:44.000.912,D:\Projetos\IntegraCSV\Importador\uFrmPreferencias.pas=</Transaction>
+    <Transaction>2016/01/20 21:18:58.000.521,=D:\Projetos\IntegraCSV\Importador\Unit1.pas</Transaction>
+    <Transaction>2016/01/20 21:19:48.000.300,D:\Projetos\IntegraCSV\Importador\Unit1.pas=D:\Projetos\IntegraCSV\Importador\uFrmPreferencias.pas</Transaction>
+    <Transaction>2016/01/20 21:19:48.000.300,D:\Projetos\IntegraCSV\Importador\Unit1.dfm=D:\Projetos\IntegraCSV\Importador\uFrmPreferencias.dfm</Transaction>
+    <Transaction>2016/01/20 21:26:07.000.364,D:\Projetos\IntegraCSV\Importador\uFrmPreferencias.pas=</Transaction>
+    <Transaction>2016/01/20 21:26:43.000.936,=D:\Projetos\IntegraCSV\Importador\uFrmPreferencias.pas</Transaction>
   </Transactions>
 </BorlandProject>

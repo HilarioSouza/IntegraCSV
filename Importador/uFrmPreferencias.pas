@@ -44,7 +44,7 @@ procedure TfrmPreferencias.btnCancelarClick(Sender: TObject);
 begin
   inherited;
   qryCFG.Cancel;
-  Close;
+  Sair;
 end;
 
 procedure TfrmPreferencias.btnOkClick(Sender: TObject);

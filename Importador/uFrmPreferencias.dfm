@@ -22,7 +22,6 @@ object frmPreferencias: TfrmPreferencias
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitHeight = 377
     object Label1: TLabel
       Left = 8
       Top = 57
@@ -93,7 +92,7 @@ object frmPreferencias: TfrmPreferencias
     BevelOuter = bvNone
     TabOrder = 2
     object btnOk: TButton
-      Left = 629
+      Left = 637
       Top = 6
       Width = 75
       Height = 25
@@ -102,7 +101,7 @@ object frmPreferencias: TfrmPreferencias
       OnClick = btnOkClick
     end
     object btnCancelar: TButton
-      Left = 710
+      Left = 718
       Top = 6
       Width = 75
       Height = 25

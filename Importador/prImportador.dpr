@@ -27,6 +27,5 @@ begin
   Application.Initialize;
   Application.CreateForm(TdmConnect, dmConnect);
   Application.CreateForm(TfrmMain, frmMain);
-  Application.CreateForm(TfrmPreferencias, frmPreferencias);
   Application.Run;
 end.

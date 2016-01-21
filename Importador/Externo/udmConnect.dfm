@@ -10,7 +10,6 @@ object dmConnect: TdmConnect
       'Password=masterkey'
       'DriverID=FB')
     FetchOptions.AssignedValues = [evDetailOptimize]
-    Connected = True
     LoginPrompt = False
     Left = 40
     Top = 16
