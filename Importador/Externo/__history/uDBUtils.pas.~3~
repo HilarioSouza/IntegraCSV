@@ -1,0 +1,29 @@
+unit uDBUtils;
+
+interface
+
+type
+  TDBUtils = class
+  private
+    class function GetMaxID(TableName: String): String; static;
+    class procedure SetID(Query: TFDQuery; const TableName: String); static;
+  public
+
+  end;
+
+implementation
+
+class function TDBUtils.GetMaxID(TableName: String): String;
+var
+  Query: TFDQuery;
+begin
+  Query := NewQuery;
+  Result := Query.FieldByName('ID').AsInteger;
+end;
+
+class procedure TDBUtils.SetID(Query: TFDQuery; const TableName: String);
+begin
+  Query.FieldByName('ID').AsInteger := GetMaxID(TableName) + 1;
+end;
+
+end.

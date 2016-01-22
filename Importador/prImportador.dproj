@@ -127,6 +127,7 @@
             <Form>frmPreferencias</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="Externo\uDBUtils.pas"/>
         <None Include="Dados\Update.sql"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

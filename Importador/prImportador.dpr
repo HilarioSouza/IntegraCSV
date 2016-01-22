@@ -19,7 +19,8 @@ uses
   uAtualizaBanco in 'Externo\uAtualizaBanco.pas',
   uInterfaceQuery in 'Externo\uInterfaceQuery.pas',
   IntfFinanceiro in 'Externo\IntfFinanceiro.pas',
-  uFrmPreferencias in 'uFrmPreferencias.pas' {frmPreferencias};
+  uFrmPreferencias in 'uFrmPreferencias.pas' {frmPreferencias},
+  uDBUtils in 'Externo\uDBUtils.pas';
 
 {$R *.res}
 
