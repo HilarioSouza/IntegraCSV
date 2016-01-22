@@ -40,9 +40,10 @@ begin
     ExecutaComando('CREATE TABLE CFG ( '+
     'EMP_CODIGO  VARCHAR(4) NOT NULL,  '+
     'ID          INTEGER NOT NULL,     '+
-    'CONFIG      VARCHAR(30),          '+
-    'VALOR       VARCHAR(100),         '+
-    'TIPO        VARCHAR(1));          ');
+    ' CAMINHOBANCO  VARCHAR(250), '+
+    ' SERVIDOR      INTEGER, '+
+    ' USUARIO       VARCHAR(40), '+
+    ' SENHA         VARCHAR(40)); ');    
 
     ExecutaComando(' CREATE TABLE EMP (           '+
                    ' CODIGO  VARCHAR(4) NOT NULL, '+
@@ -53,9 +54,24 @@ begin
                    ' ID          INTEGER NOT NULL,    '+
                    ' DATA        DATE);               ');
 
-    ExecutaComando(' CREATE TABLE REG (               '+
-                   ' EMP_CODIGO  VARCHAR(4) NOT NULL, '+
-                   ' ID          INTEGER NOT NULL);   ');
+    ExecutaComando(' CREATE TABLE REG ( ' +
+                   ' EMP_CODIGO          VARCHAR(4) NOT NULL, '+
+                   ' ID                  INTEGER NOT NULL, '+
+                   ' PROTOCOLO           VARCHAR(50), '+
+                   ' DATACADASTRO        TIMESTAMP, '+
+                   ' DESPACHANTE         DOUBLE PRECISION, '+
+                   ' DISTRIBUIDOR        DOUBLE PRECISION, '+
+                   ' VALORCARTORIO       DOUBLE PRECISION, '+
+                   ' DAJ                 DOUBLE PRECISION, '+
+                   ' VALORTOTALCUSTAS    DOUBLE PRECISION, '+
+                   ' CONVENIO            VARCHAR(50), '+
+                   ' CUSTASFECHADAS      INTEGER, '+
+                   ' VALORXIMENESGESTAO  DOUBLE PRECISION, '+
+                   ' VALORXIMENESAUT     DOUBLE PRECISION, '+
+                   ' VALORXIMENESREC     DOUBLE PRECISION, '+
+                   ' VALORXIMENESOUTROS  DOUBLE PRECISION, '+
+                   ' REPRESENTANTE       VARCHAR(50) '+
+                   ' ); ');
 
     ExecutaComando(' ALTER TABLE CFG ADD CONSTRAINT PK_CFG PRIMARY KEY (EMP_CODIGO, ID);');
     ExecutaComando(' ALTER TABLE EMP ADD CONSTRAINT PK_EMP PRIMARY KEY (CODIGO);');
@@ -73,8 +89,12 @@ var
   Qry: TFDQuery;
 begin
   Qry := AutoQuery.NewQuery('SELECT COUNT(*) QTDE FROM RDB$RELATIONS WHERE RDB$FLAGS=1 and RDB$RELATION_NAME= '+QuotedStr('DTB'));
-  Qry.Open;
-
+  try
+    Qry.Open;
+  except
+  on E: Exception do
+    raise Exception.Create('Não foi possível atualizar o banco de dados. Exceção: ' + E.Message);
+  end;
   if (Qry.IsEmpty) or (Qry.Fields[0].AsInteger = 0) then
   begin
     ExecutaComando('CREATE TABLE DTB ( VERSAOBANCO INTEGER, VERSAOAPP INTEGER)');
@@ -98,7 +118,7 @@ var
 begin
   CriarEstruturaDeAtualizacao;
   Qry := AutoQuery.NewQuery('Select VERSAOBANCO from dtb');
-  qry.Open;
+  Qry.Open;
   Result := Qry.Fields[0].AsInteger;
 end;
 

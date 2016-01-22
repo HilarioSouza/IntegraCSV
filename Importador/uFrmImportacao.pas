@@ -74,10 +74,10 @@ begin
   Leitor := TLeitorCSV.Create;
   try
     Leitor.LerArquivo(edtCaminhoArquivo.Text);
-    ShowMessage('Teste Ok');
+    ShowMessage('Importação realizada com sucesso.');
   except
     on E: Exception do
-      raise Exception.Create('Falha no teste: ' + E.Message);
+      raise Exception.Create('Erro durante a importação: ' + E.Message);
   end;
 end;
 

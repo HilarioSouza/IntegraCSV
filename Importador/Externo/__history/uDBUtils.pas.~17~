@@ -33,7 +33,7 @@ end;
 
 class function TDBUtils.MainServer: TFDConnection;
 begin
-  Result := dmConnect.fdConn;
+  dmConnect.fdConn;
 end;
 
 class procedure TDBUtils.SetID(Query: TFDQuery; const TableName: String);

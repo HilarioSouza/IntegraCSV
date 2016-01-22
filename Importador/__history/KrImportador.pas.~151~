@@ -55,8 +55,10 @@ type
 
   TRegistro = class(TClasseBase)
   public
+    EMP_Codigo      : String;
+    ID              : Integer;
     Protocolo       : String;
-    DataCadastro    : String;
+    DataCadastro    : TDateTime;
     VlrXimenes      : Double;
     Despachante     : Double;
     Distribuidor    : Double;
@@ -70,11 +72,13 @@ type
     VlrXimenesRec   : Double;
     VlrXimenesOutros: Double;
     Representante   : String;
+    IMP_Codigo      : Integer;
   end;
 
   TLeitorCSV = class(TClasseBase, ILeitor)
   private
     LinhaRegistro: String;
+    IMP_Codigo: Integer;
     procedure PopularDadosRegistro(Registro: TRegistro);
     procedure GravarRegistrosNoBanco(ListaRegistros: TObjectList<TRegistro>);
     procedure GravarRegistro(Registro: TRegistro);
@@ -90,7 +94,7 @@ type
 implementation
 
 uses SysUtils, uUtils, uInterfaceQuery, FireDAC.Comp.Client, iwSystem,
-  uFuncoesIni;
+  uFuncoesIni, System.Math, uDBUtils, udmConnect;
 
 var
   FFinanceiro: IFinanceiro;
@@ -124,19 +128,31 @@ begin
     raise Exception.Create('Arquivo não informado. Por favor informe o caminho do arquivo.');
   AssignFile(Arquivo, FileName);
   try
-  Lista := TObjectList<TRegistro>.Create;
-    FileMode := fmOpenRead;
-    Reset(Arquivo);
-    while not Eof(Arquivo) do
-    begin
-      Readln(Arquivo, LinhaRegistro);
-      Registro := TRegistro.Create;
-      Lista.Add(TRegistro(Registro));
-      PopularDadosRegistro(Registro);
+    try
+      TDBUtils.MainServer.StartTransaction;
+      IMP_Codigo := TDBUtils.GetProxID('IMP');
+      Lista := TObjectList<TRegistro>.Create;
+      FileMode := fmOpenRead;
+      Reset(Arquivo);
+      while not Eof(Arquivo) do
+      begin
+        Readln(Arquivo);
+        Readln(Arquivo, LinhaRegistro);
+        Registro := TRegistro.Create;
+        Lista.Add(TRegistro(Registro));
+        PopularDadosRegistro(Registro);
+      end;
+      GravarRegistrosNoBanco(Lista);
+      TDBUtils.MainServer.Commit;
+    finally
+      CloseFile(Arquivo);
     end;
-    GravarRegistrosNoBanco(Lista);
-  finally
-    CloseFile(Arquivo);
+  except
+    on E: Exception do
+    begin
+      TDBUtils.MainServer.Rollback;
+      raise Exception.Create('Erro: ' + E.Message);
+    end;
   end;
 end;
 
@@ -148,23 +164,27 @@ begin
   begin
     GravarRegistro(ListaRegistros[I]);
   end;
+  TDBUtils.MainServer.Commit;
 end;
 
 procedure TLeitorCSV.GravarRegistro(Registro: TRegistro);
 const
-  SQL = ' INSERT INTO REG (Protocolo, DataCadastro, VlrXimenes, Despachante, Distribuidor, VlrCartorio, DAJ, '+
-        ' VlrTotalCustas, Convenio, CustasFechadas, VlrXimenesGestao, VlrXimenesAut, VlrXimenesRec, '+
-        ' VlrXimenesOutros, Representante) '+
-        ' values (:Protocolo, :DataCadastro, :VlrXimenes, :Despachante, :Distribuidor, :VlrCartorio, :DAJ, '+
+  SQL = ' INSERT INTO REG (EMP_Codigo, ID, Protocolo, DataCadastro, ValorXimenes, Despachante, Distribuidor, ValorCartorio, DAJ, '+
+        ' ValorTotalCustas, Convenio, CustasFechadas, ValorXimenesGestao, ValorXimenesAut, ValorXimenesRec, '+
+        ' ValorXimenesOutros, Representante, IMP_Codigo) '+
+        ' values (:EMP_Codigo, :ID, :Protocolo, :DataCadastro, :VlrXimenes, :Despachante, :Distribuidor, :VlrCartorio, :DAJ, '+
         ' :VlrTotalCustas, :Convenio, :CustasFechadas, :VlrXimenesGestao, :VlrXimenesAut, :VlrXimenesRec, '+
-        ' :VlrXimenesOutros, :Representante)';
+        ' :VlrXimenesOutros, :Representante, :IMP_Codigo)';
 var
   Query: TFDQuery;
 begin
   Query := NewQuery;
   Query.SQL.Text := SQL;
+  Query.ParamByName('EMP_Codigo').AsString := Registro.EMP_Codigo;
+  Query.ParamByName('ID').AsInteger := TDBUtils.GetProxID('REG');
+  Query.ParamByName('IMP_Codigo').AsInteger := Registro.IMP_Codigo;
   Query.ParamByName('Protocolo').AsString := Registro.Protocolo;
-  Query.ParamByName('DataCadastro').AsString := Registro.DataCadastro;
+  Query.ParamByName('DataCadastro').AsDateTime := Registro.DataCadastro;
   Query.ParamByName('VlrXimenes').AsFloat := Registro.VlrXimenes;
   Query.ParamByName('Despachante').AsFloat := Registro.Despachante;
   Query.ParamByName('Distribuidor').AsFloat := Registro.Distribuidor;
@@ -186,8 +206,10 @@ var
   ArrayDados: TStringDynArray;
 begin
   ArrayDados := TUtil.Split(LinhaRegistro, ';');
+  Registro.EMP_Codigo       := '0001'; //Tratar
+  Registro.IMP_Codigo       := IMP_Codigo;
   Registro.Protocolo        := ArrayDados[IdxProtocolo];
-  Registro.DataCadastro     := ArrayDados[IdxDataCadastro];
+  Registro.DataCadastro     := StrToDateTimeDef(ArrayDados[IdxDataCadastro], 0);
   Registro.VlrXimenes       := StrToFloatDef(ArrayDados[IdxVlrXimenes], 0);
   Registro.Despachante      := StrToFloatDef(ArrayDados[IdxDespachante], 0);
   Registro.Distribuidor     := StrToFloatDef(ArrayDados[IdxDistribuidor], 0);
@@ -195,7 +217,7 @@ begin
   Registro.DAJ              := StrToFloatDef(ArrayDados[IdxDAJ], 0);
   Registro.VlrTotalCustas   := StrToFloatDef(ArrayDados[IdxVlrTotalCustas], 0);
   Registro.Convenio         := ArrayDados[IdxConvenio];
-  Registro.CustasFechadas   := StrToIntDef(ArrayDados[IdxCustasFechadas], 0);
+  Registro.CustasFechadas   := IfThen(ArrayDados[IdxCustasFechadas] = 'SIM', 1, 0);
   Registro.VlrXimenesGestao := StrToFloatDef(ArrayDados[IdxVlrXimenesGestao], 0);
   Registro.VlrXimenesAut    := StrToFloatDef(ArrayDados[IdxVlrXimenesAut], 0);
   Registro.VlrXimenesRec    := StrToFloatDef(ArrayDados[IdxVlrXimenesRec], 0);

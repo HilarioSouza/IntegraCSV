@@ -23,10 +23,10 @@ type
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
-    procedure Conectar;
   public
     { Public declarations }
     procedure ConfiguraConexao(User, Pass, DataBase: String);
+    procedure Conectar;
   end;
 
 var
@@ -48,7 +48,8 @@ begin
   User := TFuncoesIni.LerIni('BANCO', 'User_name');
   Pass := TFuncoesIni.LerIni('BANCO', 'Pass');
   DataBase := TFuncoesIni.LerIni('BANCO', 'Database');
-  ConfiguraConexao(User, Pass, DataBase);
+  if not ConfiguraConexao(User, Pass, DataBase) then
+    ConfigurarConexaoPadrao;
 end;
 
 procedure TdmConnect.ConfiguraConexao(User, Pass, DataBase: String);

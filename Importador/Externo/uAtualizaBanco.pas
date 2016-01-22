@@ -85,6 +85,8 @@ begin
 end;
 
 procedure TAtualizaBanco.CriarEstruturaDeAtualizacao;
+const
+  New_Line = #10#13;
 var
   Qry: TFDQuery;
 begin
@@ -93,7 +95,7 @@ begin
     Qry.Open;
   except
   on E: Exception do
-    raise Exception.Create('Não foi possível atualizar o banco de dados. Exceção: ' + E.Message);
+    raise Exception.Create('Não foi possível atualizar o banco de dados. Exceção: ' + New_Line + E.Message);
   end;
   if (Qry.IsEmpty) or (Qry.Fields[0].AsInteger = 0) then
   begin
