@@ -18,6 +18,13 @@ object frmMain: TfrmMain
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object Label1: TLabel
+    Left = 8
+    Top = 532
+    Width = 16
+    Height = 13
+    Caption = 'I2B'
+  end
   object MainMenu1: TMainMenu
     Left = 984
     Top = 8

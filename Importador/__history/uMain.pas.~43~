@@ -25,6 +25,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
     procedure Importao1Click(Sender: TObject);
+    procedure Preferncias1Click(Sender: TObject);
   private
     { Private declarations }
     FFTDI: TFTDI;
@@ -43,7 +44,7 @@ var
 implementation
 
 uses
-  uFrmImportacao, uFrmCdEmp, ufConfiguracaoBD, uAtualizaBanco;
+  uFrmImportacao, uFrmCdEmp, ufConfiguracaoBD, uAtualizaBanco, uFrmPreferencias;
 
 {$R *.dfm}
 
@@ -97,6 +98,11 @@ end;
 procedure TfrmMain.Importao1Click(Sender: TObject);
 begin
   FFTDi.GetTDI.MostrarFormulario(TfrmImportacao, False);
+end;
+
+procedure TfrmMain.Preferncias1Click(Sender: TObject);
+begin
+  FFTDi.GetTDI.MostrarFormulario(TfrmPreferencias, False);
 end;
 
 procedure TfrmMain.Sair1Click(Sender: TObject);
