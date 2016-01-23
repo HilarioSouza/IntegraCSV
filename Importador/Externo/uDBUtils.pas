@@ -12,11 +12,12 @@ type
     class procedure SetID(Query: TFDQuery; const TableName: String); static;
     class function MainServer: TFDConnection;
     class procedure QueryExecute(const SQL: String);
+    class procedure RefreshQuery(Query: TFDQuery);
   end;
 
 implementation
 
-uses uInterfaceQuery, udmConnect;
+uses uInterfaceQuery, udmConnect, System.SysUtils;
 
 class function TDBUtils.GetMaxID(TableName: String): Integer;
 var
@@ -43,6 +44,22 @@ var
 begin
   Query := NewQuery(SQL);
   Query.ExecSQL;
+end;
+
+class procedure TDBUtils.RefreshQuery(Query: TFDQuery);
+begin
+  try
+  if Query <> nil then
+  begin
+    if Query.Active then
+      Query.Refresh
+    else
+      Query.Open;
+  end;
+  except
+    on E: Exception do
+      raise Exception.Create('Não foi possível atualizar a query. Exceção: ' + E.message);
+  end;
 end;
 
 class procedure TDBUtils.SetID(Query: TFDQuery; const TableName: String);

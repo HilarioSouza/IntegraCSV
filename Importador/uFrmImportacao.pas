@@ -8,7 +8,7 @@ uses
   Vcl.Buttons, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids, udmConnect;
+  FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids, udmConnect, Vcl.ComCtrls;
 
 type
   TfrmImportacao = class(TfrmStandard)
@@ -16,22 +16,30 @@ type
     edtCaminhoArquivo: TLabeledEdit;
     sbtCaminhoArquivo: TSpeedButton;
     btnImportar: TButton;
-    btnSair: TButton;
-    Button3: TButton;
-    dgrImportacao: TDBGrid;
-    DataSource1: TDataSource;
-    FDQuery1: TFDQuery;
+    ddsIMP: TDataSource;
+    fqrIMP: TFDQuery;
     Panel2: TPanel;
-    Button1: TButton;
+    btnDesfazerIMP: TButton;
+    Button3: TButton;
+    Panel3: TPanel;
+    btnSair: TButton;
+    PageControl1: TPageControl;
+    tshIMP: TTabSheet;
+    tshREG: TTabSheet;
+    dgrIMP: TDBGrid;
+    dgrREG: TDBGrid;
+    ddsREG: TDataSource;
+    fqrREG: TFDQuery;
     procedure sbtCaminhoArquivoClick(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure btnDesfazerIMPClick(Sender: TObject);
   private
     procedure ImportarArquivo;
+    procedure AtualizarQueries;
     { Private declarations }
   public
     { Public declarations }
@@ -43,14 +51,14 @@ var
 implementation
 
 uses
-  KrImportador, uUtils, uMain, uFuncoesIni;
+  KrImportador, uUtils, uMain, uFuncoesIni, uDBUtils, uMensagem;
 
 {$R *.dfm}
 
 procedure TfrmImportacao.btnImportarClick(Sender: TObject);
 begin
   ImportarArquivo;
-  FDQuery1.Refresh;
+  AtualizarQueries;
 end;
 
 procedure TfrmImportacao.sbtCaminhoArquivoClick(Sender: TObject);
@@ -64,19 +72,29 @@ begin
   Sair;
 end;
 
-procedure TfrmImportacao.Button1Click(Sender: TObject);
+procedure TfrmImportacao.btnDesfazerIMPClick(Sender: TObject);
 begin
   inherited;
-  DesfazerImportacao(FDQuery1.FieldByName('ID'));
+  if TMensagem.Confirmar('Deseja desfazer a importação?') then
+  begin
+    TLeitorCSV.DesfazerImportacao(fqrIMP.FieldByName('EMP_Codigo').AsString, fqrIMP.FieldByName('ID').AsInteger);
+    ShowMessage('Importação desfeita!');
+    AtualizarQueries;
+  end
+  else
+    ShowMessage('Operação cancelada!');
 end;
 
 procedure TfrmImportacao.Button3Click(Sender: TObject);
 var Imp: TImportador;
 begin
   inherited;
-  imp := timportador.Create;
+  Imp := timportador.Create;
+  try
 
-
+  finally
+    FreeAndNil(Imp);
+  end;
 end;
 
 procedure TfrmImportacao.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -89,7 +107,13 @@ procedure TfrmImportacao.FormCreate(Sender: TObject);
 begin
   inherited;
   edtCaminhoArquivo.Text := TFuncoesIni.LerIni('CONFIG', 'FileName', ExtractFilePath(ParamStr(0)));
-  FDQuery1.Open;
+  AtualizarQueries;
+end;
+
+procedure TfrmImportacao.AtualizarQueries;
+begin
+  TDBUtils.RefreshQuery(fqrIMP);
+  TDBUtils.RefreshQuery(fqrREG);
 end;
 
 procedure TfrmImportacao.ImportarArquivo;

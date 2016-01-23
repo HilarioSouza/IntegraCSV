@@ -1,0 +1,13 @@
+unit uEstabelecimento;
+
+interface
+
+type
+
+  TEstabelecimento = class
+
+  end;
+
+implementation
+
+end.

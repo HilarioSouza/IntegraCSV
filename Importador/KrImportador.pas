@@ -11,41 +11,6 @@ type
     procedure LerArquivo(Filename: String);
   end;
 
-//  IRegistro = Interface
-//    ['{0465B2BB-5627-493B-A458-33769A4511DB}']
-//    FProtocolo       : String;
-//    FDataCadastro    : String;
-//    FVlrXimenes      : Double;
-//    FDespachante     : String;
-//    FDistribuidor    : String;
-//    FVlrCartorio     : Double;
-//    FDAJ             : String;
-//    FVlrTotalCustas  : Double;
-//    FConvenio        : String;
-//    FCustasFechadas  : String;
-//    FVlrXimenesGestao: Double;
-//    FVlrXimenesAut   : Double;
-//    FVlrXimenesRec   : Double;
-//    FVlrXimenesOutros: Double;
-//    FRepresentante   : String;
-//    //
-//    property Protocolo       : String read FProtocolo        write FProtocolo       ;
-//    property DataCadastro    : String read FDataCadastro     write FDataCadastro    ;
-//    property VlrXimenes      : Double read FVlrXimenes       write FVlrXimenes      ;
-//    property Despachante     : String read FDespachante      write FDespachante     ;
-//    property Distribuidor    : String read FDistribuidor     write FDistribuidor    ;
-//    property VlrCartorio     : Double read FVlrCartorio      write FVlrCartorio     ;
-//    property DAJ             : String read FDAJ              write FDAJ             ;
-//    property VlrTotalCustas  : Double read FVlrTotalCustas   write FVlrTotalCustas  ;
-//    property Convenio        : String read FConvenio         write FConvenio        ;
-//    property CustasFechadas  : String read FCustasFechadas   write FCustasFechadas  ;
-//    property VlrXimenesGestao: Double read FVlrXimenesGestao write FVlrXimenesGestao;
-//    property VlrXimenesAut   : Double read FVlrXimenesAut    write FVlrXimenesAut   ;
-//    property VlrXimenesRec   : Double read FVlrXimenesRec    write FVlrXimenesRec   ;
-//    property VlrXimenesOutros: Double read FVlrXimenesOutros write FVlrXimenesOutros;
-//    property Representante   : String read FRepresentante    write FRepresentante   ;
-//  end;
-
   TClasseBase = class(TPersistent)
   private
     function _AddRef: Integer; stdcall;
@@ -72,24 +37,33 @@ type
     VlrXimenesRec   : Double;
     VlrXimenesOutros: Double;
     Representante   : String;
-    IMP_Codigo      : Integer;
+    IMP_ID          : Integer;
+  end;
+
+  TListaRegistros = class(TObjectList<TRegistro>)
   end;
 
   TLeitorCSV = class(TClasseBase, ILeitor)
   private
     FEMP_Codigo: String;
     LinhaRegistro: String;
-    IMP_Codigo: Integer;
+    IMP_ID: Integer;
     procedure PopularDadosRegistro(Registro: TRegistro);
-    procedure GravarRegistrosNoBanco(ListaRegistros: TObjectList<TRegistro>);
+    procedure GravarRegistrosNoBanco(ListaRegistros: TListaRegistros);
     procedure GravarRegistro(Registro: TRegistro);
     function GravarImportacao: Integer;
   published
     procedure LerArquivo(Filename: String);
     constructor Create(const EMP_Codigo: String);
+    class procedure DesfazerImportacao(const EMP_Codigo: String; const IMP_ID: Integer);
   end;
 
   TImportador = class
+  private
+    FEMP_Codigo: String;
+    FIMP_ID: Integer;
+    procedure PopularContasaReceber(ContasaReceber: IContasaReceber; Registro: TRegistro);
+    procedure PopularListaRegistro(ListaRegistro: TListaRegistros; IMP_ID: Integer);
   public
     procedure GravarContasaReceber;
   end;
@@ -97,7 +71,7 @@ type
 implementation
 
 uses System.SysUtils, uUtils, uInterfaceQuery, FireDAC.Comp.Client, iwSystem,
-  uFuncoesIni, System.Math, uDBUtils, udmConnect;
+  uFuncoesIni, System.Math, uDBUtils, udmConnect, uEstabelecimento;
 
 var
   FFinanceiro: IFinanceiro;
@@ -125,7 +99,7 @@ procedure TLeitorCSV.LerArquivo(Filename: String);
 var
   Registro: TRegistro;
   Arquivo: Textfile;
-  Lista: TObjectList<TRegistro>;
+  Lista: TListaRegistros;
   ArquivoAberto: Boolean;
 begin
   ArquivoAberto := False;
@@ -135,8 +109,8 @@ begin
   try
     TDBUtils.MainServer.StartTransaction;
     try
-      IMP_Codigo := GravarImportacao;
-      Lista := TObjectList<TRegistro>.Create;
+      IMP_ID := GravarImportacao;
+      Lista := TListaRegistros.Create;
       FileMode := fmOpenRead;
       Reset(Arquivo);
       ArquivoAberto := True;
@@ -163,7 +137,7 @@ begin
   end;
 end;
 
-procedure TLeitorCSV.GravarRegistrosNoBanco(ListaRegistros: TObjectList<TRegistro>);
+procedure TLeitorCSV.GravarRegistrosNoBanco(ListaRegistros: TListaRegistros);
 var
   I: Integer;
 begin
@@ -176,6 +150,13 @@ end;
 constructor TLeitorCSV.Create(const EMP_Codigo: String);
 begin
   Self.FEMP_Codigo := EMP_Codigo;
+end;
+
+class procedure TLeitorCSV.DesfazerImportacao(const EMP_Codigo: String; const IMP_ID: Integer);
+begin
+  TDBUtils.QueryExecute(' DELETE FROM IMP '+
+                        '  WHERE IMP.EMP_CODIGO = ' + EMP_Codigo.QuotedString +
+                        '    AND IMP.ID = ' + IMP_ID.ToString);
 end;
 
 function TLeitorCSV.GravarImportacao: Integer;
@@ -192,33 +173,33 @@ procedure TLeitorCSV.GravarRegistro(Registro: TRegistro);
 const
   SQL = ' INSERT INTO REG (EMP_Codigo, ID, Protocolo, DataCadastro, ValorXimenes, Despachante, Distribuidor, ValorCartorio, DAJ, '+
         ' ValorTotalCustas, Convenio, CustasFechadas, ValorXimenesGestao, ValorXimenesAut, ValorXimenesRec, '+
-        ' ValorXimenesOutros, Representante, IMP_Codigo) '+
+        ' ValorXimenesOutros, Representante, IMP_ID) '+
         ' values (:EMP_Codigo, :ID, :Protocolo, :DataCadastro, :VlrXimenes, :Despachante, :Distribuidor, :VlrCartorio, :DAJ, '+
         ' :VlrTotalCustas, :Convenio, :CustasFechadas, :VlrXimenesGestao, :VlrXimenesAut, :VlrXimenesRec, '+
-        ' :VlrXimenesOutros, :Representante, :IMP_Codigo)';
+        ' :VlrXimenesOutros, :Representante, :IMP_ID)';
 var
   Query: TFDQuery;
 begin
   Query := NewQuery;
   Query.SQL.Text := SQL;
-  Query.ParamByName('EMP_Codigo').AsString := Registro.EMP_Codigo;
-  Query.ParamByName('ID').AsInteger := TDBUtils.GetProxID('REG');
-  Query.ParamByName('IMP_Codigo').AsInteger := Registro.IMP_Codigo;
-  Query.ParamByName('Protocolo').AsString := Registro.Protocolo;
-  Query.ParamByName('DataCadastro').AsDateTime := Registro.DataCadastro;
-  Query.ParamByName('VlrXimenes').AsFloat := Registro.VlrXimenes;
-  Query.ParamByName('Despachante').AsFloat := Registro.Despachante;
-  Query.ParamByName('Distribuidor').AsFloat := Registro.Distribuidor;
-  Query.ParamByName('VlrCartorio').AsFloat := Registro.VlrCartorio;
-  Query.ParamByName('DAJ').AsFloat := Registro.DAJ;
-  Query.ParamByName('VlrTotalCustas').AsFloat := Registro.VlrTotalCustas;
-  Query.ParamByName('Convenio').AsString := Registro.Convenio;
+  Query.ParamByName('EMP_Codigo').AsString      := Registro.EMP_Codigo;
+  Query.ParamByName('ID').AsInteger             := TDBUtils.GetProxID('REG');
+  Query.ParamByName('IMP_ID').AsInteger         := Registro.IMP_ID;
+  Query.ParamByName('Protocolo').AsString       := Registro.Protocolo;
+  Query.ParamByName('DataCadastro').AsDateTime  := Registro.DataCadastro;
+  Query.ParamByName('VlrXimenes').AsFloat       := Registro.VlrXimenes;
+  Query.ParamByName('Despachante').AsFloat      := Registro.Despachante;
+  Query.ParamByName('Distribuidor').AsFloat     := Registro.Distribuidor;
+  Query.ParamByName('VlrCartorio').AsFloat      := Registro.VlrCartorio;
+  Query.ParamByName('DAJ').AsFloat              := Registro.DAJ;
+  Query.ParamByName('VlrTotalCustas').AsFloat   := Registro.VlrTotalCustas;
+  Query.ParamByName('Convenio').AsString        := Registro.Convenio;
   Query.ParamByName('CustasFechadas').AsInteger := Registro.CustasFechadas;
   Query.ParamByName('VlrXimenesGestao').AsFloat := Registro.VlrXimenesGestao;
-  Query.ParamByName('VlrXimenesAut').AsFloat := Registro.VlrXimenesAut;
-  Query.ParamByName('VlrXimenesRec').AsFloat := Registro.VlrXimenesRec;
+  Query.ParamByName('VlrXimenesAut').AsFloat    := Registro.VlrXimenesAut;
+  Query.ParamByName('VlrXimenesRec').AsFloat    := Registro.VlrXimenesRec;
   Query.ParamByName('VlrXimenesOutros').AsFloat := Registro.VlrXimenesOutros;
-  Query.ParamByName('Representante').AsString := Registro.Representante;
+  Query.ParamByName('Representante').AsString   := Registro.Representante;
   Query.ExecSQL;
 end;
 
@@ -228,7 +209,7 @@ var
 begin
   ArrayDados := TUtil.Split(LinhaRegistro, ';');
   Registro.EMP_Codigo       := FEMP_Codigo; //Tratar
-  Registro.IMP_Codigo       := IMP_Codigo;
+  Registro.IMP_ID           := IMP_ID;
   Registro.Protocolo        := ArrayDados[IdxProtocolo];
   Registro.DataCadastro     := StrToDateTimeDef(ArrayDados[IdxDataCadastro], 0);
   Registro.VlrXimenes       := StrToFloatDef(ArrayDados[IdxVlrXimenes], 0);
@@ -264,8 +245,85 @@ end;
 procedure TImportador.GravarContasaReceber;
 var
   CRE: IContasaReceber;
+  ListaRegistro: TListaRegistros;
+  I: Integer;
 begin
   CRE := FFinanceiro.GetContasaReceber;
+  ListaRegistro := TListaRegistros.Create(nil);
+  try
+    PopularListaRegistro(ListaRegistro, FIMP_ID);
+    for I := 0 to ListaRegistro.Count - 1 do
+    begin
+      CRE.Append;
+      PopularContasaReceber(CRE, ListaRegistro[I]);
+      CRE.Post;
+    end;
+  finally
+    FreeAndNil(ListaRegistro);
+  end;
+end;
+
+procedure TImportador.PopularListaRegistro(ListaRegistro: TListaRegistros; IMP_ID: Integer);
+var
+  Registro: TRegistro;
+  Query: TFDQuery;
+begin
+  Query := NewQuery;
+  Query.Open('SELECT * FROM REG WHERE REG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString + ' AND REG.IMP_ID = ' + IMP_ID.ToString);
+  Registro := TRegistro.Create;
+  ListaRegistro.Add(Registro);
+  Registro.EMP_Codigo       := FEMP_Codigo;
+  Registro.IMP_ID           := IMP_ID;
+  Registro.ID               := Query.ParamByName('ID').AsInteger;
+  Registro.Protocolo        := Query.ParamByName('Protocolo').AsString;
+  Registro.DataCadastro     := Query.ParamByName('DataCadastro').AsDateTime;
+  Registro.VlrXimenes       := Query.ParamByName('VlrXimenes').AsFloat;
+  Registro.Despachante      := Query.ParamByName('Despachante').AsFloat;
+  Registro.Distribuidor     := Query.ParamByName('Distribuidor').AsFloat;
+  Registro.VlrCartorio      := Query.ParamByName('VlrCartorio').AsFloat;
+  Registro.DAJ              := Query.ParamByName('DAJ').AsFloat;
+  Registro.VlrTotalCustas   := Query.ParamByName('VlrTotalCustas').AsFloat;
+  Registro.Convenio         := Query.ParamByName('Convenio').AsString;
+  Registro.CustasFechadas   := Query.ParamByName('CustasFechadas').AsInteger;
+  Registro.VlrXimenesGestao := Query.ParamByName('VlrXimenesGestao').AsFloat;
+  Registro.VlrXimenesAut    := Query.ParamByName('VlrXimenesAut').AsFloat;
+  Registro.VlrXimenesRec    := Query.ParamByName('VlrXimenesRec').AsFloat;
+  Registro.VlrXimenesOutros := Query.ParamByName('VlrXimenesOutros').AsFloat;
+  Registro.Representante    := Query.ParamByName('Representante').AsString;
+end;
+
+procedure TImportador.PopularContasaReceber(ContasaReceber :IContasaReceber; Registro: TRegistro);
+var
+  DadosEst: TEstabelecimento;
+begin
+  DadosEst := TEstabelecimento.Create;//();
+  try
+    ContasaReceber.Estabelecimento       := DadosEst.EST_Codigo;
+    ContasaReceber.CentroResultados      := DadosEst.CRS_Codigo;
+    ContasaReceber.Cliente               := '';
+    ContasaReceber.CodigoCliente         := '';
+    ContasaReceber.Receita               := DadosEst.CRD_Codigo;
+    ContasaReceber.Documento             := '';
+    ContasaReceber.TipoGeracao           := '';
+    ContasaReceber.Emissao               := 0;
+    ContasaReceber.ISS                   := 0;
+    ContasaReceber.IRRF                  := 0;
+    ContasaReceber.INSS                  := 0;
+    ContasaReceber.PIS                   := 0;
+    ContasaReceber.COFINS                := 0;
+    ContasaReceber.CSLL                  := 0;
+    ContasaReceber.ExportaAC             := 0;
+    ContasaReceber.Obs                   := '';
+    ContasaReceber.MesAno                := '';
+    //ContasaReceber.VencimentosaReceber
+    //ContasaReceber.VencimentosChequesaReceber
+    //ContasaReceber.VencimentosCartoesaReceber
+    //ContasaReceber.ServicosaReceber
+    //ContasaReceber.ItensaReceber
+    //ContasaReceber.RateiosaReceber
+  finally
+    FreeAndNil(DadosEst);
+  end;
 end;
 
 { TClasseBase }

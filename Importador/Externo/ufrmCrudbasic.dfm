@@ -137,6 +137,10 @@ inherited frmCrudbasic: TfrmCrudbasic
     TabOrder = 2
     object tsPsq: TTabSheet
       Caption = 'Pesquisa'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object gridPsq: TDBGrid
         Left = 0
         Top = 0
@@ -156,6 +160,10 @@ inherited frmCrudbasic: TfrmCrudbasic
     object tsCad: TTabSheet
       Caption = 'Cadastro'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lblCodigo: TLabel
         Left = 3
         Top = 7

@@ -1,0 +1,17 @@
+unit uEstabelecimento;
+
+interface
+
+type
+
+  TEstabelecimento = class
+  public
+    EST_Codigo,
+    EMP_Codigo,
+    CRS_Codigo,
+    CRD_Codigo: String;
+  end;
+
+implementation
+
+end.

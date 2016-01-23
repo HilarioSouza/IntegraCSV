@@ -22,18 +22,15 @@ object frmPreferencias: TfrmPreferencias
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitHeight = 448
     object PageControl1: TPageControl
       Left = 8
       Top = 8
       Width = 704
       Height = 513
-      ActivePage = TabSheet2
+      ActivePage = TabSheet1
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Conex'#227'o AG'
-        ExplicitWidth = 613
-        ExplicitHeight = 297
         object pnlConexaoAG: TPanel
           Left = 8
           Top = 8
@@ -76,7 +73,7 @@ object frmPreferencias: TfrmPreferencias
             Height = 21
             DataField = 'CAMINHOBANCO'
             DataSource = dtsCFG
-            TabOrder = 0
+            TabOrder = 1
           end
           object detUsuarioAG: TDBEdit
             Left = 8
@@ -85,7 +82,7 @@ object frmPreferencias: TfrmPreferencias
             Height = 21
             DataField = 'USUARIO'
             DataSource = dtsCFG
-            TabOrder = 1
+            TabOrder = 3
           end
           object detSenhaAG: TDBEdit
             Left = 135
@@ -94,7 +91,7 @@ object frmPreferencias: TfrmPreferencias
             Height = 21
             DataField = 'SENHA'
             DataSource = dtsCFG
-            TabOrder = 2
+            TabOrder = 4
           end
           object DBRadioGroup1: TDBRadioGroup
             Left = 8
@@ -108,7 +105,7 @@ object frmPreferencias: TfrmPreferencias
             Items.Strings = (
               'MS SQL Server'
               'Firebird')
-            TabOrder = 3
+            TabOrder = 2
             Values.Strings = (
               '0'
               '1')
@@ -120,21 +117,18 @@ object frmPreferencias: TfrmPreferencias
             Height = 21
             DataField = 'EMP_CODIGO'
             DataSource = dtsCFG
-            TabOrder = 4
+            TabOrder = 0
           end
         end
       end
       object TabSheet2: TTabSheet
         Caption = 'Ximenes Services'
         ImageIndex = 1
-        ExplicitWidth = 281
-        ExplicitHeight = 165
         object pnlXimenesServices: TPanel
           Left = 16
           Top = 16
           Width = 553
           Height = 369
-          Caption = 'pnlXimenesServices'
           TabOrder = 0
           object Label5: TLabel
             Left = 0
@@ -189,16 +183,11 @@ object frmPreferencias: TfrmPreferencias
       object TabSheet3: TTabSheet
         Caption = 'Cart'#243'rio Ximenes'
         ImageIndex = 2
-        ExplicitLeft = 108
-        ExplicitTop = -16
-        ExplicitWidth = 281
-        ExplicitHeight = 165
         object pnlCartorioXimenes: TPanel
           Left = 16
           Top = 16
           Width = 537
           Height = 361
-          Caption = 'pnlCartorioXimenes'
           TabOrder = 0
           object Label8: TLabel
             Left = 0
@@ -260,7 +249,6 @@ object frmPreferencias: TfrmPreferencias
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 448
     object btnOk: TButton
       Left = 637
       Top = 6

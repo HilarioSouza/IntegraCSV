@@ -126,7 +126,7 @@ begin
   pgCrud.ActivePage := tsPsq;
   if (qryMain.State in [dsBrowse]) and (not qryMain.IsEmpty) then
   begin
-    if TMensagem.Pergunta('Deseja excluir esse registro?') then
+    if TMensagem.Confirmar('Deseja excluir esse registro?') then
       qryMain.Delete;
   end;
   StatusTela;
