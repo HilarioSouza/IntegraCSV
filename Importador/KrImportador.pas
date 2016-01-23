@@ -22,7 +22,7 @@ type
   public
     EMP_Codigo      : String;
     ID              : Integer;
-    Protocolo       : String;
+    Protocolo       : String; //Identificador do Registro
     DataCadastro    : TDateTime;
     VlrXimenes      : Double;
     Despachante     : Double;
@@ -30,14 +30,15 @@ type
     VlrCartorio     : Double;
     DAJ             : Double;
     VlrTotalCustas  : Double;
-    Convenio        : String;
+    Convenio        : String; //CNPJ do Cliente
     CustasFechadas  : Integer;
     VlrXimenesGestao: Double;
     VlrXimenesAut   : Double;
     VlrXimenesRec   : Double;
     VlrXimenesOutros: Double;
-    Representante   : String;
+    Representante   : String; //CPF do Representante
     IMP_ID          : Integer;
+    function GetValorVencimento: Double;
   end;
 
   TListaRegistros = class(TObjectList<TRegistro>)
@@ -58,14 +59,26 @@ type
     class procedure DesfazerImportacao(const EMP_Codigo: String; const IMP_ID: Integer);
   end;
 
-  TImportador = class
+  TImportadorBase = class
   private
+    FRegistro: TRegistro;
     FEMP_Codigo: String;
     FIMP_ID: Integer;
-    procedure PopularContasaReceber(ContasaReceber: IContasaReceber; Registro: TRegistro);
+  end;
+
+  TImportadorCRE = class(TImportadorBase)
+  private
+    procedure PopularContasaReceber(ContasaReceber: IContasaReceber);
     procedure PopularListaRegistro(ListaRegistro: TListaRegistros; IMP_ID: Integer);
+    procedure PopularVencimentosaReceber(Vencimentos: IVencimentosaReceber);
+    procedure PopularServicosaReceber(Servicos: IServicosaReceber);
+    procedure PopularRateiosaReceber(Rateios: IRateiosaReceber);
+    procedure PopularComissionadosaReceber(Comissionados: IComissionadosServicosaReceber);
   public
     procedure GravarContasaReceber;
+  end;
+
+  TImportadorCPG = class(TImportadorBase)
   end;
 
 implementation
@@ -242,7 +255,7 @@ begin
   FFinanceiro.Open(GetEnderecoBanco);
 end;
 
-procedure TImportador.GravarContasaReceber;
+procedure TImportadorCRE.GravarContasaReceber;
 var
   CRE: IContasaReceber;
   ListaRegistro: TListaRegistros;
@@ -251,19 +264,30 @@ begin
   CRE := FFinanceiro.GetContasaReceber;
   ListaRegistro := TListaRegistros.Create(nil);
   try
-    PopularListaRegistro(ListaRegistro, FIMP_ID);
-    for I := 0 to ListaRegistro.Count - 1 do
-    begin
-      CRE.Append;
-      PopularContasaReceber(CRE, ListaRegistro[I]);
-      CRE.Post;
+    FFinanceiro.StartTransaction;
+    try
+      PopularListaRegistro(ListaRegistro, FIMP_ID);
+      for I := 0 to ListaRegistro.Count - 1 do
+      begin
+        CRE.Append;
+        FRegistro := ListaRegistro[I];
+        PopularContasaReceber(CRE);
+        CRE.Post;
+      end;
+      FFinanceiro.Commit;
+    finally
+      FreeAndNil(ListaRegistro);
     end;
-  finally
-    FreeAndNil(ListaRegistro);
+  except
+    on E: Exception do
+    begin
+      FFinanceiro.Rollback;
+      raise Exception.Create('Ocorreu um erro durante a importação dos Contas a Receber. Exceção: ' + E.Message);
+    end;
   end;
 end;
 
-procedure TImportador.PopularListaRegistro(ListaRegistro: TListaRegistros; IMP_ID: Integer);
+procedure TImportadorCRE.PopularListaRegistro(ListaRegistro: TListaRegistros; IMP_ID: Integer);
 var
   Registro: TRegistro;
   Query: TFDQuery;
@@ -292,20 +316,17 @@ begin
   Registro.Representante    := Query.ParamByName('Representante').AsString;
 end;
 
-procedure TImportador.PopularContasaReceber(ContasaReceber :IContasaReceber; Registro: TRegistro);
+procedure TImportadorCRE.PopularContasaReceber(ContasaReceber :IContasaReceber);
 var
   DadosEst: TEstabelecimento;
 begin
   DadosEst := TEstabelecimento.Create;//();
   try
-    ContasaReceber.Estabelecimento       := DadosEst.EST_Codigo;
-    ContasaReceber.CentroResultados      := DadosEst.CRS_Codigo;
-    ContasaReceber.Cliente               := '';
-    ContasaReceber.CodigoCliente         := '';
-    ContasaReceber.Receita               := DadosEst.CRD_Codigo;
-    ContasaReceber.Documento             := '';
-    ContasaReceber.TipoGeracao           := '';
-    ContasaReceber.Emissao               := 0;
+    ContasaReceber.Cliente               := FRegistro.Convenio;
+    //ContasaReceber.CodigoCliente         := '';
+    ContasaReceber.Documento             := FRegistro.Protocolo;
+    ContasaReceber.TipoGeracao           := 'M';
+    ContasaReceber.Emissao               := FRegistro.DataCadastro;
     ContasaReceber.ISS                   := 0;
     ContasaReceber.IRRF                  := 0;
     ContasaReceber.INSS                  := 0;
@@ -314,16 +335,40 @@ begin
     ContasaReceber.CSLL                  := 0;
     ContasaReceber.ExportaAC             := 0;
     ContasaReceber.Obs                   := '';
-    ContasaReceber.MesAno                := '';
-    //ContasaReceber.VencimentosaReceber
-    //ContasaReceber.VencimentosChequesaReceber
-    //ContasaReceber.VencimentosCartoesaReceber
-    //ContasaReceber.ServicosaReceber
-    //ContasaReceber.ItensaReceber
-    //ContasaReceber.RateiosaReceber
+    ContasaReceber.MesAno                := FormatDateTime('mmaaaa', FRegistro.DataCadastro);
+    PopularVencimentosaReceber(ContasaReceber.VencimentosaReceber);
+    PopularServicosaReceber(ContasaReceber.ServicosaReceber);
+    PopularRateiosaReceber(ContasaReceber.RateiosaReceber);
   finally
     FreeAndNil(DadosEst);
   end;
+end;
+
+procedure TImportadorCRE.PopularVencimentosaReceber(Vencimentos: IVencimentosaReceber);
+begin
+  Vencimentos.Append;
+  Vencimentos.Vencimento := FRegistro.DataCadastro;
+  Vencimentos.Valor      := FRegistro.GetValorVencimento;
+  Vencimentos.AgenteCobrador := '';//
+  Vencimentos.Post;
+end;
+
+procedure TImportadorCRE.PopularServicosaReceber(Servicos: IServicosaReceber);
+begin
+  //Servicos.Append;
+  //
+  //Servicos.Post;
+  PopularComissionadosaReceber(Servicos.ComissionadosServicosaReceber);
+end;
+
+procedure TImportadorCRE.PopularComissionadosaReceber(Comissionados: IComissionadosServicosaReceber);
+begin
+
+end;
+
+procedure TImportadorCRE.PopularRateiosaReceber(Rateios: IRateiosaReceber);
+begin
+
 end;
 
 { TClasseBase }
@@ -341,6 +386,13 @@ end;
 function TClasseBase.QueryInterface(const IID: TGUID; out Obj): HRESULT;
 begin
   Result := 0;
+end;
+
+{ TRegistro }
+
+function TRegistro.GetValorVencimento: Double;
+begin
+  Result := Despachante + Distribuidor + VlrCartorio + VlrXimenes;
 end;
 
 end.

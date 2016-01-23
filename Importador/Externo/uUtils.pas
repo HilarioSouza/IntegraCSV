@@ -2,7 +2,7 @@ unit uUtils;
 
 interface
 
-uses System.SysUtils, System.Types;
+uses System.SysUtils, System.Types, Vcl.Controls;
 
 type
   TUtil = class
@@ -18,6 +18,11 @@ type
   TUtilArquivo = class
   public
     class function GetCaminhoArquivo(const InitialDir: String = ''): String; static;
+  end;
+
+  TControlUtils = class
+  public
+    class procedure TryFocus(Control: TWinControl);
   end;
 
 implementation
@@ -125,6 +130,18 @@ begin
     Result := odlCaminho.FileName;
   finally
     FreeAndNil(odlCaminho);
+  end;
+end;
+
+{ TControlUtil }
+
+class procedure TControlUtils.TryFocus(Control: TWinControl);
+begin
+  try
+    if Control.CanFocus then
+      Control.SetFocus;
+  except
+    //Nada a fazer;
   end;
 end;
 

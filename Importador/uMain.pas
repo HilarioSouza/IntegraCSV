@@ -17,7 +17,6 @@ type
     Movimentos1: TMenuItem;
     Importao1: TMenuItem;
     Preferncias1: TMenuItem;
-    Label1: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Empresa1Click(Sender: TObject);

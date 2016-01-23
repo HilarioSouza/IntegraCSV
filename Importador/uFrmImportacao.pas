@@ -8,7 +8,8 @@ uses
   Vcl.Buttons, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids, udmConnect, Vcl.ComCtrls;
+  FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids, udmConnect, Vcl.ComCtrls,
+  Vcl.DBCtrls;
 
 type
   TfrmImportacao = class(TfrmStandard)
@@ -20,21 +21,22 @@ type
     fqrIMP: TFDQuery;
     Panel2: TPanel;
     btnDesfazerIMP: TButton;
-    Button3: TButton;
-    Panel3: TPanel;
     btnSair: TButton;
-    PageControl1: TPageControl;
-    tshIMP: TTabSheet;
-    tshREG: TTabSheet;
-    dgrIMP: TDBGrid;
-    dgrREG: TDBGrid;
     ddsREG: TDataSource;
     fqrREG: TFDQuery;
+    dcbEMP: TDBLookupComboBox;
+    fqrEMP: TFDQuery;
+    ddsEMP: TDataSource;
+    Panel3: TPanel;
+    PageControl1: TPageControl;
+    tshIMP: TTabSheet;
+    dgrIMP: TDBGrid;
+    tshREG: TTabSheet;
+    dgrREG: TDBGrid;
     procedure sbtCaminhoArquivoClick(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure Button3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnDesfazerIMPClick(Sender: TObject);
   private
@@ -57,8 +59,16 @@ uses
 
 procedure TfrmImportacao.btnImportarClick(Sender: TObject);
 begin
-  ImportarArquivo;
-  AtualizarQueries;
+  if dcbEMP.KeyValue = null then
+  begin
+    ShowMessage('Por favor selecione uma Empresa');
+    TControlUtils.TryFocus(dcbEMP);
+  end
+  else
+  begin
+    ImportarArquivo;
+    AtualizarQueries;
+  end;
 end;
 
 procedure TfrmImportacao.sbtCaminhoArquivoClick(Sender: TObject);
@@ -85,18 +95,6 @@ begin
     ShowMessage('Operação cancelada!');
 end;
 
-procedure TfrmImportacao.Button3Click(Sender: TObject);
-var Imp: TImportador;
-begin
-  inherited;
-  Imp := timportador.Create;
-  try
-
-  finally
-    FreeAndNil(Imp);
-  end;
-end;
-
 procedure TfrmImportacao.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   inherited;
@@ -108,6 +106,7 @@ begin
   inherited;
   edtCaminhoArquivo.Text := TFuncoesIni.LerIni('CONFIG', 'FileName', ExtractFilePath(ParamStr(0)));
   AtualizarQueries;
+  fqrEMP.Open;
 end;
 
 procedure TfrmImportacao.AtualizarQueries;
@@ -120,7 +119,7 @@ procedure TfrmImportacao.ImportarArquivo;
 var
   Leitor: ILeitor;
 begin
-  Leitor := TLeitorCSV.Create('0001');
+  Leitor := TLeitorCSV.Create(dcbEMP.KeyValue);
   try
     Leitor.LerArquivo(edtCaminhoArquivo.Text);
     ShowMessage('Importação realizada com sucesso.');
