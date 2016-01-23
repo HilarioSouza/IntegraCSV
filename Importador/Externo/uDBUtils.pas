@@ -11,6 +11,7 @@ type
     class function GetMaxID(TableName: String): Integer; static;
     class procedure SetID(Query: TFDQuery; const TableName: String); static;
     class function MainServer: TFDConnection;
+    class procedure QueryExecute(const SQL: String);
   end;
 
 implementation
@@ -34,6 +35,14 @@ end;
 class function TDBUtils.MainServer: TFDConnection;
 begin
   Result := dmConnect.fdConn;
+end;
+
+class procedure TDBUtils.QueryExecute(const SQL: String);
+var
+  Query: TFDQuery;
+begin
+  Query := NewQuery(SQL);
+  Query.ExecSQL;
 end;
 
 class procedure TDBUtils.SetID(Query: TFDQuery; const TableName: String);

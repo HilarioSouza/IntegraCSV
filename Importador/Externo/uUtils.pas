@@ -17,7 +17,7 @@ type
 
   TUtilArquivo = class
   public
-    class function GetCaminhoArquivo: String; static;
+    class function GetCaminhoArquivo(const InitialDir: String = ''): String; static;
   end;
 
 implementation
@@ -111,13 +111,14 @@ begin
   end;
 end;
 
-class function TUtilArquivo.GetCaminhoArquivo: String;
+class function TUtilArquivo.GetCaminhoArquivo(const InitialDir: String = ''): String;
 var
   odlCaminho: TOpenDialog;
 begin
   odlCaminho := TOpenDialog.Create(nil);
   try
-    odlCaminho.InitialDir := 'C:\';
+    if not InitialDir.IsEmpty then
+      odlCaminho.InitialDir := InitialDir;
     odlCaminho.Filter := '*.csv';
     odlCaminho.FilterIndex := 1;
     odlCaminho.Execute;

@@ -77,13 +77,16 @@ type
 
   TLeitorCSV = class(TClasseBase, ILeitor)
   private
+    FEMP_Codigo: String;
     LinhaRegistro: String;
     IMP_Codigo: Integer;
     procedure PopularDadosRegistro(Registro: TRegistro);
     procedure GravarRegistrosNoBanco(ListaRegistros: TObjectList<TRegistro>);
     procedure GravarRegistro(Registro: TRegistro);
+    function GravarImportacao: Integer;
   published
     procedure LerArquivo(Filename: String);
+    constructor Create(const EMP_Codigo: String);
   end;
 
   TImportador = class
@@ -93,7 +96,7 @@ type
 
 implementation
 
-uses SysUtils, uUtils, uInterfaceQuery, FireDAC.Comp.Client, iwSystem,
+uses System.SysUtils, uUtils, uInterfaceQuery, FireDAC.Comp.Client, iwSystem,
   uFuncoesIni, System.Math, uDBUtils, udmConnect;
 
 var
@@ -123,20 +126,23 @@ var
   Registro: TRegistro;
   Arquivo: Textfile;
   Lista: TObjectList<TRegistro>;
+  ArquivoAberto: Boolean;
 begin
+  ArquivoAberto := False;
   if (Filename = '') then
     raise Exception.Create('Arquivo não informado. Por favor informe o caminho do arquivo.');
   AssignFile(Arquivo, FileName);
   try
     TDBUtils.MainServer.StartTransaction;
     try
-      IMP_Codigo := IncluirImportacao;
+      IMP_Codigo := GravarImportacao;
       Lista := TObjectList<TRegistro>.Create;
       FileMode := fmOpenRead;
       Reset(Arquivo);
+      ArquivoAberto := True;
+      Readln(Arquivo);
       while not Eof(Arquivo) do
       begin
-        Readln(Arquivo);
         Readln(Arquivo, LinhaRegistro);
         Registro := TRegistro.Create;
         Lista.Add(TRegistro(Registro));
@@ -145,7 +151,8 @@ begin
       GravarRegistrosNoBanco(Lista);
       TDBUtils.MainServer.Commit;
     finally
-      CloseFile(Arquivo);
+      if ArquivoAberto then
+        CloseFile(Arquivo);
     end;
   except
     on E: Exception do
@@ -164,6 +171,21 @@ begin
   begin
     GravarRegistro(ListaRegistros[I]);
   end;
+end;
+
+constructor TLeitorCSV.Create(const EMP_Codigo: String);
+begin
+  Self.FEMP_Codigo := EMP_Codigo;
+end;
+
+function TLeitorCSV.GravarImportacao: Integer;
+var
+  ID: Integer;
+begin
+  ID := TDBUtils.GetProxID('IMP');
+  TDBUtils.QueryExecute(' INSERT INTO IMP (EMP_CODIGO, ID, DATA) '+
+                        ' VALUES (' + FEMP_Codigo.QuotedString +',' + ID.ToString + ',' + FormatDateTime('yyyy-mm-dd', Now).QuotedString +')');
+  Result := ID;
 end;
 
 procedure TLeitorCSV.GravarRegistro(Registro: TRegistro);
@@ -205,7 +227,7 @@ var
   ArrayDados: TStringDynArray;
 begin
   ArrayDados := TUtil.Split(LinhaRegistro, ';');
-  Registro.EMP_Codigo       := '0001'; //Tratar
+  Registro.EMP_Codigo       := FEMP_Codigo; //Tratar
   Registro.IMP_Codigo       := IMP_Codigo;
   Registro.Protocolo        := ArrayDados[IdxProtocolo];
   Registro.DataCadastro     := StrToDateTimeDef(ArrayDados[IdxDataCadastro], 0);
