@@ -3,11 +3,15 @@ unit KrImportador;
 interface
 
 uses
-  Classes, System.Types, System.Generics.Collections, IntfFinanceiro;
+  Classes, System.Types, System.Generics.Collections, IntfFinanceiro, uEstabelecimento;
 
 type
   ILeitor = Interface
     ['{A05F12A1-D8FF-48D2-B039-01A4A7CEECA6}']
+    function GetIMP_ID: Integer;
+    function GetEMP_Codigo: String;
+    property IMP_ID:Integer read GetIMP_ID;
+    property EMP_Codigo: String read GetEMP_Codigo;
     procedure LerArquivo(Filename: String);
   end;
 
@@ -39,21 +43,26 @@ type
     Representante   : String; //CPF do Representante
     IMP_ID          : Integer;
     function GetValorVencimento: Double;
+    function GetValorRateioServices: Double;
+    function GetValorRateioCartorio: Double;
   end;
 
-  TListaRegistros = class(TObjectList<TRegistro>)
-  end;
+  TListaRegistros = class(TObjectList<TRegistro>);
 
   TLeitorCSV = class(TClasseBase, ILeitor)
   private
     FEMP_Codigo: String;
     LinhaRegistro: String;
-    IMP_ID: Integer;
+    FIMP_ID: Integer;
     procedure PopularDadosRegistro(Registro: TRegistro);
     procedure GravarRegistrosNoBanco(ListaRegistros: TListaRegistros);
     procedure GravarRegistro(Registro: TRegistro);
     function GravarImportacao: Integer;
+    function GetIMP_ID: Integer;
+    function GetEMP_Codigo: String;
   published
+    property IMP_ID:Integer read GetIMP_ID;
+    property EMP_Codigo: String read GetEMP_Codigo;
     procedure LerArquivo(Filename: String);
     constructor Create(const EMP_Codigo: String);
     class procedure DesfazerImportacao(const EMP_Codigo: String; const IMP_ID: Integer);
@@ -64,6 +73,11 @@ type
     FRegistro: TRegistro;
     FEMP_Codigo: String;
     FIMP_ID: Integer;
+    FDadosServices: TEstabelecimento;
+    FDadosCartorio: TEstabelecimento;
+  public
+    constructor Create(const EMP_Codigo: String; const IMP_ID: Integer);
+    destructor Destroy; override;
   end;
 
   TImportadorCRE = class(TImportadorBase)
@@ -81,10 +95,15 @@ type
   TImportadorCPG = class(TImportadorBase)
   end;
 
+  TImportador = class
+  public
+    class procedure ImportarArquivo(const cEMP_Codigo, cCaminhoArquivo: String); static;
+  end;
+
 implementation
 
 uses System.SysUtils, uUtils, uInterfaceQuery, FireDAC.Comp.Client, iwSystem,
-  uFuncoesIni, System.Math, uDBUtils, udmConnect, uEstabelecimento;
+  uFuncoesIni, System.Math, uDBUtils, udmConnect;
 
 var
   FFinanceiro: IFinanceiro;
@@ -122,7 +141,7 @@ begin
   try
     TDBUtils.MainServer.StartTransaction;
     try
-      IMP_ID := GravarImportacao;
+      FIMP_ID := GravarImportacao;
       Lista := TListaRegistros.Create;
       FileMode := fmOpenRead;
       Reset(Arquivo);
@@ -170,6 +189,16 @@ begin
   TDBUtils.QueryExecute(' DELETE FROM IMP '+
                         '  WHERE IMP.EMP_CODIGO = ' + EMP_Codigo.QuotedString +
                         '    AND IMP.ID = ' + IMP_ID.ToString);
+end;
+
+function TLeitorCSV.GetEMP_Codigo: String;
+begin
+  Result := FEMP_Codigo;
+end;
+
+function TLeitorCSV.GetIMP_ID: Integer;
+begin
+  Result := FIMP_ID;
 end;
 
 function TLeitorCSV.GravarImportacao: Integer;
@@ -248,11 +277,26 @@ end;
 function GetFinanceiroAG: IFinanceiro;
 begin
   FFinanceiro := GetFinanceiro(gsAppPath);
-  FFinanceiro.Empresa := '0001';
+  FFinanceiro.Empresa := AnsiString('0001');
   FFinanceiro.DriverNameBanco := '';
   FFinanceiro.UsuarioBanco := '';
   FFinanceiro.SenhaBanco := '';
   FFinanceiro.Open(GetEnderecoBanco);
+end;
+
+constructor TImportadorBase.Create(const EMP_Codigo: String; const IMP_ID: Integer);
+begin
+  FEMP_Codigo := EMP_Codigo;
+  FIMP_ID := IMP_ID;
+  FDadosServices := TEstabelecimento.Create(FEMP_Codigo, tidServices);
+  FDadosCartorio := TEstabelecimento.Create(FEMP_Codigo, tidCartorio);
+end;
+
+destructor TImportadorBase.Destroy;
+begin
+  FreeAndNil(FDadosServices);
+  FreeAndNil(FDadosCartorio);
+  inherited;
 end;
 
 procedure TImportadorCRE.GravarContasaReceber;
@@ -317,31 +361,24 @@ begin
 end;
 
 procedure TImportadorCRE.PopularContasaReceber(ContasaReceber :IContasaReceber);
-var
-  DadosEst: TEstabelecimento;
 begin
-  DadosEst := TEstabelecimento.Create;//();
-  try
-    ContasaReceber.Cliente               := FRegistro.Convenio;
-    //ContasaReceber.CodigoCliente         := '';
-    ContasaReceber.Documento             := FRegistro.Protocolo;
-    ContasaReceber.TipoGeracao           := 'M';
-    ContasaReceber.Emissao               := FRegistro.DataCadastro;
-    ContasaReceber.ISS                   := 0;
-    ContasaReceber.IRRF                  := 0;
-    ContasaReceber.INSS                  := 0;
-    ContasaReceber.PIS                   := 0;
-    ContasaReceber.COFINS                := 0;
-    ContasaReceber.CSLL                  := 0;
-    ContasaReceber.ExportaAC             := 0;
-    ContasaReceber.Obs                   := '';
-    ContasaReceber.MesAno                := FormatDateTime('mmaaaa', FRegistro.DataCadastro);
-    PopularVencimentosaReceber(ContasaReceber.VencimentosaReceber);
-    PopularServicosaReceber(ContasaReceber.ServicosaReceber);
-    PopularRateiosaReceber(ContasaReceber.RateiosaReceber);
-  finally
-    FreeAndNil(DadosEst);
-  end;
+  ContasaReceber.Cliente               := FRegistro.Convenio;
+  //ContasaReceber.CodigoCliente         := '';
+  ContasaReceber.Documento             := FRegistro.Protocolo;
+  ContasaReceber.TipoGeracao           := 'M';
+  ContasaReceber.Emissao               := FRegistro.DataCadastro;
+  ContasaReceber.ISS                   := 0;
+  ContasaReceber.IRRF                  := 0;
+  ContasaReceber.INSS                  := 0;
+  ContasaReceber.PIS                   := 0;
+  ContasaReceber.COFINS                := 0;
+  ContasaReceber.CSLL                  := 0;
+  ContasaReceber.ExportaAC             := 0;
+  ContasaReceber.Obs                   := '';
+  ContasaReceber.MesAno                := FormatDateTime('mmaaaa', FRegistro.DataCadastro);
+  PopularVencimentosaReceber(ContasaReceber.VencimentosaReceber);
+  PopularServicosaReceber(ContasaReceber.ServicosaReceber);
+  PopularRateiosaReceber(ContasaReceber.RateiosaReceber);
 end;
 
 procedure TImportadorCRE.PopularVencimentosaReceber(Vencimentos: IVencimentosaReceber);
@@ -363,12 +400,31 @@ end;
 
 procedure TImportadorCRE.PopularComissionadosaReceber(Comissionados: IComissionadosServicosaReceber);
 begin
-
+  Comissionados.Append;
+  Comissionados.VendedorRepresentante := FRegistro.Representante;
+  Comissionados.PercentualComissao    := 0;
+  Comissionados.Post;
 end;
 
 procedure TImportadorCRE.PopularRateiosaReceber(Rateios: IRateiosaReceber);
 begin
+  Rateios.Append;
+  Rateios.Estabelecimento    := FDadosServices.EST_Codigo;
+  Rateios.CentroDeResultados := FDadosServices.CRS_Codigo;
+  Rateios.Receita            := FDadosServices.CRD_Codigo;
+  Rateios.Observacao         := 'Rateio referente ao estabelecimento Ximenes Services';
+  Rateios.Valor              := FRegistro.GetValorRateioServices;//TO-DO - Valor do rateio;
+  Rateios.Post;
 
+  Rateios.Append;
+  Rateios.Estabelecimento    := FDadosCartorio.EST_Codigo;
+  Rateios.CentroDeResultados := FDadosCartorio.CRS_Codigo;
+  Rateios.Receita            := FDadosCartorio.CRD_Codigo;
+  Rateios.Observacao         := 'Rateio referente ao estabelecimento Cartório Ximenes';
+  Rateios.Valor              := FRegistro.GetValorRateioCartorio;//TO-DO - Valor do rateio;
+  Rateios.Post;
+
+  //TO-DO - Falta o rateio do CPG - Perguntar ao Samuel.
 end;
 
 { TClasseBase }
@@ -390,9 +446,38 @@ end;
 
 { TRegistro }
 
+function TRegistro.GetValorRateioCartorio: Double;
+begin
+  Result := VlrXimenesAut + VlrXimenesRec;
+end;
+
+function TRegistro.GetValorRateioServices: Double;
+begin
+  Result := VlrXimenesGestao;
+end;
+
 function TRegistro.GetValorVencimento: Double;
 begin
   Result := Despachante + Distribuidor + VlrCartorio + VlrXimenes;
 end;
+
+class procedure TImportador.ImportarArquivo(const cEMP_Codigo, cCaminhoArquivo: String);
+var
+  Leitor: ILeitor;
+  ImportadorCRE: TImportadorCRE;
+begin
+  Leitor := TLeitorCSV.Create(cEMP_Codigo);
+  try
+    Leitor.LerArquivo(cCaminhoArquivo);
+    ImportadorCRE := TImportadorCRE.Create(cEMP_Codigo, Leitor.IMP_ID);
+    ImportadorCRE.GravarContasaReceber;
+  except
+    on E: Exception do
+      raise Exception.Create('Erro durante a importação: ' + E.Message);
+  end;
+end;
+
+initialization
+  //FFinanceiro := GetFinanceiroAG;
 
 end.

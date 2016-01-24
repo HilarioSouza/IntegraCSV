@@ -4847,8 +4847,8 @@ type
     procedure StartTransaction;
     procedure Commit;
     procedure Rollback;
-    function GetEmpresa:string;
-    procedure SetEmpresa(const Codigo:string);
+    function GetEmpresa:String;
+    procedure SetEmpresa(const Codigo:String);
     function GetDriverNameBanco:string;
     procedure SetDriverNameBanco(const Codigo:string);
     function GetUsuarioBanco:string;
@@ -4932,7 +4932,7 @@ type
     function GetCupomFiscal: ICupomFiscal;
     function GetConhecimentoTransporte: IConhecimentoTransporte;
     function GetSaldoDisponivelOrcamento(EMP_Codigo, CRD_Codigo: String; Data: TDateTime; var ValorOrcado: Double): Double;
-    property Empresa:string read GetEmpresa write SetEmpresa;
+    property Empresa:String read GetEmpresa write SetEmpresa;
     property DriverNameBanco:string read GetDriverNameBanco write SetDriverNameBanco;
     property UsuarioBanco:string read GetUsuarioBanco write SetUsuarioBanco;
     property SenhaBanco:string read GetSenhaBanco write SetSenhaBanco;

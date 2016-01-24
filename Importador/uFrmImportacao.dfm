@@ -23,8 +23,6 @@ object frmImportacao: TfrmImportacao
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 778
-    ExplicitHeight = 97
     object sbtCaminhoArquivo: TSpeedButton
       Left = 335
       Top = 25
@@ -83,9 +81,6 @@ object frmImportacao: TfrmImportacao
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 3
-      ExplicitLeft = -1
-      ExplicitTop = 103
-      ExplicitWidth = 778
       object PageControl1: TPageControl
         Left = 0
         Top = 0
@@ -94,14 +89,8 @@ object frmImportacao: TfrmImportacao
         ActivePage = tshIMP
         Align = alClient
         TabOrder = 0
-        ExplicitWidth = 706
-        ExplicitHeight = 405
         object tshIMP: TTabSheet
           Caption = 'tshIMP'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 770
-          ExplicitHeight = 0
           object dgrIMP: TDBGrid
             Left = 0
             Top = 0
@@ -120,10 +109,6 @@ object frmImportacao: TfrmImportacao
         object tshREG: TTabSheet
           Caption = 'tshREG'
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 770
-          ExplicitHeight = 0
           object dgrREG: TDBGrid
             Left = 0
             Top = 0
@@ -150,8 +135,6 @@ object frmImportacao: TfrmImportacao
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitLeft = 706
-    ExplicitHeight = 508
     object btnDesfazerIMP: TButton
       Left = 8
       Top = 127

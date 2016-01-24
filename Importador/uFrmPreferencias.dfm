@@ -27,7 +27,7 @@ object frmPreferencias: TfrmPreferencias
       Top = 8
       Width = 704
       Height = 513
-      ActivePage = TabSheet1
+      ActivePage = TabSheet3
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Conex'#227'o AG'

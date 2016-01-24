@@ -40,7 +40,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btnDesfazerIMPClick(Sender: TObject);
   private
-    procedure ImportarArquivo;
     procedure AtualizarQueries;
     { Private declarations }
   public
@@ -66,7 +65,7 @@ begin
   end
   else
   begin
-    ImportarArquivo;
+    TImportador.ImportarArquivo(dcbEMP.KeyValue, edtCaminhoArquivo.Text);
     AtualizarQueries;
   end;
 end;
@@ -113,20 +112,6 @@ procedure TfrmImportacao.AtualizarQueries;
 begin
   TDBUtils.RefreshQuery(fqrIMP);
   TDBUtils.RefreshQuery(fqrREG);
-end;
-
-procedure TfrmImportacao.ImportarArquivo;
-var
-  Leitor: ILeitor;
-begin
-  Leitor := TLeitorCSV.Create(dcbEMP.KeyValue);
-  try
-    Leitor.LerArquivo(edtCaminhoArquivo.Text);
-    ShowMessage('Importação realizada com sucesso.');
-  except
-    on E: Exception do
-      raise Exception.Create('Erro durante a importação: ' + E.Message);
-  end;
 end;
 
 end.

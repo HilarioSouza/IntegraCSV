@@ -83,7 +83,7 @@ end;
 procedure TfrmPreferencias.FormCreate(Sender: TObject);
 begin
   inherited;
-  qryCFG.Open();
+  qryCFG.Open;
   qryCFG.Edit;
 end;
 
