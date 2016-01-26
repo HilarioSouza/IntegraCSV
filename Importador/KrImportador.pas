@@ -275,8 +275,9 @@ var
   Query: TFDQuery;
 begin
   Query := NewQuery('SELECT * FROM CFG WHERE CFG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString);
+  Query.Open;
   FFinanceiro.DriverNameBanco := 'INTRBASE';
-  FFinanceiro.UsuarioBanco := Query.FieldByName('USERNAME').AsString;
+  FFinanceiro.UsuarioBanco := Query.FieldByName('USUARIO').AsString;
   FFinanceiro.SenhaBanco := Query.FieldByName('SENHA').AsString;
   FFinanceiro.Open(Query.FieldByName('CAMINHOBANCO').AsString);
   FFinanceiro.Empresa := FEMP_Codigo;
@@ -303,7 +304,12 @@ var
   ListaRegistro: TListaRegistros;
   I: Integer;
 begin
-  FFinanceiro := GetFinanceiro(gsAppPath);
+  try
+    FFinanceiro := GetFinanceiro(gsAppPath);
+  except
+    on E: Exception do
+      raise Exception.Create(E.Message);
+  end;
   PopularFinanceiroAG;
   CRE := FFinanceiro.GetContasaReceber;
   ListaRegistro := TListaRegistros.Create;
@@ -365,7 +371,7 @@ begin
   ContasaReceber.Cliente               := FRegistro.Convenio;
   //ContasaReceber.CodigoCliente         := '';
   ContasaReceber.Documento             := FRegistro.Protocolo;
-  ContasaReceber.TipoGeracao           := 'M';
+  ContasaReceber.TipoGeracao           := 'C'; //Aparentemente se for Cargas, não é possível editar no AG...
   ContasaReceber.Emissao               := FRegistro.DataCadastro;
   ContasaReceber.ISS                   := 0;
   ContasaReceber.IRRF                  := 0;

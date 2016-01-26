@@ -51,6 +51,7 @@ object frmPreferencias: TfrmPreferencias
             Width = 45
             Height = 13
             Caption = 'Empresa:'
+            Visible = False
           end
           object Label3: TLabel
             Left = 8
@@ -118,6 +119,7 @@ object frmPreferencias: TfrmPreferencias
             DataField = 'EMP_CODIGO'
             DataSource = dtsCFG
             TabOrder = 0
+            Visible = False
           end
         end
       end

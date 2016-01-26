@@ -22,8 +22,6 @@ type
     Panel2: TPanel;
     btnDesfazerIMP: TButton;
     btnSair: TButton;
-    ddsREG: TDataSource;
-    fqrREG: TFDQuery;
     dcbEMP: TDBLookupComboBox;
     fqrEMP: TFDQuery;
     ddsEMP: TDataSource;
@@ -31,36 +29,15 @@ type
     pgcIMP: TPageControl;
     tshIMP: TTabSheet;
     dgrIMP: TDBGrid;
-    tshREG: TTabSheet;
-    dgrREG: TDBGrid;
     fqrIMPEMP_CODIGO: TStringField;
     fqrIMPID: TIntegerField;
     fqrIMPDATA: TDateField;
-    fqrREGEMP_CODIGO: TStringField;
-    fqrREGID: TIntegerField;
-    fqrREGPROTOCOLO: TStringField;
-    fqrREGDATACADASTRO: TSQLTimeStampField;
-    fqrREGDESPACHANTE: TFloatField;
-    fqrREGDISTRIBUIDOR: TFloatField;
-    fqrREGVALORCARTORIO: TFloatField;
-    fqrREGDAJ: TFloatField;
-    fqrREGVALORTOTALCUSTAS: TFloatField;
-    fqrREGCONVENIO: TStringField;
-    fqrREGCUSTASFECHADAS: TIntegerField;
-    fqrREGVALORXIMENESGESTAO: TFloatField;
-    fqrREGVALORXIMENESAUT: TFloatField;
-    fqrREGVALORXIMENESREC: TFloatField;
-    fqrREGVALORXIMENESOUTROS: TFloatField;
-    fqrREGREPRESENTANTE: TStringField;
-    fqrREGVALORXIMENES: TFloatField;
-    fqrREGIMP_ID: TIntegerField;
     procedure sbtCaminhoArquivoClick(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure btnDesfazerIMPClick(Sender: TObject);
-    procedure tshREGShow(Sender: TObject);
   private
     procedure AtualizarQueries;
     { Private declarations }
@@ -95,14 +72,6 @@ end;
 procedure TfrmImportacao.sbtCaminhoArquivoClick(Sender: TObject);
 begin
   edtCaminhoArquivo.Text := TUtilArquivo.GetCaminhoArquivo(edtCaminhoArquivo.Text);
-end;
-
-procedure TfrmImportacao.tshREGShow(Sender: TObject);
-begin
-  inherited;
-  if not fqrIMP.Eof then
-    fqrREG.Open(' SELECT * FROM REG WHERE REG.EMP_CODIGO = ' + (fqrIMP.FieldByName('EMP_CODIGO').AsString).QuotedString +
-                ' AND REG.IMP_ID = ' + fqrIMP.FieldByName('ID').AsString);
 end;
 
 procedure TfrmImportacao.btnSairClick(Sender: TObject);
@@ -144,7 +113,6 @@ end;
 procedure TfrmImportacao.AtualizarQueries;
 begin
   TDBUtils.RefreshQuery(fqrIMP);
-  TDBUtils.RefreshQuery(fqrREG);
 end;
 
 end.

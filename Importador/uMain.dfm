@@ -20,7 +20,7 @@ object frmMain: TfrmMain
   PixelsPerInch = 96
   TextHeight = 13
   object MainMenu1: TMainMenu
-    Left = 8
+    Left = 32
     Top = 8
     object Cadastros1: TMenuItem
       Caption = 'Cadastros'
