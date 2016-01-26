@@ -39,12 +39,12 @@ end;
 
 function TEstabelecimento.GetSQLCartorio: String;
 begin
-  Result := ' select CARTORIOEST as EST, CARTORIOCRD as CRD, CARTORIOCRS as CRS from cfg where CFG.EMP_Codigo = ' + FEMP_Codigo.QuotedString;
+  Result := ' select CARTORIOEST as EST, CARTORIOCRD as CRD, CARTORIOCRS as CRS from EMP where EMP.Codigo = ' + FEMP_Codigo.QuotedString;
 end;
 
 function TEstabelecimento.GetSQLServices: String;
 begin
-  Result := ' select SERVICESEST as EST, SERVICESCRD as CRD, SERVICESCRS as CRS from cfg where CFG.EMP_Codigo = ' + FEMP_Codigo.QuotedString;
+  Result := ' select SERVICESEST as EST, SERVICESCRD as CRD, SERVICESCRS as CRS from EMP where EMP.Codigo = ' + FEMP_Codigo.QuotedString;
 end;
 
 procedure TEstabelecimento.PopularDadosEstabelecimento;

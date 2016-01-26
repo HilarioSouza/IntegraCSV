@@ -16,6 +16,26 @@ type
     qryMainNOME: TStringField;
     edtNome: TDBEdit;
     lblNome: TLabel;
+    GroupBox1: TGroupBox;
+    Label8: TLabel;
+    Label9: TLabel;
+    Label10: TLabel;
+    DBEdit2: TDBEdit;
+    DBEdit3: TDBEdit;
+    DBEdit4: TDBEdit;
+    GroupBox2: TGroupBox;
+    detReceita: TDBEdit;
+    Label7: TLabel;
+    detCentroResultados: TDBEdit;
+    Label6: TLabel;
+    detEstabelecimento: TDBEdit;
+    Label5: TLabel;
+    qryMainCARTORIOEST: TStringField;
+    qryMainCARTORIOCRD: TStringField;
+    qryMainCARTORIOCRS: TStringField;
+    qryMainSERVICESEST: TStringField;
+    qryMainSERVICESCRD: TStringField;
+    qryMainSERVICESCRS: TStringField;
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
@@ -36,6 +56,7 @@ procedure TfrmCdEmp.FormCreate(Sender: TObject);
 begin
   inherited;
   fPrincipal := frmMain;
+
 end;
 
 end.

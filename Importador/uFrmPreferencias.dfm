@@ -27,7 +27,7 @@ object frmPreferencias: TfrmPreferencias
       Top = 8
       Width = 704
       Height = 513
-      ActivePage = TabSheet3
+      ActivePage = TabSheet1
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Conex'#227'o AG'
@@ -118,124 +118,6 @@ object frmPreferencias: TfrmPreferencias
             DataField = 'EMP_CODIGO'
             DataSource = dtsCFG
             TabOrder = 0
-          end
-        end
-      end
-      object TabSheet2: TTabSheet
-        Caption = 'Ximenes Services'
-        ImageIndex = 1
-        object pnlXimenesServices: TPanel
-          Left = 16
-          Top = 16
-          Width = 553
-          Height = 369
-          TabOrder = 0
-          object Label5: TLabel
-            Left = 0
-            Top = -3
-            Width = 82
-            Height = 13
-            Caption = 'Estabelecimento:'
-          end
-          object Label6: TLabel
-            Left = 0
-            Top = 46
-            Width = 108
-            Height = 13
-            Caption = 'Centro de Resultados:'
-          end
-          object Label7: TLabel
-            Left = 0
-            Top = 95
-            Width = 40
-            Height = 13
-            Caption = 'Receita:'
-          end
-          object detEstabelecimento: TDBEdit
-            Left = 0
-            Top = 16
-            Width = 121
-            Height = 21
-            DataField = 'SERVICESEST'
-            DataSource = dtsCFG
-            TabOrder = 0
-          end
-          object detCentroResultados: TDBEdit
-            Left = 0
-            Top = 65
-            Width = 121
-            Height = 21
-            DataField = 'SERVICESCRS'
-            DataSource = dtsCFG
-            TabOrder = 1
-          end
-          object detReceita: TDBEdit
-            Left = 0
-            Top = 114
-            Width = 121
-            Height = 21
-            DataField = 'SERVICESCRD'
-            DataSource = dtsCFG
-            TabOrder = 2
-          end
-        end
-      end
-      object TabSheet3: TTabSheet
-        Caption = 'Cart'#243'rio Ximenes'
-        ImageIndex = 2
-        object pnlCartorioXimenes: TPanel
-          Left = 16
-          Top = 16
-          Width = 537
-          Height = 361
-          TabOrder = 0
-          object Label8: TLabel
-            Left = 0
-            Top = -3
-            Width = 82
-            Height = 13
-            Caption = 'Estabelecimento:'
-          end
-          object Label9: TLabel
-            Left = 0
-            Top = 46
-            Width = 108
-            Height = 13
-            Caption = 'Centro de Resultados:'
-          end
-          object Label10: TLabel
-            Left = 0
-            Top = 95
-            Width = 40
-            Height = 13
-            Caption = 'Receita:'
-          end
-          object DBEdit2: TDBEdit
-            Left = 0
-            Top = 16
-            Width = 121
-            Height = 21
-            DataField = 'CARTORIOEST'
-            DataSource = dtsCFG
-            TabOrder = 0
-          end
-          object DBEdit3: TDBEdit
-            Left = 0
-            Top = 65
-            Width = 121
-            Height = 21
-            DataField = 'CARTORIOCRS'
-            DataSource = dtsCFG
-            TabOrder = 1
-          end
-          object DBEdit4: TDBEdit
-            Left = 0
-            Top = 114
-            Width = 121
-            Height = 21
-            DataField = 'CARTORIOCRD'
-            DataSource = dtsCFG
-            TabOrder = 2
           end
         end
       end

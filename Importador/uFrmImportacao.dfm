@@ -66,7 +66,7 @@ object frmImportacao: TfrmImportacao
     object dcbEMP: TDBLookupComboBox
       Left = 364
       Top = 25
-      Width = 145
+      Width = 229
       Height = 21
       KeyField = 'CODIGO'
       ListField = 'NOME'
@@ -81,16 +81,16 @@ object frmImportacao: TfrmImportacao
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 3
-      object PageControl1: TPageControl
+      object pgcIMP: TPageControl
         Left = 0
         Top = 0
         Width = 795
         Height = 503
-        ActivePage = tshIMP
+        ActivePage = tshREG
         Align = alClient
         TabOrder = 0
         object tshIMP: TTabSheet
-          Caption = 'tshIMP'
+          Caption = 'Importa'#231#245'es'
           object dgrIMP: TDBGrid
             Left = 0
             Top = 0
@@ -107,8 +107,9 @@ object frmImportacao: TfrmImportacao
           end
         end
         object tshREG: TTabSheet
-          Caption = 'tshREG'
+          Caption = 'Registros'
           ImageIndex = 1
+          OnShow = tshREGShow
           object dgrREG: TDBGrid
             Left = 0
             Top = 0
@@ -165,6 +166,25 @@ object frmImportacao: TfrmImportacao
       'select * from imp')
     Left = 712
     Top = 24
+    object fqrIMPEMP_CODIGO: TStringField
+      DisplayLabel = 'Empresa'
+      FieldName = 'EMP_CODIGO'
+      Origin = 'EMP_CODIGO'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+      Size = 4
+    end
+    object fqrIMPID: TIntegerField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object fqrIMPDATA: TDateField
+      DisplayLabel = 'Data'
+      FieldName = 'DATA'
+      Origin = '"DATA"'
+    end
   end
   object ddsREG: TDataSource
     DataSet = fqrREG
@@ -177,6 +197,102 @@ object frmImportacao: TfrmImportacao
       'select * from reg')
     Left = 584
     Top = 40
+    object fqrREGEMP_CODIGO: TStringField
+      DisplayLabel = 'Empresa'
+      FieldName = 'EMP_CODIGO'
+      Origin = 'EMP_CODIGO'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+      Size = 4
+    end
+    object fqrREGID: TIntegerField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object fqrREGPROTOCOLO: TStringField
+      DisplayLabel = 'Protocolo'
+      FieldName = 'PROTOCOLO'
+      Origin = 'PROTOCOLO'
+      Size = 50
+    end
+    object fqrREGDATACADASTRO: TSQLTimeStampField
+      DisplayLabel = 'Data de Cadastro'
+      FieldName = 'DATACADASTRO'
+      Origin = 'DATACADASTRO'
+    end
+    object fqrREGDESPACHANTE: TFloatField
+      DisplayLabel = 'Despachante'
+      FieldName = 'DESPACHANTE'
+      Origin = 'DESPACHANTE'
+    end
+    object fqrREGDISTRIBUIDOR: TFloatField
+      DisplayLabel = 'Distribuidor'
+      FieldName = 'DISTRIBUIDOR'
+      Origin = 'DISTRIBUIDOR'
+    end
+    object fqrREGVALORCARTORIO: TFloatField
+      DisplayLabel = 'Valor Cart'#243'rio'
+      FieldName = 'VALORCARTORIO'
+      Origin = 'VALORCARTORIO'
+    end
+    object fqrREGDAJ: TFloatField
+      FieldName = 'DAJ'
+      Origin = 'DAJ'
+    end
+    object fqrREGVALORTOTALCUSTAS: TFloatField
+      DisplayLabel = 'Valor Total Custas'
+      FieldName = 'VALORTOTALCUSTAS'
+      Origin = 'VALORTOTALCUSTAS'
+    end
+    object fqrREGCONVENIO: TStringField
+      DisplayLabel = 'Conv'#234'nio'
+      FieldName = 'CONVENIO'
+      Origin = 'CONVENIO'
+      Size = 50
+    end
+    object fqrREGCUSTASFECHADAS: TIntegerField
+      DisplayLabel = 'Custas Fechadas'
+      FieldName = 'CUSTASFECHADAS'
+      Origin = 'CUSTASFECHADAS'
+    end
+    object fqrREGVALORXIMENESGESTAO: TFloatField
+      DisplayLabel = 'Valor Ximenes Gest'#227'o'
+      FieldName = 'VALORXIMENESGESTAO'
+      Origin = 'VALORXIMENESGESTAO'
+    end
+    object fqrREGVALORXIMENESAUT: TFloatField
+      DisplayLabel = 'Valor Ximenes Aut.'
+      FieldName = 'VALORXIMENESAUT'
+      Origin = 'VALORXIMENESAUT'
+    end
+    object fqrREGVALORXIMENESREC: TFloatField
+      DisplayLabel = 'Valor Ximenes Rec.'
+      FieldName = 'VALORXIMENESREC'
+      Origin = 'VALORXIMENESREC'
+    end
+    object fqrREGVALORXIMENESOUTROS: TFloatField
+      DisplayLabel = 'Valor Ximenes Outros'
+      FieldName = 'VALORXIMENESOUTROS'
+      Origin = 'VALORXIMENESOUTROS'
+    end
+    object fqrREGREPRESENTANTE: TStringField
+      DisplayLabel = 'Representante'
+      FieldName = 'REPRESENTANTE'
+      Origin = 'REPRESENTANTE'
+      Size = 50
+    end
+    object fqrREGVALORXIMENES: TFloatField
+      DisplayLabel = 'Valor Ximenes'
+      FieldName = 'VALORXIMENES'
+      Origin = 'VALORXIMENES'
+    end
+    object fqrREGIMP_ID: TIntegerField
+      DisplayLabel = 'ID Importa'#231#227'o'
+      FieldName = 'IMP_ID'
+      Origin = 'IMP_ID'
+    end
   end
   object fqrEMP: TFDQuery
     Connection = dmConnect.fdConn

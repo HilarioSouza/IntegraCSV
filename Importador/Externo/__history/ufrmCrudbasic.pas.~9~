@@ -1,0 +1,178 @@
+unit ufrmCrudbasic;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ufrmStandard, Vcl.StdCtrls,
+  Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.ToolWin,
+  Vcl.ActnMan, Vcl.ActnCtrls, Vcl.Grids, Vcl.DBGrids, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Mask, Vcl.DBCtrls,
+  IntfFormPrincipal;
+
+type
+  TfrmCrudbasic = class(TfrmStandard)
+    pnCaptionTela: TPanel;
+    Label1: TLabel;
+    Label2: TLabel;
+    pnTop: TPanel;
+    Panel1: TPanel;
+    pgCrud: TPageControl;
+    tsPsq: TTabSheet;
+    tsCad: TTabSheet;
+    gridPsq: TDBGrid;
+    qryMain: TFDQuery;
+    lblCodigo: TLabel;
+    edtID: TDBEdit;
+    dsDados: TDataSource;
+    btnIncluir: TButton;
+    btnEditar: TButton;
+    btnCancelar: TButton;
+    btnExcluir: TButton;
+    btnSair: TButton;
+    btnSalvar: TButton;
+    procedure FormCreate(Sender: TObject);
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnEditarClick(Sender: TObject);
+    procedure btnCancelarClick(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure btnSairClick(Sender: TObject);
+    procedure btnSalvarClick(Sender: TObject);
+  private
+    { Private declarations }
+    FfPrincipal: IFormPrincipal;
+  public
+    { Public declarations }
+    procedure StatusTela;
+    property fPrincipal: IFormPrincipal read FfPrincipal write FfPrincipal;
+  protected
+    procedure Incluir;
+    procedure Salvar;
+    procedure Editar;
+    procedure Excluir;
+    procedure Cancelar;
+    procedure Sair;
+  end;
+
+var
+  frmCrudbasic: TfrmCrudbasic;
+
+implementation
+
+{$R *.dfm}
+
+uses uMensagem;
+
+procedure TfrmCrudbasic.btnCancelarClick(Sender: TObject);
+begin
+  inherited;
+  Cancelar;
+end;
+
+procedure TfrmCrudbasic.btnEditarClick(Sender: TObject);
+begin
+  inherited;
+  Editar;
+end;
+
+procedure TfrmCrudbasic.btnExcluirClick(Sender: TObject);
+begin
+  inherited;
+  Excluir;
+end;
+
+procedure TfrmCrudbasic.btnIncluirClick(Sender: TObject);
+begin
+  inherited;
+  Incluir;
+end;
+
+procedure TfrmCrudbasic.btnSairClick(Sender: TObject);
+begin
+  inherited;
+  Sair;
+end;
+
+procedure TfrmCrudbasic.btnSalvarClick(Sender: TObject);
+begin
+  inherited;
+  Salvar;
+end;
+
+procedure TfrmCrudbasic.Cancelar;
+begin
+  if qryMain.State in dsEditModes then
+    qryMain.Cancel;
+  StatusTela;
+  pgCrud.ActivePage := tsPsq;
+end;
+
+procedure TfrmCrudbasic.Editar;
+begin
+  if (qryMain.State in [dsBrowse]) and (not qryMain.IsEmpty) then
+  begin
+    qryMain.Edit;
+    pgCrud.ActivePage := tsCad;
+  end;
+  StatusTela;
+end;
+
+procedure TfrmCrudbasic.Excluir;
+begin
+  pgCrud.ActivePage := tsPsq;
+  if (qryMain.State in [dsBrowse]) and (not qryMain.IsEmpty) then
+  begin
+    if TMensagem.Confirmar('Deseja excluir esse registro?') then
+      qryMain.Delete;
+  end;
+  StatusTela;
+end;
+
+procedure TfrmCrudbasic.FormCreate(Sender: TObject);
+begin
+  inherited;
+  qryMain.Open();
+  StatusTela;
+end;
+
+procedure TfrmCrudbasic.Incluir;
+begin
+  if not qryMain.Active then
+    qryMain.Active := True;
+  qryMain.Append;
+  pgCrud.ActivePage := tsCad;
+  StatusTela;
+end;
+
+procedure TfrmCrudbasic.Sair;
+const
+  WM_CLOSE_TAB = WM_USER + 1;
+begin
+  PostMessage(FfPrincipal.FTDI.GetHandleTDI, WM_CLOSE_TAB,
+    TPageControl(Self.parent.parent).ActivePage.pageindex, 0);
+end;
+
+procedure TfrmCrudbasic.Salvar;
+begin
+  if qryMain.State in dsEditModes then
+    qryMain.Post;
+  StatusTela;
+  pgCrud.ActivePage := tsPsq;
+end;
+
+procedure TfrmCrudbasic.StatusTela;
+begin
+  btnIncluir.Enabled := (not(dsDados.State in dsEditModes));
+  btnEditar.Enabled := (qryMain.Active) and (not qryMain.IsEmpty) and
+    (not(dsDados.State in dsEditModes));
+  btnExcluir.Enabled := (qryMain.Active) and (not qryMain.IsEmpty) and
+    (not(dsDados.State in dsEditModes));
+  btnCancelar.Enabled := dsDados.State in dsEditModes;
+  btnSalvar.Enabled := dsDados.State in dsEditModes;
+end;
+
+end.

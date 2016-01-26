@@ -28,6 +28,118 @@ inherited frmCdEmp: TfrmCdEmp
         DataSource = dsDados
         TabOrder = 1
       end
+      object GroupBox1: TGroupBox
+        Left = 175
+        Top = 57
+        Width = 139
+        Height = 168
+        Caption = ' Cart'#243'rio Ximenes: '
+        TabOrder = 3
+        object Label8: TLabel
+          Left = 8
+          Top = 16
+          Width = 82
+          Height = 13
+          Caption = 'Estabelecimento:'
+        end
+        object Label9: TLabel
+          Left = 8
+          Top = 65
+          Width = 108
+          Height = 13
+          Caption = 'Centro de Resultados:'
+        end
+        object Label10: TLabel
+          Left = 8
+          Top = 114
+          Width = 40
+          Height = 13
+          Caption = 'Receita:'
+        end
+        object DBEdit2: TDBEdit
+          Left = 8
+          Top = 35
+          Width = 121
+          Height = 21
+          DataField = 'CARTORIOEST'
+          DataSource = dsDados
+          TabOrder = 0
+        end
+        object DBEdit3: TDBEdit
+          Left = 8
+          Top = 84
+          Width = 121
+          Height = 21
+          DataField = 'CARTORIOCRS'
+          DataSource = dsDados
+          TabOrder = 1
+        end
+        object DBEdit4: TDBEdit
+          Left = 8
+          Top = 133
+          Width = 121
+          Height = 21
+          DataField = 'CARTORIOCRD'
+          DataSource = dsDados
+          TabOrder = 2
+        end
+      end
+      object GroupBox2: TGroupBox
+        Left = 3
+        Top = 57
+        Width = 140
+        Height = 168
+        Caption = ' Ximenes Services: '
+        TabOrder = 2
+        object Label7: TLabel
+          Left = 8
+          Top = 114
+          Width = 40
+          Height = 13
+          Caption = 'Receita:'
+        end
+        object Label6: TLabel
+          Left = 8
+          Top = 65
+          Width = 108
+          Height = 13
+          Caption = 'Centro de Resultados:'
+        end
+        object Label5: TLabel
+          Left = 8
+          Top = 16
+          Width = 82
+          Height = 13
+          Caption = 'Estabelecimento:'
+        end
+        object detReceita: TDBEdit
+          Left = 8
+          Top = 133
+          Width = 121
+          Height = 21
+          DataField = 'SERVICESCRD'
+          DataSource = dsDados
+          TabOrder = 2
+        end
+        object detCentroResultados: TDBEdit
+          Left = 8
+          Top = 87
+          Width = 121
+          Height = 21
+          DataField = 'SERVICESCRS'
+          DataSource = dsDados
+          TabOrder = 1
+        end
+        object detEstabelecimento: TDBEdit
+          Left = 8
+          Top = 35
+          Width = 121
+          Height = 21
+          DataField = 'SERVICESEST'
+          DataSource = dsDados
+          TabOrder = 0
+        end
+      end
     end
   end
   inherited qryMain: TFDQuery
@@ -43,6 +155,36 @@ inherited frmCdEmp: TfrmCdEmp
     object qryMainNOME: TStringField
       FieldName = 'NOME'
       Size = 100
+    end
+    object qryMainCARTORIOEST: TStringField
+      FieldName = 'CARTORIOEST'
+      Origin = 'CARTORIOEST'
+      Size = 4
+    end
+    object qryMainCARTORIOCRD: TStringField
+      FieldName = 'CARTORIOCRD'
+      Origin = 'CARTORIOCRD'
+      Size = 10
+    end
+    object qryMainCARTORIOCRS: TStringField
+      FieldName = 'CARTORIOCRS'
+      Origin = 'CARTORIOCRS'
+      Size = 10
+    end
+    object qryMainSERVICESEST: TStringField
+      FieldName = 'SERVICESEST'
+      Origin = 'SERVICESEST'
+      Size = 4
+    end
+    object qryMainSERVICESCRD: TStringField
+      FieldName = 'SERVICESCRD'
+      Origin = 'SERVICESCRD'
+      Size = 10
+    end
+    object qryMainSERVICESCRS: TStringField
+      FieldName = 'SERVICESCRS'
+      Origin = 'SERVICESCRS'
+      Size = 10
     end
   end
   inherited dsDados: TDataSource

@@ -137,6 +137,7 @@ begin
   inherited;
   qryMain.Open();
   StatusTela;
+  pgCrud.ActivePage := tsPsq;
 end;
 
 procedure TfrmCrudbasic.Incluir;

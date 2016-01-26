@@ -42,6 +42,8 @@ type
     VlrXimenesOutros: Double;
     Representante   : String; //CPF do Representante
     IMP_ID          : Integer;
+    SER_Codigo      : String;
+    MDS_Codigo      : String;
     function GetValorVencimento: Double;
     function GetValorRateioServices: Double;
     function GetValorRateioCartorio: Double;
@@ -70,11 +72,14 @@ type
 
   TImportadorBase = class
   private
+    FFinanceiro: IFinanceiro;
     FRegistro: TRegistro;
     FEMP_Codigo: String;
     FIMP_ID: Integer;
     FDadosServices: TEstabelecimento;
     FDadosCartorio: TEstabelecimento;
+    function PopularFinanceiroAG: IFinanceiro;
+    procedure PopularListaRegistro(ListaRegistro: TListaRegistros; IMP_ID: Integer);
   public
     constructor Create(const EMP_Codigo: String; const IMP_ID: Integer);
     destructor Destroy; override;
@@ -83,7 +88,6 @@ type
   TImportadorCRE = class(TImportadorBase)
   private
     procedure PopularContasaReceber(ContasaReceber: IContasaReceber);
-    procedure PopularListaRegistro(ListaRegistro: TListaRegistros; IMP_ID: Integer);
     procedure PopularVencimentosaReceber(Vencimentos: IVencimentosaReceber);
     procedure PopularServicosaReceber(Servicos: IServicosaReceber);
     procedure PopularRateiosaReceber(Rateios: IRateiosaReceber);
@@ -93,6 +97,11 @@ type
   end;
 
   TImportadorCPG = class(TImportadorBase)
+  private
+    procedure PopularContasaPagar(ContasaPagar: IContasaPagar);
+    procedure PopularVencimentosaPagar(Vencimentos: IVencimentosaPagar);
+  public
+    procedure GravarContasaPagar;
   end;
 
   TImportador = class
@@ -104,9 +113,6 @@ implementation
 
 uses System.SysUtils, uUtils, uInterfaceQuery, FireDAC.Comp.Client, iwSystem,
   uFuncoesIni, System.Math, uDBUtils, udmConnect;
-
-var
-  FFinanceiro: IFinanceiro;
 
 const
   IdxProtocolo        = 0;
@@ -139,7 +145,6 @@ begin
     raise Exception.Create('Arquivo não informado. Por favor informe o caminho do arquivo.');
   AssignFile(Arquivo, FileName);
   try
-    TDBUtils.MainServer.StartTransaction;
     try
       FIMP_ID := GravarImportacao;
       Lista := TListaRegistros.Create;
@@ -155,17 +160,13 @@ begin
         PopularDadosRegistro(Registro);
       end;
       GravarRegistrosNoBanco(Lista);
-      TDBUtils.MainServer.Commit;
     finally
       if ArquivoAberto then
         CloseFile(Arquivo);
     end;
   except
     on E: Exception do
-    begin
-      TDBUtils.MainServer.Rollback;
       raise Exception.Create('Erro: ' + E.Message);
-    end;
   end;
 end;
 
@@ -269,19 +270,16 @@ begin
   Registro.Representante    := ArrayDados[IdxRepresentante];
 end;
 
-function GetEnderecoBanco: String;
+function TImportadorBase.PopularFinanceiroAG: IFinanceiro;
+var
+  Query: TFDQuery;
 begin
-  Result := TFuncoesIni.LerIni('BANCO', 'Database');
-end;
-
-function GetFinanceiroAG: IFinanceiro;
-begin
-  FFinanceiro := GetFinanceiro(gsAppPath);
-  FFinanceiro.Empresa := AnsiString('0001');
-  FFinanceiro.DriverNameBanco := '';
-  FFinanceiro.UsuarioBanco := '';
-  FFinanceiro.SenhaBanco := '';
-  FFinanceiro.Open(GetEnderecoBanco);
+  Query := NewQuery('SELECT * FROM CFG WHERE CFG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString);
+  FFinanceiro.DriverNameBanco := 'INTRBASE';
+  FFinanceiro.UsuarioBanco := Query.FieldByName('USERNAME').AsString;
+  FFinanceiro.SenhaBanco := Query.FieldByName('SENHA').AsString;
+  FFinanceiro.Open(Query.FieldByName('CAMINHOBANCO').AsString);
+  FFinanceiro.Empresa := FEMP_Codigo;
 end;
 
 constructor TImportadorBase.Create(const EMP_Codigo: String; const IMP_ID: Integer);
@@ -305,8 +303,10 @@ var
   ListaRegistro: TListaRegistros;
   I: Integer;
 begin
+  FFinanceiro := GetFinanceiro(gsAppPath);
+  PopularFinanceiroAG;
   CRE := FFinanceiro.GetContasaReceber;
-  ListaRegistro := TListaRegistros.Create(nil);
+  ListaRegistro := TListaRegistros.Create;
   try
     FFinanceiro.StartTransaction;
     try
@@ -331,7 +331,7 @@ begin
   end;
 end;
 
-procedure TImportadorCRE.PopularListaRegistro(ListaRegistro: TListaRegistros; IMP_ID: Integer);
+procedure TImportadorBase.PopularListaRegistro(ListaRegistro: TListaRegistros; IMP_ID: Integer);
 var
   Registro: TRegistro;
   Query: TFDQuery;
@@ -342,22 +342,22 @@ begin
   ListaRegistro.Add(Registro);
   Registro.EMP_Codigo       := FEMP_Codigo;
   Registro.IMP_ID           := IMP_ID;
-  Registro.ID               := Query.ParamByName('ID').AsInteger;
-  Registro.Protocolo        := Query.ParamByName('Protocolo').AsString;
-  Registro.DataCadastro     := Query.ParamByName('DataCadastro').AsDateTime;
-  Registro.VlrXimenes       := Query.ParamByName('VlrXimenes').AsFloat;
-  Registro.Despachante      := Query.ParamByName('Despachante').AsFloat;
-  Registro.Distribuidor     := Query.ParamByName('Distribuidor').AsFloat;
-  Registro.VlrCartorio      := Query.ParamByName('VlrCartorio').AsFloat;
-  Registro.DAJ              := Query.ParamByName('DAJ').AsFloat;
-  Registro.VlrTotalCustas   := Query.ParamByName('VlrTotalCustas').AsFloat;
-  Registro.Convenio         := Query.ParamByName('Convenio').AsString;
-  Registro.CustasFechadas   := Query.ParamByName('CustasFechadas').AsInteger;
-  Registro.VlrXimenesGestao := Query.ParamByName('VlrXimenesGestao').AsFloat;
-  Registro.VlrXimenesAut    := Query.ParamByName('VlrXimenesAut').AsFloat;
-  Registro.VlrXimenesRec    := Query.ParamByName('VlrXimenesRec').AsFloat;
-  Registro.VlrXimenesOutros := Query.ParamByName('VlrXimenesOutros').AsFloat;
-  Registro.Representante    := Query.ParamByName('Representante').AsString;
+  Registro.ID               := Query.FieldByName('ID').AsInteger;
+  Registro.Protocolo        := Query.FieldByName('Protocolo').AsString;
+  Registro.DataCadastro     := Query.FieldByName('DataCadastro').AsDateTime;
+  Registro.VlrXimenes       := Query.FieldByName('ValorXimenes').AsFloat;
+  Registro.Despachante      := Query.FieldByName('Despachante').AsFloat;
+  Registro.Distribuidor     := Query.FieldByName('Distribuidor').AsFloat;
+  Registro.VlrCartorio      := Query.FieldByName('ValorCartorio').AsFloat;
+  Registro.DAJ              := Query.FieldByName('DAJ').AsFloat;
+  Registro.VlrTotalCustas   := Query.FieldByName('ValorTotalCustas').AsFloat;
+  Registro.Convenio         := Query.FieldByName('Convenio').AsString;
+  Registro.CustasFechadas   := Query.FieldByName('CustasFechadas').AsInteger;
+  Registro.VlrXimenesGestao := Query.FieldByName('ValorXimenesGestao').AsFloat;
+  Registro.VlrXimenesAut    := Query.FieldByName('ValorXimenesAut').AsFloat;
+  Registro.VlrXimenesRec    := Query.FieldByName('ValorXimenesRec').AsFloat;
+  Registro.VlrXimenesOutros := Query.FieldByName('ValorXimenesOutros').AsFloat;
+  Registro.Representante    := Query.FieldByName('Representante').AsString;
 end;
 
 procedure TImportadorCRE.PopularContasaReceber(ContasaReceber :IContasaReceber);
@@ -392,10 +392,12 @@ end;
 
 procedure TImportadorCRE.PopularServicosaReceber(Servicos: IServicosaReceber);
 begin
-  //Servicos.Append;
-  //
-  //Servicos.Post;
-  PopularComissionadosaReceber(Servicos.ComissionadosServicosaReceber);
+  Servicos.Append;
+  Servicos.Servico := FRegistro.SER_Codigo;
+  Servicos.Modalidade := FRegistro.MDS_Codigo;
+  Servicos.Valor := FRegistro.GetValorVencimento;
+  Servicos.Post;
+//  PopularComissionadosaReceber(Servicos.ComissionadosServicosaReceber);
 end;
 
 procedure TImportadorCRE.PopularComissionadosaReceber(Comissionados: IComissionadosServicosaReceber);
@@ -468,16 +470,78 @@ var
 begin
   Leitor := TLeitorCSV.Create(cEMP_Codigo);
   try
+    TDBUtils.MainServer.StartTransaction;
     Leitor.LerArquivo(cCaminhoArquivo);
     ImportadorCRE := TImportadorCRE.Create(cEMP_Codigo, Leitor.IMP_ID);
     ImportadorCRE.GravarContasaReceber;
+    TDBUtils.MainServer.Commit;
   except
     on E: Exception do
+    begin
+      TDBUtils.MainServer.Rollback;
       raise Exception.Create('Erro durante a importação: ' + E.Message);
+    end;
   end;
 end;
 
-initialization
-  //FFinanceiro := GetFinanceiroAG;
+{ TImportadorCPG }
+
+procedure TImportadorCPG.GravarContasaPagar;
+var
+  CPG: IContasaPagar;
+  ListaRegistro: TListaRegistros;
+  I: Integer;
+begin
+  FFinanceiro := GetFinanceiro(gsAppPath);
+  PopularFinanceiroAG;
+  CPG := FFinanceiro.GetContasaPagar;
+  ListaRegistro := TListaRegistros.Create;
+  try
+    FFinanceiro.StartTransaction;
+    try
+      PopularListaRegistro(ListaRegistro, FIMP_ID);
+      for I := 0 to ListaRegistro.Count - 1 do
+      begin
+        CPG.Append;
+        FRegistro := ListaRegistro[I];
+        PopularContasaPagar(CPG);
+        CPG.Post;
+      end;
+      FFinanceiro.Commit;
+    finally
+      FreeAndNil(ListaRegistro);
+    end;
+  except
+    on E: Exception do
+    begin
+      FFinanceiro.Rollback;
+      raise Exception.Create('Ocorreu um erro durante a importação dos Contas a Receber. Exceção: ' + E.Message);
+    end;
+  end;
+end;
+
+procedure TImportadorCPG.PopularContasaPagar(ContasaPagar: IContasaPagar);
+begin
+  ContasaPagar.Fornecedor            := FRegistro.Convenio;
+  //ContasaPagar.CodigoCliente         := '';
+  ContasaPagar.Documento             := FRegistro.Protocolo;
+  ContasaPagar.Emissao               := FRegistro.DataCadastro;
+//  ContasaPagar.ISS                   := 0;
+//  ContasaPagar.IRRF                  := 0;
+//  ContasaPagar.INSS                  := 0;
+//  ContasaPagar.PIS                   := 0;
+//  ContasaPagar.COFINS                := 0;
+//  ContasaPagar.CSLL                  := 0;
+//  ContasaPagar.ExportaAC             := 0;
+//  ContasaPagar.Obs                   := '';
+//  ContasaPagar.MesAno                := FormatDateTime('mmaaaa', FRegistro.DataCadastro);
+  PopularVencimentosaPagar(ContasaPagar.VencimentosaPagar);
+end;
+
+procedure TImportadorCPG.PopularVencimentosaPagar(Vencimentos: IVencimentosaPagar);
+begin
+  //Vencimentos.Append;
+  //Vencimentos.Post;
+end;
 
 end.

@@ -53,7 +53,7 @@ inherited frmCrudbasic: TfrmCrudbasic
     Left = 5
     Top = 61
     Width = 607
-    Height = 46
+    Height = 32
     Margins.Left = 5
     Margins.Top = 1
     Margins.Right = 5
@@ -65,17 +65,18 @@ inherited frmCrudbasic: TfrmCrudbasic
       Left = 0
       Top = 0
       Width = 607
-      Height = 46
+      Height = 32
       Align = alClient
       BevelEdges = [beLeft, beTop, beBottom]
       BevelKind = bkFlat
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitHeight = 47
       object btnIncluir: TButton
         Left = 0
         Top = 0
         Width = 59
-        Height = 42
+        Height = 27
         Caption = 'Incluir'
         TabOrder = 0
         OnClick = btnIncluirClick
@@ -84,7 +85,7 @@ inherited frmCrudbasic: TfrmCrudbasic
         Left = 60
         Top = 0
         Width = 59
-        Height = 42
+        Height = 27
         Caption = 'Editar'
         TabOrder = 1
         OnClick = btnEditarClick
@@ -93,7 +94,7 @@ inherited frmCrudbasic: TfrmCrudbasic
         Left = 182
         Top = 0
         Width = 59
-        Height = 42
+        Height = 27
         Caption = 'Cancelar'
         TabOrder = 2
         OnClick = btnCancelarClick
@@ -102,7 +103,7 @@ inherited frmCrudbasic: TfrmCrudbasic
         Left = 243
         Top = 0
         Width = 59
-        Height = 42
+        Height = 27
         Caption = 'Excluir'
         TabOrder = 3
         OnClick = btnExcluirClick
@@ -111,7 +112,7 @@ inherited frmCrudbasic: TfrmCrudbasic
         Left = 304
         Top = 0
         Width = 59
-        Height = 42
+        Height = 27
         Caption = 'Sair'
         TabOrder = 4
         OnClick = btnSairClick
@@ -120,7 +121,7 @@ inherited frmCrudbasic: TfrmCrudbasic
         Left = 121
         Top = 0
         Width = 59
-        Height = 42
+        Height = 27
         Caption = 'Salvar'
         TabOrder = 5
         OnClick = btnSalvarClick
@@ -129,23 +130,22 @@ inherited frmCrudbasic: TfrmCrudbasic
   end
   object pgCrud: TPageControl
     Left = 0
-    Top = 108
+    Top = 94
     Width = 617
-    Height = 287
+    Height = 301
     ActivePage = tsCad
     Align = alClient
     TabOrder = 2
+    ExplicitTop = 108
+    ExplicitHeight = 287
     object tsPsq: TTabSheet
       Caption = 'Pesquisa'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 259
       object gridPsq: TDBGrid
         Left = 0
         Top = 0
         Width = 609
-        Height = 259
+        Height = 273
         Align = alClient
         DataSource = dsDados
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
@@ -160,10 +160,7 @@ inherited frmCrudbasic: TfrmCrudbasic
     object tsCad: TTabSheet
       Caption = 'Cadastro'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 259
       object lblCodigo: TLabel
         Left = 3
         Top = 7

@@ -28,17 +28,39 @@ type
     fqrEMP: TFDQuery;
     ddsEMP: TDataSource;
     Panel3: TPanel;
-    PageControl1: TPageControl;
+    pgcIMP: TPageControl;
     tshIMP: TTabSheet;
     dgrIMP: TDBGrid;
     tshREG: TTabSheet;
     dgrREG: TDBGrid;
+    fqrIMPEMP_CODIGO: TStringField;
+    fqrIMPID: TIntegerField;
+    fqrIMPDATA: TDateField;
+    fqrREGEMP_CODIGO: TStringField;
+    fqrREGID: TIntegerField;
+    fqrREGPROTOCOLO: TStringField;
+    fqrREGDATACADASTRO: TSQLTimeStampField;
+    fqrREGDESPACHANTE: TFloatField;
+    fqrREGDISTRIBUIDOR: TFloatField;
+    fqrREGVALORCARTORIO: TFloatField;
+    fqrREGDAJ: TFloatField;
+    fqrREGVALORTOTALCUSTAS: TFloatField;
+    fqrREGCONVENIO: TStringField;
+    fqrREGCUSTASFECHADAS: TIntegerField;
+    fqrREGVALORXIMENESGESTAO: TFloatField;
+    fqrREGVALORXIMENESAUT: TFloatField;
+    fqrREGVALORXIMENESREC: TFloatField;
+    fqrREGVALORXIMENESOUTROS: TFloatField;
+    fqrREGREPRESENTANTE: TStringField;
+    fqrREGVALORXIMENES: TFloatField;
+    fqrREGIMP_ID: TIntegerField;
     procedure sbtCaminhoArquivoClick(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure btnDesfazerIMPClick(Sender: TObject);
+    procedure tshREGShow(Sender: TObject);
   private
     procedure AtualizarQueries;
     { Private declarations }
@@ -75,9 +97,18 @@ begin
   edtCaminhoArquivo.Text := TUtilArquivo.GetCaminhoArquivo(edtCaminhoArquivo.Text);
 end;
 
+procedure TfrmImportacao.tshREGShow(Sender: TObject);
+begin
+  inherited;
+  if not fqrIMP.Eof then
+    fqrREG.Open(' SELECT * FROM REG WHERE REG.EMP_CODIGO = ' + (fqrIMP.FieldByName('EMP_CODIGO').AsString).QuotedString +
+                ' AND REG.IMP_ID = ' + fqrIMP.FieldByName('ID').AsString);
+end;
+
 procedure TfrmImportacao.btnSairClick(Sender: TObject);
 begin
   TFuncoesIni.GravarIni('CONFIG', 'FileName', edtCaminhoArquivo.Text);
+  TFuncoesIni.GravarIni('CONFIG', 'Empresa', dcbEMP.KeyValue);
   Sair;
 end;
 
@@ -103,7 +134,9 @@ end;
 procedure TfrmImportacao.FormCreate(Sender: TObject);
 begin
   inherited;
+  pgcIMP.ActivePage := tshIMP;
   edtCaminhoArquivo.Text := TFuncoesIni.LerIni('CONFIG', 'FileName', ExtractFilePath(ParamStr(0)));
+  dcbEMP.KeyValue := TFuncoesIni.LerIni('CONFIG', 'Empresa', '');
   AtualizarQueries;
   fqrEMP.Open;
 end;
