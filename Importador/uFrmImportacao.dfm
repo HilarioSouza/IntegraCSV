@@ -24,7 +24,7 @@ object frmImportacao: TfrmImportacao
     BevelOuter = bvNone
     TabOrder = 0
     object sbtCaminhoArquivo: TSpeedButton
-      Left = 335
+      Left = 331
       Top = 25
       Width = 23
       Height = 21

@@ -47,6 +47,7 @@ type
     function GetValorVencimento: Double;
     function GetValorRateioServices: Double;
     function GetValorRateioCartorio: Double;
+    function GetValorContasaPagar: Double;
   end;
 
   TListaRegistros = class(TObjectList<TRegistro>);
@@ -323,6 +324,7 @@ begin
         FRegistro := ListaRegistro[I];
         PopularContasaReceber(CRE);
         CRE.Post;
+        AtualizarRegistro(FRegistro.ID, CRE.Codigo);
       end;
       FFinanceiro.Commit;
     finally
@@ -369,19 +371,21 @@ end;
 procedure TImportadorCRE.PopularContasaReceber(ContasaReceber :IContasaReceber);
 begin
   ContasaReceber.Cliente               := FRegistro.Convenio;
+  ContasaReceber.Estabelecimento       := '0001';//Preciso mesmo disso?
   //ContasaReceber.CodigoCliente         := '';
   ContasaReceber.Documento             := FRegistro.Protocolo;
-  ContasaReceber.TipoGeracao           := 'M';
+  ContasaReceber.TipoGeracao           := 'C'; //Aparentemente se for Cargas, não é possível editar no AG...
   ContasaReceber.Emissao               := FRegistro.DataCadastro;
-  ContasaReceber.ISS                   := 0;
-  ContasaReceber.IRRF                  := 0;
-  ContasaReceber.INSS                  := 0;
-  ContasaReceber.PIS                   := 0;
-  ContasaReceber.COFINS                := 0;
-  ContasaReceber.CSLL                  := 0;
+//  ContasaReceber.ISS                   := 0;
+//  ContasaReceber.IRRF                  := 0;
+//  ContasaReceber.INSS                  := 0;
+//  ContasaReceber.PIS                   := 0;
+//  ContasaReceber.COFINS                := 0;
+//  ContasaReceber.CSLL                  := 0;
   ContasaReceber.ExportaAC             := 0;
   ContasaReceber.Obs                   := '';
   ContasaReceber.MesAno                := FormatDateTime('mmaaaa', FRegistro.DataCadastro);
+//  ContasaReceber.IDWS                  := FRegistro.Protocolo; //Atualizar AGLib urgente...
   PopularVencimentosaReceber(ContasaReceber.VencimentosaReceber);
   PopularServicosaReceber(ContasaReceber.ServicosaReceber);
   PopularRateiosaReceber(ContasaReceber.RateiosaReceber);
@@ -392,15 +396,16 @@ begin
   Vencimentos.Append;
   Vencimentos.Vencimento := FRegistro.DataCadastro;
   Vencimentos.Valor      := FRegistro.GetValorVencimento;
-  Vencimentos.AgenteCobrador := '';//
+  Vencimentos.AgenteCobrador := '0001';//
+  Vencimentos.TipoDocumento := '001';//
   Vencimentos.Post;
 end;
 
 procedure TImportadorCRE.PopularServicosaReceber(Servicos: IServicosaReceber);
 begin
   Servicos.Append;
-  Servicos.Servico := FRegistro.SER_Codigo;
-  Servicos.Modalidade := FRegistro.MDS_Codigo;
+  Servicos.Servico := '0001';//FRegistro.SER_Codigo;
+  Servicos.Modalidade := '01'; //FRegistro.MDS_Codigo;
   Servicos.Valor := FRegistro.GetValorVencimento;
   Servicos.Post;
 //  PopularComissionadosaReceber(Servicos.ComissionadosServicosaReceber);
@@ -429,8 +434,17 @@ begin
   Rateios.CentroDeResultados := FDadosCartorio.CRS_Codigo;
   Rateios.Receita            := FDadosCartorio.CRD_Codigo;
   Rateios.Observacao         := 'Rateio referente ao estabelecimento Cartório Ximenes';
-  Rateios.Valor              := FRegistro.GetValorRateioCartorio;//TO-DO - Valor do rateio;
+  Rateios.Valor              := FRegistro.GetValorRateioCartorio + FRegistro.GetValorContasaPagar;//TO-DO - Valor do rateio;
   Rateios.Post;
+
+//Terceiro Rateio = CPG
+//  Rateios.Append;
+//  Rateios.Estabelecimento    := FDadosCartorio.EST_Codigo;
+//  Rateios.CentroDeResultados := FDadosCartorio.CRS_Codigo;
+//  Rateios.Receita            := FDadosCartorio.CRD_Codigo;
+//  Rateios.Observacao         := 'Rateio referente ao estabelecimento Cartório Ximenes';
+//  Rateios.Valor              := FRegistro.GetValorRateioCartorio;//TO-DO - Valor do rateio;
+//  Rateios.Post;
 
   //TO-DO - Falta o rateio do CPG - Perguntar ao Samuel.
 end;
@@ -459,6 +473,11 @@ begin
   Result := VlrXimenesAut + VlrXimenesRec;
 end;
 
+function TRegistro.GetValorContasaPagar: Double;
+begin
+  Result := Despachante + Distribuidor + VlrCartorio;
+end;
+
 function TRegistro.GetValorRateioServices: Double;
 begin
   Result := VlrXimenesGestao;
@@ -466,7 +485,7 @@ end;
 
 function TRegistro.GetValorVencimento: Double;
 begin
-  Result := Despachante + Distribuidor + VlrCartorio + VlrXimenes;
+  Result := GetValorContasaPagar + GetValorRateioServices + GetValorRateioCartorio;
 end;
 
 class procedure TImportador.ImportarArquivo(const cEMP_Codigo, cCaminhoArquivo: String);

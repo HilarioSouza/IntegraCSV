@@ -66,7 +66,7 @@ object frmImportacao: TfrmImportacao
     object dcbEMP: TDBLookupComboBox
       Left = 364
       Top = 25
-      Width = 145
+      Width = 229
       Height = 21
       KeyField = 'CODIGO'
       ListField = 'NOME'
@@ -81,7 +81,7 @@ object frmImportacao: TfrmImportacao
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 3
-      object PageControl1: TPageControl
+      object pgcIMP: TPageControl
         Left = 0
         Top = 0
         Width = 795
@@ -90,7 +90,7 @@ object frmImportacao: TfrmImportacao
         Align = alClient
         TabOrder = 0
         object tshIMP: TTabSheet
-          Caption = 'tshIMP'
+          Caption = 'Importa'#231#245'es'
           object dgrIMP: TDBGrid
             Left = 0
             Top = 0
@@ -98,24 +98,6 @@ object frmImportacao: TfrmImportacao
             Height = 475
             Align = alClient
             DataSource = ddsIMP
-            TabOrder = 0
-            TitleFont.Charset = DEFAULT_CHARSET
-            TitleFont.Color = clWindowText
-            TitleFont.Height = -11
-            TitleFont.Name = 'Tahoma'
-            TitleFont.Style = []
-          end
-        end
-        object tshREG: TTabSheet
-          Caption = 'tshREG'
-          ImageIndex = 1
-          object dgrREG: TDBGrid
-            Left = 0
-            Top = 0
-            Width = 787
-            Height = 475
-            Align = alClient
-            DataSource = ddsREG
             TabOrder = 0
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
@@ -165,18 +147,25 @@ object frmImportacao: TfrmImportacao
       'select * from imp')
     Left = 712
     Top = 24
-  end
-  object ddsREG: TDataSource
-    DataSet = fqrREG
-    Left = 576
-    Top = 32
-  end
-  object fqrREG: TFDQuery
-    Connection = dmConnect.fdConn
-    SQL.Strings = (
-      'select * from reg')
-    Left = 584
-    Top = 40
+    object fqrIMPEMP_CODIGO: TStringField
+      DisplayLabel = 'Empresa'
+      FieldName = 'EMP_CODIGO'
+      Origin = 'EMP_CODIGO'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+      Size = 4
+    end
+    object fqrIMPID: TIntegerField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object fqrIMPDATA: TDateField
+      DisplayLabel = 'Data'
+      FieldName = 'DATA'
+      Origin = '"DATA"'
+    end
   end
   object fqrEMP: TFDQuery
     Connection = dmConnect.fdConn
