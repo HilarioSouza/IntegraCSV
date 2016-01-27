@@ -56,7 +56,7 @@ object frmImportacao: TfrmImportacao
     end
     object btnImportar: TButton
       Left = 16
-      Top = 56
+      Top = 52
       Width = 75
       Height = 25
       Caption = 'Importar'

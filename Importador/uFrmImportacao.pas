@@ -57,7 +57,7 @@ uses
 
 procedure TfrmImportacao.btnImportarClick(Sender: TObject);
 begin
-  if dcbEMP.KeyValue = null then
+  if (dcbEMP.KeyValue = null) or (dcbEMP.KeyValue = '') then
   begin
     ShowMessage('Por favor selecione uma Empresa');
     TControlUtils.TryFocus(dcbEMP);

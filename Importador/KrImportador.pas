@@ -145,6 +145,8 @@ begin
   ArquivoAberto := False;
   if (Filename = '') then
     raise Exception.Create('Arquivo não informado. Por favor informe o caminho do arquivo.');
+  if (not FileExists(Filename)) then
+    raise Exception.Create('Arquivo não encontrado. Por favor verifique o caminho do arquivo.');
   AssignFile(Arquivo, FileName);
   try
     try
@@ -276,13 +278,18 @@ function TImportadorBase.PopularFinanceiroAG: IFinanceiro;
 var
   Query: TFDQuery;
 begin
-  Query := NewQuery('SELECT * FROM CFG WHERE CFG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString);
-  Query.Open;
-  FFinanceiro.DriverNameBanco := 'INTRBASE';
-  FFinanceiro.UsuarioBanco := Query.FieldByName('USUARIO').AsString;
-  FFinanceiro.SenhaBanco := Query.FieldByName('SENHA').AsString;
-  FFinanceiro.Open(Query.FieldByName('CAMINHOBANCO').AsString);
-  FFinanceiro.Empresa := FEMP_Codigo;
+  try
+    Query := NewQuery('SELECT * FROM CFG WHERE CFG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString);
+    Query.Open;
+    FFinanceiro.DriverNameBanco := 'INTRBASE';
+    FFinanceiro.UsuarioBanco := Query.FieldByName('USUARIO').AsString;
+    FFinanceiro.SenhaBanco := Query.FieldByName('SENHA').AsString;
+    FFinanceiro.Open(Query.FieldByName('CAMINHOBANCO').AsString);
+    FFinanceiro.Empresa := FEMP_Codigo;
+  except
+    on E: Exception do
+      raise Exception.Create('Erro ao conectar com a DLL do AG. Exceção: ' + E.Message);
+  end;
 end;
 
 constructor TImportadorBase.Create(const EMP_Codigo: String; const IMP_ID: Integer);
