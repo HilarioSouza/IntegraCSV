@@ -418,7 +418,7 @@ begin
   ContasaReceber.Emissao               := FRegistro.DataCadastro;
   ContasaReceber.Obs                   := 'Importação via arquivo Ximenes. Protocolo: ' + FRegistro.Protocolo;
   ContasaReceber.MesAno                := FormatDateTime('mmaaaa', FRegistro.DataCadastro);
-//  ContasaReceber.IDWS                  := FRegistro.Protocolo; //Atualizar AGLib urgente...
+  ContasaReceber.IDWS                  := FRegistro.Protocolo; //Atualizar AGLib urgente...
   PopularVencimentosaReceber(ContasaReceber.VencimentosaReceber);
   PopularServicosaReceber(ContasaReceber.ServicosaReceber);
   PopularRateiosaReceber(ContasaReceber.RateiosaReceber);
