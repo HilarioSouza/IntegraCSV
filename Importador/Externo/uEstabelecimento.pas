@@ -3,12 +3,12 @@ unit uEstabelecimento;
 interface
 
 type
-  TIDEstabelecimento = (tidServices, tidCartorio);
+  TIDEstabelecimento = (tidServices, tidCartorio, tidContasaPagar);
 
   TEstabelecimento = class
   private
     FEST_Codigo,
-    FEMP_Codigo: String;
+    FEMP_Codigo,
     FCRS_Codigo,
     FCRD_Codigo: String;
     FTipoEst: TIDEstabelecimento;
@@ -22,6 +22,15 @@ type
     property CRS_Codigo: String read FCRS_Codigo;
     property CRD_Codigo: String read FCRD_Codigo;
     property TipoEST: TIDEstabelecimento read FTipoEst;
+  end;
+
+  TEstabelecimentoContasaPagar = class(TEstabelecimento)
+  private
+    FFRN_Codigo: String;
+    procedure PopularDadosEstabelecimento;
+  public
+    function GetSQLContasaPagar: String;
+    property FRN_Codigo: String read FFRN_Codigo;
   end;
 
 implementation
@@ -56,13 +65,35 @@ begin
     tidServices: SQL := GetSQLServices;
     tidCartorio: SQL := GetSQLCartorio;
   else
-    raise Exception.Create('Tipo de estabelecimento inválido.');  
+    raise Exception.Create('Tipo de estabelecimento inválido.');
   end;
   Query := NewQuery(SQL);
   Query.Open;
   FEST_Codigo := Query.FieldByName('EST').AsString;
   FCRD_Codigo := Query.FieldByName('CRD').AsString;
   FCRS_Codigo := Query.FieldByName('CRS').AsString;
+  Query.Close;
+end;
+
+{ TEstabelecimentoContasaPagar }
+
+function TEstabelecimentoContasaPagar.GetSQLContasaPagar: String;
+begin
+  Result := ' select CPG_EST as EST, CPG_CRD as CRD, CPG_CRS as CRS, CPG_FRN_CNPJ as FRN from EMP where EMP.Codigo = ' + FEMP_Codigo.QuotedString;
+end;
+
+procedure TEstabelecimentoContasaPagar.PopularDadosEstabelecimento;
+var
+  Query: TFDQuery;
+  SQL: String;
+begin
+  SQL := GetSQLContasaPagar;
+  Query := NewQuery(SQL);
+  Query.Open;
+  FEST_Codigo := Query.FieldByName('EST').AsString;
+  FCRD_Codigo := Query.FieldByName('CRD').AsString;
+  FCRS_Codigo := Query.FieldByName('CRS').AsString;
+  FCRS_Codigo := Query.FieldByName('FRN').AsString;
   Query.Close;
 end;
 

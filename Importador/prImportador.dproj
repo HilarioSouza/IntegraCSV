@@ -129,6 +129,8 @@
         </DCCReference>
         <DCCReference Include="Externo\uDBUtils.pas"/>
         <DCCReference Include="Externo\uEstabelecimento.pas"/>
+        <DCCReference Include="uAuditoria.pas"/>
+        <DCCReference Include="Externo\uLogger.pas"/>
         <None Include="Dados\Update.sql"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
@@ -164,6 +166,12 @@
                 <DeployFile LocalName="Dados\Update.sql" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\ImportadorBin\bin\prImportador.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>prImportador.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

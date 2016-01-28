@@ -21,7 +21,9 @@ uses
   IntfFinanceiro in 'Externo\IntfFinanceiro.pas',
   uFrmPreferencias in 'uFrmPreferencias.pas' {frmPreferencias},
   uDBUtils in 'Externo\uDBUtils.pas',
-  uEstabelecimento in 'Externo\uEstabelecimento.pas';
+  uEstabelecimento in 'Externo\uEstabelecimento.pas',
+  uAuditoria in 'uAuditoria.pas',
+  uLogger in 'Externo\uLogger.pas';
 
 {$R *.res}
 

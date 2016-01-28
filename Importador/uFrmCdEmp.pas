@@ -16,14 +16,14 @@ type
     qryMainNOME: TStringField;
     edtNome: TDBEdit;
     lblNome: TLabel;
-    GroupBox1: TGroupBox;
+    gbxCartorioXimenes: TGroupBox;
     Label8: TLabel;
     Label9: TLabel;
     Label10: TLabel;
     DBEdit2: TDBEdit;
     DBEdit3: TDBEdit;
     DBEdit4: TDBEdit;
-    GroupBox2: TGroupBox;
+    gbxXimenesServices: TGroupBox;
     detReceita: TDBEdit;
     Label7: TLabel;
     detCentroResultados: TDBEdit;
@@ -36,6 +36,22 @@ type
     qryMainSERVICESEST: TStringField;
     qryMainSERVICESCRD: TStringField;
     qryMainSERVICESCRS: TStringField;
+    gbxContasaPagar: TGroupBox;
+    Label3: TLabel;
+    DBEdit1: TDBEdit;
+    Label4: TLabel;
+    DBEdit5: TDBEdit;
+    Label11: TLabel;
+    DBEdit6: TDBEdit;
+    DBEdit7: TDBEdit;
+    qryMainCPG_EST: TStringField;
+    qryMainCPG_CRD: TStringField;
+    qryMainCPG_CRS: TStringField;
+    qryMainVDR_COB_CODIGO: TStringField;
+    qryMainSER_CODIGO: TStringField;
+    qryMainVDR_TDC_CODIGO: TStringField;
+    qryMainMDS_CODIGO: TStringField;
+    qryMainCPG_FRN_CNPJ: TStringField;
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
