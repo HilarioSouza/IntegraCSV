@@ -131,6 +131,10 @@
         <DCCReference Include="Externo\uEstabelecimento.pas"/>
         <DCCReference Include="uAuditoria.pas"/>
         <DCCReference Include="Externo\uLogger.pas"/>
+        <DCCReference Include="uFrmLog.pas">
+            <Form>frmLog</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <None Include="Dados\Update.sql"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

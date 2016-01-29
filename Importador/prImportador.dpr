@@ -23,7 +23,8 @@ uses
   uDBUtils in 'Externo\uDBUtils.pas',
   uEstabelecimento in 'Externo\uEstabelecimento.pas',
   uAuditoria in 'uAuditoria.pas',
-  uLogger in 'Externo\uLogger.pas';
+  uLogger in 'Externo\uLogger.pas',
+  uFrmLog in 'uFrmLog.pas' {frmLog};
 
 {$R *.res}
 
@@ -31,5 +32,6 @@ begin
   Application.Initialize;
   Application.CreateForm(TdmConnect, dmConnect);
   Application.CreateForm(TfrmMain, frmMain);
+  Application.CreateForm(TfrmLog, frmLog);
   Application.Run;
 end.

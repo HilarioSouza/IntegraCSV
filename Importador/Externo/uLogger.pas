@@ -20,6 +20,7 @@ type
 
   TLoggerImport = class(TLogger)
     procedure Log(Registro: TRegistro; const Msg: String); overload;
+    procedure ShowLog;
   end;
 
 function GetLogger: TLoggerImport;
@@ -27,7 +28,7 @@ function GetLogger: TLoggerImport;
 implementation
 
 uses
-  System.SysUtils;
+  System.SysUtils, uFrmLog;
 
 var
   Logger: TLoggerImport;
@@ -80,6 +81,19 @@ end;
 procedure TLoggerImport.Log(Registro: TRegistro; const Msg: String);
 begin
   Self.Log('Linha : ' + Registro.NumLinha.ToString + ' Protocolo: ' + Registro.Protocolo + ' - ' + Msg);
+end;
+
+procedure TLoggerImport.ShowLog;
+var
+  FrmLogImport: TFrmLog;
+begin
+  try
+    FrmLogImport := TfrmLog.Create(nil);
+    FrmLogImport.Text := Self.GetLog;
+    FrmLogImport.ShowModal;
+  finally
+    FreeAndNil(FrmLogImport);
+  end;
 end;
 
 initialization

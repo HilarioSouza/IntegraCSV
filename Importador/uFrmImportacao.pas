@@ -68,7 +68,7 @@ begin
     AtualizarQueries;
   end;
   if GetLogger.HasLog then
-    ShowMessage(GetLogger.GetLog); //Alterar para um form com memo.
+    GetLogger.ShowLog;
 end;
 
 procedure TfrmImportacao.sbtCaminhoArquivoClick(Sender: TObject);
