@@ -51,7 +51,7 @@ var
 implementation
 
 uses
-  KrImportador, uUtils, uMain, uFuncoesIni, uDBUtils, uMensagem;
+  KrImportador, uUtils, uMain, uFuncoesIni, uDBUtils, uMensagem, uLogger;
 
 {$R *.dfm}
 
@@ -67,6 +67,8 @@ begin
     TImportador.ImportarArquivo(dcbEMP.KeyValue, edtCaminhoArquivo.Text);
     AtualizarQueries;
   end;
+  if GetLogger.HasLog then
+    ShowMessage(GetLogger.GetLog); //Alterar para um form com memo.
 end;
 
 procedure TfrmImportacao.sbtCaminhoArquivoClick(Sender: TObject);

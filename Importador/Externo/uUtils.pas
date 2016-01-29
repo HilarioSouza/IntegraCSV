@@ -13,6 +13,7 @@ type
     class function TrocaVirgPPto(Valor: string): String;
     class function LPad(S: string; Ch: char; Len: Integer): string;
     class function Split(const aStr: string; aSeparator: char = '|'): TStringDynArray;
+    class function GetOnlyNumbers(const Text: String): String;
   end;
 
   TUtilArquivo = class
@@ -64,6 +65,20 @@ begin
     end;
   end;
   Result := Valor;
+end;
+
+class function TUtil.GetOnlyNumbers(const Text: String): String;
+var
+  I: Integer;
+begin
+  Result := '';
+  if Text.IsEmpty then
+    Exit;
+  for I := High(Text) to Low(Text) do
+  begin
+    if CharInSet(Text[I],['1'..'9']) then
+      Result := Result + Text[I];
+  end;
 end;
 
 class function TUtil.IIf(Expressao: Variant;

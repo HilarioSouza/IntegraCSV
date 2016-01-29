@@ -47,6 +47,7 @@ type
     AgenteCobradorAG : String;
     TipoDocumentoAG  : String;
     Linha            : String;
+    NumLinha         : Integer;
     function GetValorVencimento: Double;
     function GetValorRateioServices: Double;
     function GetValorRateioCartorio: Double;
@@ -168,6 +169,7 @@ begin
         Registro := TRegistro.Create;
         Lista.Add(TRegistro(Registro));
         PopularDadosRegistro(Registro);
+        Registro.NumLinha := Lista.Count;
       end;
       GravarRegistrosNoBanco(Lista);
     finally
@@ -226,10 +228,10 @@ procedure TLeitorCSV.GravarRegistro(Registro: TRegistro);
 const
   SQL = ' INSERT INTO REG (EMP_Codigo, ID, Protocolo, DataCadastro, ValorXimenes, Despachante, Distribuidor, ValorCartorio, DAJ, '+
         ' ValorTotalCustas, Convenio, CustasFechadas, ValorXimenesGestao, ValorXimenesAut, ValorXimenesRec, '+
-        ' ValorXimenesOutros, Representante, IMP_ID) '+
+        ' ValorXimenesOutros, Representante, IMP_ID, NumLinha) '+
         ' values (:EMP_Codigo, :ID, :Protocolo, :DataCadastro, :VlrXimenes, :Despachante, :Distribuidor, :VlrCartorio, :DAJ, '+
         ' :VlrTotalCustas, :Convenio, :CustasFechadas, :VlrXimenesGestao, :VlrXimenesAut, :VlrXimenesRec, '+
-        ' :VlrXimenesOutros, :Representante, :IMP_ID)';
+        ' :VlrXimenesOutros, :Representante, :IMP_ID, :NumLinha)';
 var
   Query: TFDQuery;
 begin
@@ -253,6 +255,7 @@ begin
   Query.ParamByName('VlrXimenesRec').AsFloat    := Registro.VlrXimenesRec;
   Query.ParamByName('VlrXimenesOutros').AsFloat := Registro.VlrXimenesOutros;
   Query.ParamByName('Representante').AsString   := Registro.Representante;
+  Query.ParamByName('NumLinha').AsInteger       := Registro.NumLinha;
   Query.ExecSQL;
 end;
 
@@ -271,7 +274,7 @@ begin
   Registro.VlrCartorio      := StrToFloatDef(ArrayDados[IdxVlrCartorio], 0);
   Registro.DAJ              := StrToFloatDef(ArrayDados[IdxDAJ], 0);
   Registro.VlrTotalCustas   := StrToFloatDef(ArrayDados[IdxVlrTotalCustas], 0);
-  Registro.Convenio         := ArrayDados[IdxConvenio];
+  Registro.Convenio         := TUtil.GetOnlyNumbers(ArrayDados[IdxConvenio]);
   Registro.CustasFechadas   := ArrayDados[IdxCustasFechadas] = 'SIM';
   Registro.VlrXimenesGestao := StrToFloatDef(ArrayDados[IdxVlrXimenesGestao], 0);
   Registro.VlrXimenesAut    := StrToFloatDef(ArrayDados[IdxVlrXimenesAut], 0);
@@ -309,6 +312,8 @@ procedure TImportadorCRE.AtualizarRegistro(const CRE_Codigo: String);
 var
   Query: TFDQuery;
 begin
+  if CRE_Codigo.IsEmpty then
+    Exit;
   Query := NewQuery('UPDATE REG SET REG.CRE_CODIGO = ' + CRE_Codigo.QuotedString +
                     ' WHERE REG.ID = ' + FRegistro.ID.ToString +
                     ' AND REG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString);
@@ -347,16 +352,22 @@ begin
         CRE.Append;
         FRegistro := ListaRegistro[I];
         TAuditor.GravarAuditoria(FRegistro);
-        PopularContasaReceber(CRE);
         try
+          PopularContasaReceber(CRE);
           CRE.Post;
         except
           on E: Exception do
-            TLogger.Log(FRegistro);
+          begin
+            CRE.Cancel;
+            GetLogger.Log(FRegistro, E.Message);
+          end;
         end;
         AtualizarRegistro(CRE.Codigo);
       end;
-      FFinanceiro.Commit;
+      if GetLogger.HasLog then
+        FFinanceiro.Rollback
+      else
+        FFinanceiro.Commit;
     finally
       FreeAndNil(ListaRegistro);
     end;
@@ -403,8 +414,9 @@ begin
     Registro.Representante    := Query.FieldByName('Representante').AsString;
     Registro.ServicoAG        := Query.FieldByName('SER_CODIGO').AsString;
     Registro.AgenteCobradorAG := Query.FieldByName('VDR_COB_CODIGO').AsString;
-    registro.TipoDocumentoAG  := Query.FieldByName('VDR_TDC_CODIGO').AsString;
-    registro.ModalidadeAG     := Query.FieldByName('MDS_CODIGO').AsString;
+    Registro.TipoDocumentoAG  := Query.FieldByName('VDR_TDC_CODIGO').AsString;
+    Registro.ModalidadeAG     := Query.FieldByName('MDS_CODIGO').AsString;
+    Registro.NumLinha         := Query.FieldByName('NumLinha').AsInteger;
     Query.Next;
   end;
 end;
@@ -515,13 +527,20 @@ var
   Leitor: ILeitor;
   ImportadorCRE: TImportadorCRE;
 begin
+  GetLogger.Clear;
   Leitor := TLeitorCSV.Create(cEMP_Codigo);
   try
     TDBUtils.MainServer.StartTransaction;
     Leitor.LerArquivo(cCaminhoArquivo);
     ImportadorCRE := TImportadorCRE.Create(cEMP_Codigo, Leitor.IMP_ID);
     ImportadorCRE.GravarContasaReceber;
-    TDBUtils.MainServer.Commit;
+    if GetLogger.HasLog then
+    begin
+      TDBUtils.MainServer.Rollback;
+      GetLogger.SaveLog(gsAppPath + gsAppName + '.log');
+    end
+    else
+     TDBUtils.MainServer.Commit;
   except
     on E: Exception do
     begin
