@@ -13,25 +13,26 @@ uses
 
 type
   TfrmImportacao = class(TfrmStandard)
-    Panel1: TPanel;
-    edtCaminhoArquivo: TLabeledEdit;
-    sbtCaminhoArquivo: TSpeedButton;
-    btnImportar: TButton;
+    pnlMain: TPanel;
     ddsIMP: TDataSource;
     fqrIMP: TFDQuery;
-    Panel2: TPanel;
+    pnlButtons: TPanel;
     btnDesfazerIMP: TButton;
     btnSair: TButton;
-    dcbEMP: TDBLookupComboBox;
     fqrEMP: TFDQuery;
     ddsEMP: TDataSource;
-    Panel3: TPanel;
+    pnlGrid: TPanel;
     pgcIMP: TPageControl;
     tshIMP: TTabSheet;
     dgrIMP: TDBGrid;
     fqrIMPEMP_CODIGO: TStringField;
     fqrIMPID: TIntegerField;
     fqrIMPDATA: TDateField;
+    pnlArquivo: TPanel;
+    btnImportar: TButton;
+    edtCaminhoArquivo: TLabeledEdit;
+    sbtCaminhoArquivo: TSpeedButton;
+    dcbEMP: TDBLookupComboBox;
     procedure sbtCaminhoArquivoClick(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
@@ -56,6 +57,8 @@ uses
 {$R *.dfm}
 
 procedure TfrmImportacao.btnImportarClick(Sender: TObject);
+var
+  Importador: TImportador;
 begin
   if (dcbEMP.KeyValue = null) or (dcbEMP.KeyValue = '') then
   begin
@@ -64,7 +67,12 @@ begin
   end
   else
   begin
-    TImportador.ImportarArquivo(dcbEMP.KeyValue, edtCaminhoArquivo.Text);
+    Importador := TImportador.Create(dcbEMP.KeyValue);
+    try
+      Importador.ImportarArquivo(dcbEMP.KeyValue, edtCaminhoArquivo.Text);
+    finally
+      FreeAndNil(Importador);
+    end;
     AtualizarQueries;
   end;
   if GetLogger.HasLog then

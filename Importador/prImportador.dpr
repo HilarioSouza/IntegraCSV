@@ -24,7 +24,10 @@ uses
   uEstabelecimento in 'Externo\uEstabelecimento.pas',
   uAuditoria in 'uAuditoria.pas',
   uLogger in 'Externo\uLogger.pas',
-  uFrmLog in 'uFrmLog.pas' {frmLog};
+  uFrmLog in 'uFrmLog.pas' {frmLog},
+  uValidador in 'uValidador.pas',
+  Vcl.Themes,
+  Vcl.Styles;
 
 {$R *.res}
 

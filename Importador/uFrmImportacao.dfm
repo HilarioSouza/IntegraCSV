@@ -2,8 +2,8 @@ object frmImportacao: TfrmImportacao
   Left = 0
   Top = 0
   Caption = 'Importador'
-  ClientHeight = 597
-  ClientWidth = 882
+  ClientHeight = 689
+  ClientWidth = 1105
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,77 +15,29 @@ object frmImportacao: TfrmImportacao
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Panel1: TPanel
+  object pnlMain: TPanel
     Left = 0
     Top = 0
-    Width = 795
-    Height = 597
+    Width = 1018
+    Height = 689
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    object sbtCaminhoArquivo: TSpeedButton
-      Left = 331
-      Top = 25
-      Width = 23
-      Height = 21
-      Glyph.Data = {
-        76010000424D7601000000000000760000002800000020000000100000000100
-        04000000000000010000120B0000120B00001000000000000000000000000000
-        800000800000008080008000000080008000808000007F7F7F00BFBFBF000000
-        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00555555555555
-        555555FFFFFFFFFF55555000000000055555577777777775FFFF00B8B8B8B8B0
-        0000775F5555555777770B0B8B8B8B8B0FF07F75F555555575F70FB0B8B8B8B8
-        B0F07F575FFFFFFFF7F70BFB0000000000F07F557777777777570FBFBF0FFFFF
-        FFF07F55557F5FFFFFF70BFBFB0F000000F07F55557F777777570FBFBF0FFFFF
-        FFF075F5557F5FFFFFF750FBFB0F000000F0575FFF7F777777575700000FFFFF
-        FFF05577777F5FF55FF75555550F00FF00005555557F775577775555550FFFFF
-        0F055555557F55557F755555550FFFFF00555555557FFFFF7755555555000000
-        0555555555777777755555555555555555555555555555555555}
-      NumGlyphs = 2
-      OnClick = sbtCaminhoArquivoClick
-    end
-    object edtCaminhoArquivo: TLabeledEdit
-      Left = 16
-      Top = 25
-      Width = 313
-      Height = 21
-      EditLabel.Width = 99
-      EditLabel.Height = 13
-      EditLabel.Caption = 'Caminho do arquivo:'
-      TabOrder = 0
-    end
-    object btnImportar: TButton
-      Left = 16
-      Top = 52
-      Width = 75
-      Height = 25
-      Caption = 'Importar'
-      TabOrder = 1
-      OnClick = btnImportarClick
-    end
-    object dcbEMP: TDBLookupComboBox
-      Left = 364
-      Top = 25
-      Width = 229
-      Height = 21
-      KeyField = 'CODIGO'
-      ListField = 'NOME'
-      ListSource = ddsEMP
-      TabOrder = 2
-    end
-    object Panel3: TPanel
+    object pnlGrid: TPanel
       Left = 0
-      Top = 94
-      Width = 795
-      Height = 503
-      Align = alBottom
+      Top = 78
+      Width = 1018
+      Height = 611
+      Align = alClient
       BevelOuter = bvNone
-      TabOrder = 3
+      TabOrder = 0
+      ExplicitTop = 68
+      ExplicitHeight = 621
       object pgcIMP: TPageControl
         Left = 0
         Top = 0
-        Width = 795
-        Height = 503
+        Width = 1018
+        Height = 611
         ActivePage = tshIMP
         Align = alClient
         TabOrder = 0
@@ -94,8 +46,8 @@ object frmImportacao: TfrmImportacao
           object dgrIMP: TDBGrid
             Left = 0
             Top = 0
-            Width = 787
-            Height = 475
+            Width = 1010
+            Height = 583
             Align = alClient
             DataSource = ddsIMP
             TabOrder = 0
@@ -108,18 +60,77 @@ object frmImportacao: TfrmImportacao
         end
       end
     end
+    object pnlArquivo: TPanel
+      Left = 0
+      Top = 0
+      Width = 1018
+      Height = 78
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 1
+      object sbtCaminhoArquivo: TSpeedButton
+        Left = 315
+        Top = 16
+        Width = 23
+        Height = 21
+        Glyph.Data = {
+          76010000424D7601000000000000760000002800000020000000100000000100
+          04000000000000010000120B0000120B00001000000000000000000000000000
+          800000800000008080008000000080008000808000007F7F7F00BFBFBF000000
+          FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00555555555555
+          555555FFFFFFFFFF55555000000000055555577777777775FFFF00B8B8B8B8B0
+          0000775F5555555777770B0B8B8B8B8B0FF07F75F555555575F70FB0B8B8B8B8
+          B0F07F575FFFFFFFF7F70BFB0000000000F07F557777777777570FBFBF0FFFFF
+          FFF07F55557F5FFFFFF70BFBFB0F000000F07F55557F777777570FBFBF0FFFFF
+          FFF075F5557F5FFFFFF750FBFB0F000000F0575FFF7F777777575700000FFFFF
+          FFF05577777F5FF55FF75555550F00FF00005555557F775577775555550FFFFF
+          0F055555557F55557F755555550FFFFF00555555557FFFFF7755555555000000
+          0555555555777777755555555555555555555555555555555555}
+        NumGlyphs = 2
+        OnClick = sbtCaminhoArquivoClick
+      end
+      object btnImportar: TButton
+        Left = 0
+        Top = 43
+        Width = 75
+        Height = 25
+        Caption = 'Importar'
+        TabOrder = 0
+        OnClick = btnImportarClick
+      end
+      object edtCaminhoArquivo: TLabeledEdit
+        Left = 0
+        Top = 16
+        Width = 313
+        Height = 21
+        EditLabel.Width = 99
+        EditLabel.Height = 13
+        EditLabel.Caption = 'Caminho do arquivo:'
+        TabOrder = 1
+      end
+      object dcbEMP: TDBLookupComboBox
+        Left = 348
+        Top = 16
+        Width = 229
+        Height = 21
+        KeyField = 'CODIGO'
+        ListField = 'NOME'
+        ListSource = ddsEMP
+        TabOrder = 2
+      end
+    end
   end
-  object Panel2: TPanel
-    Left = 795
+  object pnlButtons: TPanel
+    Left = 1018
     Top = 0
     Width = 87
-    Height = 597
+    Height = 689
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 1
     object btnDesfazerIMP: TButton
       Left = 8
-      Top = 127
+      Top = 102
       Width = 75
       Height = 25
       Caption = 'Desfazer'
@@ -128,7 +139,7 @@ object frmImportacao: TfrmImportacao
     end
     object btnSair: TButton
       Left = 8
-      Top = 160
+      Top = 135
       Width = 75
       Height = 25
       Caption = 'Sair'

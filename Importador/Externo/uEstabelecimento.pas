@@ -12,7 +12,7 @@ type
     FCRS_Codigo,
     FCRD_Codigo: String;
     FTipoEst: TIDEstabelecimento;
-    procedure PopularDadosEstabelecimento;
+    procedure PopularDadosEstabelecimento; virtual;
     function GetSQLCartorio: String;
     function GetSQLServices: String;
   public
@@ -27,10 +27,20 @@ type
   TEstabelecimentoContasaPagar = class(TEstabelecimento)
   private
     FFRN_Codigo: String;
-    procedure PopularDadosEstabelecimento;
+    procedure PopularDadosEstabelecimento; override;
   public
     function GetSQLContasaPagar: String;
     property FRN_Codigo: String read FFRN_Codigo;
+  end;
+
+  TServico = class
+    SER_Codigo: String;
+    MDS_Codigo: String;
+  end;
+
+  TVencimentoCRE = class
+    COB_Codigo: String;
+    TDC_Codigo: String;
   end;
 
 implementation

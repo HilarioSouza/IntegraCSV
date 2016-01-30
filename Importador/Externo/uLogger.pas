@@ -67,8 +67,19 @@ begin
 end;
 
 procedure TLogger.SaveLog(const FileName: String);
+var
+  LogFile: TextFile;
 begin
-  FLista.SaveToFile(FileName);
+  Assign(LogFile, FileName);
+  try
+    if FileExists(FileName) then
+      Append(LogFile)
+    else
+      Reset(LogFile);
+    WriteLn(LogFile, FLIsta.Text);
+  finally
+    Close(LogFile);
+  end;
 end;
 
 function GetLogger: TLoggerImport;

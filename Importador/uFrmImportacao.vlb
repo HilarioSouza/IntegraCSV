@@ -1,13 +1,7 @@
-﻿[Panel1]
-Coordinates=10,10,55,58
-
-[edtCaminhoArquivo]
-Coordinates=75,10,127,58
-
-[]
-Coordinates=28,77,91,36
-
-[sbtCaminhoArquivo]
+﻿[]
 Coordinates=10,78,96,36
 Visible=True
+
+[pnlMain]
+Coordinates=10,10,55,58
 

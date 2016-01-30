@@ -30,10 +30,10 @@ type
     qryMainVDR_TDC_CODIGO: TStringField;
     qryMainMDS_CODIGO: TStringField;
     qryMainCPG_FRN_CNPJ: TStringField;
-    PageControl1: TPageControl;
-    TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
-    TabSheet3: TTabSheet;
+    pgcEmpresa: TPageControl;
+    tshContasaReceber: TTabSheet;
+    tshContasaPagar: TTabSheet;
+    tshServicos: TTabSheet;
     gbxXimenesServices: TGroupBox;
     Label7: TLabel;
     Label6: TLabel;
@@ -66,8 +66,11 @@ type
     lblModalidade: TLabel;
     lblTipoDoc: TLabel;
     lblAgenteCob: TLabel;
+    sptHeader: TSplitter;
     procedure FormCreate(Sender: TObject);
+    procedure btnSalvarClick(Sender: TObject);
   private
+    procedure ValidarEmpresa(ID: String);
     { Private declarations }
   public
     { Public declarations }
@@ -80,13 +83,27 @@ implementation
 
 {$R *.dfm}
 
-uses udmConnect, uMain;
+uses udmConnect, uMain, uUtils;
+
+procedure TfrmCdEmp.btnSalvarClick(Sender: TObject);
+begin
+  ValidarEmpresa(edtID.Text);
+  inherited;
+end;
 
 procedure TfrmCdEmp.FormCreate(Sender: TObject);
 begin
   inherited;
   fPrincipal := frmMain;
+end;
 
+procedure TfrmCdEmp.ValidarEmpresa(ID: String);
+begin
+  if ID.IsEmpty then
+  begin
+    TControlUtils.TryFocus(edtID);
+    raise Exception.Create('É necessário informar o código da Empresa cadastrada no Fortes Financeiro.');
+  end;
 end;
 
 end.

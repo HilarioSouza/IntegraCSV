@@ -13,6 +13,7 @@ type
     btnOk: TButton;
     procedure btnOkClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure pnlButtonsResize(Sender: TObject);
   private
     function GetText: String;
     procedure SetText(const Value: String);
@@ -44,6 +45,12 @@ end;
 function TfrmLog.GetText: String;
 begin
   Result := mmoLog.Text;
+end;
+
+procedure TfrmLog.pnlButtonsResize(Sender: TObject);
+begin
+  inherited;
+  btnOk.Left := Trunc((pnlButtons.Width / 2) + 40);
 end;
 
 procedure TfrmLog.SetText(const Value: String);

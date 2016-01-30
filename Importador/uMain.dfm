@@ -1,7 +1,6 @@
 object frmMain: TfrmMain
   Left = 192
   Top = 124
-  BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'Integra'#231#227'o AG'
   ClientHeight = 679
   ClientWidth = 1062

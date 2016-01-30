@@ -3,43 +3,48 @@ inherited frmCdEmp: TfrmCdEmp
   ClientHeight = 560
   ClientWidth = 1003
   ExplicitWidth = 1009
-  ExplicitHeight = 588
+  ExplicitHeight = 589
   PixelsPerInch = 96
   TextHeight = 13
   inherited pnCaptionTela: TPanel
     Width = 993
-    ExplicitWidth = 646
+    ExplicitWidth = 993
+    inherited Label1: TLabel
+      Width = 63
+      Caption = 'Empresas'
+      ExplicitWidth = 63
+    end
+    inherited Label2: TLabel
+      Width = 256
+      Caption = 'Dados de parametriza'#231#227'o com o Fortes Financeiro'
+      ExplicitWidth = 256
+    end
   end
   inherited pnTop: TPanel
     Width = 993
-    ExplicitWidth = 646
+    ExplicitWidth = 993
     inherited Panel1: TPanel
       Width = 993
-      ExplicitWidth = 646
-      ExplicitHeight = 32
+      ExplicitWidth = 993
     end
   end
   inherited pgCrud: TPageControl
     Width = 1003
     Height = 466
-    ExplicitTop = 94
-    ExplicitWidth = 656
-    ExplicitHeight = 371
+    ExplicitWidth = 1003
+    ExplicitHeight = 466
     inherited tsPsq: TTabSheet
-      ExplicitLeft = 4
-      ExplicitTop = 24
+      ExplicitTop = 27
       ExplicitWidth = 995
-      ExplicitHeight = 438
+      ExplicitHeight = 435
       inherited gridPsq: TDBGrid
         Width = 995
-        Height = 438
+        Height = 435
       end
     end
     inherited tsCad: TTabSheet
-      ExplicitLeft = 4
-      ExplicitTop = 24
-      ExplicitWidth = 648
-      ExplicitHeight = 343
+      ExplicitWidth = 995
+      ExplicitHeight = 435
       inherited lblCodigo: TLabel
         Width = 37
         Caption = 'C'#243'digo:'
@@ -51,6 +56,17 @@ inherited frmCdEmp: TfrmCdEmp
         Width = 31
         Height = 13
         Caption = 'Nome:'
+      end
+      object sptHeader: TSplitter [2]
+        Left = 0
+        Top = 0
+        Width = 995
+        Height = 50
+        Cursor = crVSplit
+        Align = alTop
+        Color = clBtnFace
+        ParentColor = False
+        ResizeStyle = rsNone
       end
       inherited edtID: TDBEdit
         DataField = 'CODIGO'
@@ -64,18 +80,16 @@ inherited frmCdEmp: TfrmCdEmp
         DataSource = dsDados
         TabOrder = 1
       end
-      object PageControl1: TPageControl
+      object pgcEmpresa: TPageControl
         Left = 0
-        Top = 56
+        Top = 50
         Width = 995
-        Height = 382
-        ActivePage = TabSheet2
-        Align = alBottom
+        Height = 385
+        ActivePage = tshContasaReceber
+        Align = alClient
         TabOrder = 2
-        object TabSheet1: TTabSheet
+        object tshContasaReceber: TTabSheet
           Caption = 'Contas a Receber'
-          ExplicitWidth = 285
-          ExplicitHeight = 165
           object gbxXimenesServices: TGroupBox
             Left = 3
             Top = 3
@@ -189,11 +203,10 @@ inherited frmCdEmp: TfrmCdEmp
             end
           end
         end
-        object TabSheet2: TTabSheet
+        object tshContasaPagar: TTabSheet
           Caption = 'Contas a Pagar'
           ImageIndex = 1
-          ExplicitTop = 0
-          ExplicitHeight = 285
+          ExplicitTop = 27
           object gbxContasaPagar: TGroupBox
             Left = 11
             Top = 3
@@ -239,7 +252,7 @@ inherited frmCdEmp: TfrmCdEmp
               TabOrder = 0
             end
             object detCRS: TDBEdit
-              Left = 3
+              Left = 8
               Top = 82
               Width = 145
               Height = 21
@@ -267,10 +280,10 @@ inherited frmCdEmp: TfrmCdEmp
             end
           end
         end
-        object TabSheet3: TTabSheet
+        object tshServicos: TTabSheet
           Caption = 'Servi'#231'os'
           ImageIndex = 2
-          ExplicitLeft = 3
+          ExplicitTop = 27
           object GroupBox1: TGroupBox
             Left = 3
             Top = 3

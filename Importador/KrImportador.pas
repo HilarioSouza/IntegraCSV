@@ -75,47 +75,77 @@ type
     class procedure DesfazerImportacao(const EMP_Codigo: String; const IMP_ID: Integer);
   end;
 
-  TImportadorBase = class
+  IMovimentoFinanceiro = Interface
+  ['{9CA44B6B-23D2-4D48-B7C2-183729DAD6CC}']
+    procedure PopularListaRegistro(ListaRegistro: TListaRegistros);
+    procedure Popular;
+    procedure Append;
+    Procedure Post;
+    procedure Cancel;
+    procedure SetRegistro(const Value: TRegistro);
+    procedure AtualizarRegistro(const Codigo: String);
+    function GetRegistro: TRegistro;
+    function GetCodigo: String;
+    //
+    property Registro: TRegistro read GetRegistro write SetRegistro;
+  end;
+
+  TImportadorBase = class(TClasseBase)
   private
-    FFinanceiro: IFinanceiro;
     FRegistro: TRegistro;
     FEMP_Codigo: String;
     FIMP_ID: Integer;
-    function PopularFinanceiroAG: IFinanceiro;
-    procedure PopularListaRegistro(ListaRegistro: TListaRegistros; IMP_ID: Integer);
+    procedure PopularListaRegistro(ListaRegistro: TListaRegistros);
+    function GetRegistro: TRegistro;
+    procedure SetRegistro(const Value: TRegistro);
   public
-    constructor Create(const EMP_Codigo: String; const IMP_ID: Integer);
+    constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
+    property Registro: TRegistro read GetRegistro write SetRegistro;
   end;
 
-  TImportadorCRE = class(TImportadorBase)
+  TImportadorCRE = class(TImportadorBase, IMovimentoFinanceiro)
   private
+    FContasaReceber: IContasaReceber;
     FDadosServices: TEstabelecimento;
     FDadosCartorio: TEstabelecimento;
-    procedure PopularContasaReceber(ContasaReceber: IContasaReceber);
     procedure PopularVencimentosaReceber(Vencimentos: IVencimentosaReceber);
     procedure PopularServicosaReceber(Servicos: IServicosaReceber);
     procedure PopularRateiosaReceber(Rateios: IRateiosaReceber);
     procedure PopularComissionadosaReceber(Comissionados: IComissionadosServicosaReceber);
-    procedure AtualizarRegistro(const CRE_Codigo: String);
+    procedure AtualizarRegistro(const Codigo: String);
+    procedure Popular;
+    procedure Append;
+    Procedure Post;
+    procedure Cancel;
   public
-    procedure GravarContasaReceber;
-    constructor Create(const EMP_Codigo: String; const IMP_ID: Integer);
+    constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
+    function GetCodigo: String;
   end;
 
-  TImportadorCPG = class(TImportadorBase)
+  TImportadorCPG = class(TImportadorBase, IMovimentoFinanceiro)
   private
-    FDadosEST: TEstabelecimento;
-    procedure PopularContasaPagar(ContasaPagar: IContasaPagar);
+    FContasaPagar: IContasaPagar;
+    FDadosEST: TEstabelecimentoContasaPagar;
+    procedure Popular;
+    procedure Append;
+    Procedure Post;
+    procedure Cancel;
     procedure PopularVencimentosaPagar(Vencimentos: IVencimentosaPagar);
-    procedure AtualizarRegistro(const CPG_Codigo: String);
+    procedure AtualizarRegistro(const Codigo: String);
   public
-    procedure GravarContasaPagar;
-    constructor Create(const EMP_Codigo: String; const IMP_ID: Integer);
+    constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
+    function GetCodigo: String;
   end;
 
   TImportador = class
+  private
+    FEmp_Codigo: String;
+    FFinanceiro: IFinanceiro;
+    procedure PopularFinanceiroAG;
   public
-    class procedure ImportarArquivo(const cEMP_Codigo, cCaminhoArquivo: String); static;
+    constructor Create(const EMP_Codigo: String);
+    procedure ImportarArquivo(const cEMP_Codigo, cCaminhoArquivo: String);
+    Procedure ImportarMovimento(Movimento: IMovimentoFinanceiro);
   end;
 
 implementation
@@ -169,7 +199,7 @@ begin
         Registro := TRegistro.Create;
         Lista.Add(TRegistro(Registro));
         PopularDadosRegistro(Registro);
-        Registro.NumLinha := Lista.Count;
+        Registro.NumLinha := Lista.Count + 1;
       end;
       GravarRegistrosNoBanco(Lista);
     finally
@@ -284,103 +314,53 @@ begin
   Registro.Linha            := LinhaRegistro;
 end;
 
-function TImportadorBase.PopularFinanceiroAG: IFinanceiro;
-var
-  Query: TFDQuery;
+function TImportadorBase.GetRegistro: TRegistro;
 begin
-  try
-    Query := NewQuery('SELECT * FROM CFG WHERE CFG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString);
-    Query.Open;
-    FFinanceiro.DriverNameBanco := 'INTRBASE';
-    FFinanceiro.UsuarioBanco := Query.FieldByName('USUARIO').AsString;
-    FFinanceiro.SenhaBanco := Query.FieldByName('SENHA').AsString;
-    FFinanceiro.Open(Query.FieldByName('CAMINHOBANCO').AsString);
-    FFinanceiro.Empresa := FEMP_Codigo;
-  except
-    on E: Exception do
-      raise Exception.Create('Erro ao conectar com a DLL do AG. Exceção: ' + E.Message);
-  end;
+  Result := FRegistro;
 end;
 
-constructor TImportadorBase.Create(const EMP_Codigo: String; const IMP_ID: Integer);
+constructor TImportadorBase.Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
 begin
   FEMP_Codigo := EMP_Codigo;
   FIMP_ID := IMP_ID;
 end;
 
-procedure TImportadorCRE.AtualizarRegistro(const CRE_Codigo: String);
+procedure TImportadorCRE.Append;
+begin
+  FContasaReceber.Append;
+end;
+
+procedure TImportadorCRE.AtualizarRegistro(const Codigo: String);
 var
   Query: TFDQuery;
 begin
-  if CRE_Codigo.IsEmpty then
+  if Codigo.IsEmpty then
     Exit;
-  Query := NewQuery('UPDATE REG SET REG.CRE_CODIGO = ' + CRE_Codigo.QuotedString +
+  Query := NewQuery('UPDATE REG SET REG.CRE_CODIGO = ' + Codigo.QuotedString +
                     ' WHERE REG.ID = ' + FRegistro.ID.ToString +
                     ' AND REG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString);
   Query.ExecSQL;
 end;
 
-constructor TImportadorCRE.Create(const EMP_Codigo: String;
-  const IMP_ID: Integer);
+procedure TImportadorCRE.Cancel;
+begin
+  FContasaReceber.Cancel;
+end;
+
+constructor TImportadorCRE.Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
 begin
   inherited;
   FDadosServices := TEstabelecimento.Create(FEMP_Codigo, tidServices);
   FDadosCartorio := TEstabelecimento.Create(FEMP_Codigo, tidCartorio);
+  FContasaReceber := Financeiro.GetContasaReceber;
 end;
 
-procedure TImportadorCRE.GravarContasaReceber;
-var
-  CRE: IContasaReceber;
-  ListaRegistro: TListaRegistros;
-  I: Integer;
+function TImportadorCRE.GetCodigo: String;
 begin
-  try
-    FFinanceiro := GetFinanceiro(gsAppPath);
-  except
-    on E: Exception do
-      raise Exception.Create(E.Message);
-  end;
-  PopularFinanceiroAG;
-  CRE := FFinanceiro.GetContasaReceber;
-  ListaRegistro := TListaRegistros.Create;
-  try
-    FFinanceiro.StartTransaction;
-    try
-      PopularListaRegistro(ListaRegistro, FIMP_ID);
-      for I := 0 to ListaRegistro.Count - 1 do
-      begin
-        CRE.Append;
-        FRegistro := ListaRegistro[I];
-        TAuditor.GravarAuditoria(FRegistro);
-        try
-          PopularContasaReceber(CRE);
-          CRE.Post;
-        except
-          on E: Exception do
-          begin
-            CRE.Cancel;
-            GetLogger.Log(FRegistro, E.Message);
-          end;
-        end;
-        AtualizarRegistro(CRE.Codigo);
-      end;
-      if GetLogger.HasLog then
-        FFinanceiro.Rollback
-      else
-        FFinanceiro.Commit;
-    finally
-      FreeAndNil(ListaRegistro);
-    end;
-  except
-    on E: Exception do
-    begin
-      FFinanceiro.Rollback;
-      raise Exception.Create('Ocorreu um erro durante a importação dos Contas a Receber. Exceção: ' + E.Message);
-    end;
-  end;
+  FContasaReceber.Codigo;
 end;
 
-procedure TImportadorBase.PopularListaRegistro(ListaRegistro: TListaRegistros; IMP_ID: Integer);
+procedure TImportadorBase.PopularListaRegistro(ListaRegistro: TListaRegistros);
 var
   Registro: TRegistro;
   Query: TFDQuery;
@@ -388,14 +368,14 @@ begin
   Query := NewQuery;
   Query.Open('SELECT REG.*, EMP.* FROM REG ' +
              '  LEFT JOIN EMP ON EMP.CODIGO = REG.EMP_CODIGO' +
-             ' WHERE REG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString + ' AND REG.IMP_ID = ' + IMP_ID.ToString);
+             ' WHERE REG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString + ' AND REG.IMP_ID = ' + FIMP_ID.ToString);
   Query.First;
   while not Query.Eof do
   begin
     Registro := TRegistro.Create;
     ListaRegistro.Add(Registro);
     Registro.EMP_Codigo       := FEMP_Codigo;
-    Registro.IMP_ID           := IMP_ID;
+    Registro.IMP_ID           := FIMP_ID;
     Registro.ID               := Query.FieldByName('ID').AsInteger;
     Registro.Protocolo        := Query.FieldByName('Protocolo').AsString;
     Registro.DataCadastro     := Query.FieldByName('DataCadastro').AsDateTime;
@@ -421,19 +401,24 @@ begin
   end;
 end;
 
-procedure TImportadorCRE.PopularContasaReceber(ContasaReceber :IContasaReceber);
+procedure TImportadorBase.SetRegistro(const Value: TRegistro);
 begin
-  ContasaReceber.Cliente               := FRegistro.Convenio;
-  ContasaReceber.Estabelecimento       := FDadosServices.EST_Codigo;//Só porque é obrigatório.
-  ContasaReceber.Documento             := FRegistro.Protocolo;
-  ContasaReceber.TipoGeracao           := 'C'; //Aparentemente se for Cargas, não é possível editar no AG...
-  ContasaReceber.Emissao               := FRegistro.DataCadastro;
-  ContasaReceber.Obs                   := 'Importação via arquivo Ximenes. Protocolo: ' + FRegistro.Protocolo;
-  ContasaReceber.MesAno                := FormatDateTime('mmaaaa', FRegistro.DataCadastro);
-  ContasaReceber.IDWS                  := FRegistro.Protocolo; //Atualizar AGLib urgente...
-  PopularVencimentosaReceber(ContasaReceber.VencimentosaReceber);
-  PopularServicosaReceber(ContasaReceber.ServicosaReceber);
-  PopularRateiosaReceber(ContasaReceber.RateiosaReceber);
+  FRegistro := Value;
+end;
+
+procedure TImportadorCRE.Popular;
+begin
+  FContasaReceber.Cliente               := FRegistro.Convenio;
+  FContasaReceber.Estabelecimento       := FDadosServices.EST_Codigo;//Só porque é obrigatório.
+  FContasaReceber.Documento             := FRegistro.Protocolo;
+  FContasaReceber.TipoGeracao           := 'C'; //Aparentemente se for Cargas, não é possível editar no AG...
+  FContasaReceber.Emissao               := FRegistro.DataCadastro;
+  FContasaReceber.Obs                   := 'Importação via arquivo Ximenes. Protocolo: ' + FRegistro.Protocolo;
+  FContasaReceber.MesAno                := FormatDateTime('mmaaaa', FRegistro.DataCadastro);
+  FContasaReceber.IDWS                  := FRegistro.Protocolo; //Atualizar AGLib urgente...
+  PopularVencimentosaReceber(FContasaReceber.VencimentosaReceber);
+  PopularServicosaReceber(FContasaReceber.ServicosaReceber);
+  PopularRateiosaReceber(FContasaReceber.RateiosaReceber);
 end;
 
 procedure TImportadorCRE.PopularVencimentosaReceber(Vencimentos: IVencimentosaReceber);
@@ -444,6 +429,11 @@ begin
   Vencimentos.AgenteCobrador := FRegistro.AgenteCobradorAG;
   Vencimentos.TipoDocumento  := FRegistro.TipoDocumentoAG;
   Vencimentos.Post;
+end;
+
+procedure TImportadorCRE.Post;
+begin
+  FContasaReceber.Post;
 end;
 
 procedure TImportadorCRE.PopularServicosaReceber(Servicos: IServicosaReceber);
@@ -522,28 +512,49 @@ begin
   Result := GetValorContasaPagar + GetValorRateioServices + GetValorRateioCartorio;
 end;
 
-class procedure TImportador.ImportarArquivo(const cEMP_Codigo, cCaminhoArquivo: String);
+constructor TImportador.Create(const EMP_Codigo: String);
+begin
+  FEmp_Codigo := EMP_Codigo;
+  FFinanceiro:= GetFinanceiro(gsAppPath);
+  PopularFinanceiroAG;
+end;
+
+procedure TImportador.ImportarArquivo(const cEMP_Codigo, cCaminhoArquivo: String);
 var
   Leitor: ILeitor;
   ImportadorCRE: TImportadorCRE;
+  ImportadorCPG: TImportadorCPG;
 begin
   GetLogger.Clear;
   Leitor := TLeitorCSV.Create(cEMP_Codigo);
   try
     TDBUtils.MainServer.StartTransaction;
-    Leitor.LerArquivo(cCaminhoArquivo);
-    ImportadorCRE := TImportadorCRE.Create(cEMP_Codigo, Leitor.IMP_ID);
-    ImportadorCRE.GravarContasaReceber;
-    if GetLogger.HasLog then
-    begin
-      TDBUtils.MainServer.Rollback;
-      GetLogger.SaveLog(gsAppPath + gsAppName + '.log');
-    end
-    else
-     TDBUtils.MainServer.Commit;
+    FFinanceiro.StartTransaction;
+    try
+      Leitor.LerArquivo(cCaminhoArquivo);
+      ImportadorCRE := TImportadorCRE.Create(FFinanceiro, cEMP_Codigo, Leitor.IMP_ID);
+      ImportarMovimento(ImportadorCRE);
+      ImportadorCPG := TImportadorCPG.Create(FFinanceiro, cEMP_Codigo, Leitor.IMP_ID);
+      ImportarMovimento(ImportadorCPG);
+      if GetLogger.HasLog then
+      begin
+        FFinanceiro.Rollback;
+        TDBUtils.MainServer.Rollback;
+        GetLogger.SaveLog(gsAppPath + gsAppName + '.log');
+      end
+      else
+      begin
+        FFinanceiro.Commit;
+        TDBUtils.MainServer.Commit;
+      end;
+    finally
+      FreeAndNil(ImportadorCRE);
+      FreeAndNil(ImportadorCPG);
+    end;
   except
     on E: Exception do
     begin
+      FFinanceiro.Rollback;
       TDBUtils.MainServer.Rollback;
       raise Exception.Create('Erro durante a importação: ' + E.Message);
     end;
@@ -552,67 +563,44 @@ end;
 
 { TImportadorCPG }
 
-procedure TImportadorCPG.AtualizarRegistro(const CPG_Codigo: String);
+procedure TImportadorCPG.Append;
+begin
+  FContasaPagar.Append;
+end;
+
+procedure TImportadorCPG.AtualizarRegistro(const Codigo: String);
 var
   Query: TFDQuery;
 begin
-  Query := NewQuery('UPDATE REG SET REG.CPG_CODIGO = ' + CPG_Codigo.QuotedString +
+  Query := NewQuery('UPDATE REG SET REG.CPG_CODIGO = ' + Codigo.QuotedString +
                     ' WHERE REG.ID = ' + FRegistro.ID.ToString +
                     ' AND REG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString);
   Query.ExecSQL;
 end;
 
-constructor TImportadorCPG.Create(const EMP_Codigo: String; const IMP_ID: Integer);
+procedure TImportadorCPG.Cancel;
+begin
+  FContasaPagar.Cancel;
+end;
+
+constructor TImportadorCPG.Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
 begin
   inherited;
-  FDadosEST := TEstabelecimento.Create(FEMP_Codigo, tidContasaPagar);
+  FDadosEST := TEstabelecimentoContasaPagar.Create(FEMP_Codigo, tidContasaPagar);
+  FContasaPagar := Financeiro.GetContasaPagar;
 end;
 
-procedure TImportadorCPG.GravarContasaPagar;
-var
-  CPG: IContasaPagar;
-  ListaRegistro: TListaRegistros;
-  I: Integer;
+function TImportadorCPG.GetCodigo: String;
 begin
-  FFinanceiro := GetFinanceiro(gsAppPath);
-  PopularFinanceiroAG;
-  CPG := FFinanceiro.GetContasaPagar;
-  ListaRegistro := TListaRegistros.Create;
-  try
-    FFinanceiro.StartTransaction;
-    try
-      PopularListaRegistro(ListaRegistro, FIMP_ID);
-      for I := 0 to ListaRegistro.Count - 1 do
-      begin
-        CPG.Append;
-        FRegistro := ListaRegistro[I];
-        TAuditor.GravarAuditoria(FRegistro);
-        PopularContasaPagar(CPG);
-        CPG.Post;
-        AtualizarRegistro(CPG.Codigo);
-      end;
-      FFinanceiro.Commit;
-    finally
-      FreeAndNil(ListaRegistro);
-    end;
-  except
-    on E: Exception do
-    begin
-      FFinanceiro.Rollback;
-      raise Exception.Create('Ocorreu um erro durante a importação dos Contas a Receber. Exceção: ' + E.Message);
-    end;
-  end;
+  Result := FContasaPagar.Codigo;
 end;
 
-procedure TImportadorCPG.PopularContasaPagar(ContasaPagar: IContasaPagar);
-var
-  DadosEstCPG: TEstabelecimentoContasaPagar;
+procedure TImportadorCPG.Popular;
 begin
-  DadosEstCPG := TEstabelecimentoContasaPagar.Create(FEMP_Codigo, tidContasaPagar);
-  ContasaPagar.Fornecedor            := DadosEstCPG.FRN_Codigo;
-  ContasaPagar.Documento             := FRegistro.Protocolo;
-  ContasaPagar.Emissao               := FRegistro.DataCadastro;
-  ContasaPagar.MesAnoComp            := FormatDateTime('mmaaaa', FRegistro.DataCadastro);
+  FContasaPagar.Fornecedor            := FDadosEST.FRN_Codigo;
+  FContasaPagar.Documento             := FRegistro.Protocolo;
+  FContasaPagar.Emissao               := FRegistro.DataCadastro;
+  FContasaPagar.MesAnoComp            := FormatDateTime('mmaaaa', FRegistro.DataCadastro);
 
 //  ContasaPagar.Estabelecimento
 //  ContasaPagar.CentroResultados
@@ -627,9 +615,9 @@ begin
 //  ContasaPagar.ExportaAC
 //  ContasaPagar.Obs                := 'Importação via arquivo Ximenes. Protocolo: ' + FRegistro.Protocolo;
 
-  ContasaPagar.Origem                := 'C';
+  FContasaPagar.Origem                := 'C';
 
-  PopularVencimentosaPagar(ContasaPagar.VencimentosaPagar);
+  PopularVencimentosaPagar(FContasaPagar.VencimentosaPagar);
 end;
 
 procedure TImportadorCPG.PopularVencimentosaPagar(Vencimentos: IVencimentosaPagar);
@@ -637,6 +625,66 @@ begin
   //Vencimentos.Append;
   //Vencimentos.Post;
   //PopularBaixaVencimentosaPagar;
+end;
+
+procedure TImportadorCPG.Post;
+begin
+  FContasaPagar.Post;
+end;
+
+procedure TImportador.ImportarMovimento(Movimento: IMovimentoFinanceiro);
+var
+  ListaRegistro: TListaRegistros;
+  I: Integer;
+begin
+  ListaRegistro := TListaRegistros.Create;
+  try
+    try
+      Movimento.PopularListaRegistro(ListaRegistro);
+      for I := 0 to ListaRegistro.Count - 1 do
+      begin
+        Movimento.Append;
+        Movimento.Registro := ListaRegistro[I];
+        TAuditor.GravarAuditoria(Movimento.Registro);
+        try
+          Movimento.Popular;
+          Movimento.Post;
+        except
+          on E: Exception do
+          begin
+            Movimento.Cancel;
+            GetLogger.Log(Movimento.Registro, 'Contas a pagar: ' + E.Message);
+          end;
+        end;
+        Movimento.AtualizarRegistro(Movimento.GetCodigo);
+      end;
+    finally
+      FreeAndNil(ListaRegistro);
+    end;
+  except
+    on E: Exception do
+    begin
+      raise Exception.Create('Ocorreu um erro durante a importação dos Contas a Pagar. Exceção: ' + E.Message);
+    end;
+  end;
+end;
+
+procedure TImportador.PopularFinanceiroAG;
+var
+  Query: TFDQuery;
+begin
+  try
+    Query := NewQuery('SELECT * FROM CFG WHERE CFG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString);
+    Query.Open;
+    FFinanceiro.DriverNameBanco := 'INTRBASE';
+    FFinanceiro.UsuarioBanco := Query.FieldByName('USUARIO').AsString;
+    FFinanceiro.SenhaBanco := Query.FieldByName('SENHA').AsString;
+    FFinanceiro.Open(Query.FieldByName('CAMINHOBANCO').AsString);
+    FFinanceiro.Empresa := FEMP_Codigo;
+  except
+    on E: Exception do
+      raise Exception.Create('Erro ao conectar com a DLL do AG. Exceção: ' + E.Message);
+  end;
 end;
 
 end.

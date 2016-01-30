@@ -71,7 +71,6 @@ inherited frmCrudbasic: TfrmCrudbasic
       BevelKind = bkFlat
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitHeight = 47
       object btnIncluir: TButton
         Left = 0
         Top = 0
@@ -136,11 +135,8 @@ inherited frmCrudbasic: TfrmCrudbasic
     ActivePage = tsCad
     Align = alClient
     TabOrder = 2
-    ExplicitTop = 108
-    ExplicitHeight = 287
     object tsPsq: TTabSheet
       Caption = 'Pesquisa'
-      ExplicitHeight = 259
       object gridPsq: TDBGrid
         Left = 0
         Top = 0
@@ -160,7 +156,6 @@ inherited frmCrudbasic: TfrmCrudbasic
     object tsCad: TTabSheet
       Caption = 'Cadastro'
       ImageIndex = 1
-      ExplicitHeight = 259
       object lblCodigo: TLabel
         Left = 3
         Top = 7

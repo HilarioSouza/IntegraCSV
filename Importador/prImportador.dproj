@@ -135,6 +135,7 @@
             <Form>frmLog</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="uValidador.pas"/>
         <None Include="Dados\Update.sql"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
@@ -159,7 +160,6 @@
                 <Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp210.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Program Files\FastReports\LibD21\dclfrxtee21.bpl">(untitled)</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>
