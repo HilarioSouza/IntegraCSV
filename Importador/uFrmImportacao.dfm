@@ -31,8 +31,6 @@ object frmImportacao: TfrmImportacao
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitTop = 68
-      ExplicitHeight = 621
       object pgcIMP: TPageControl
         Left = 0
         Top = 0

@@ -135,7 +135,7 @@
             <Form>frmLog</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="uValidador.pas"/>
+        <DCCReference Include="uEmpresa.pas"/>
         <None Include="Dados\Update.sql"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

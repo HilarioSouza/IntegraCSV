@@ -19,6 +19,7 @@ type
   end;
 
   TLoggerImport = class(TLogger)
+  public
     procedure Log(Registro: TRegistro; const Msg: String); overload;
     procedure ShowLog;
   end;

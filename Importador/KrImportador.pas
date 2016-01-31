@@ -26,7 +26,8 @@ type
   public
     EMP_Codigo       : String;
     ID               : Integer;
-    Protocolo        : String; //Identificador do Registro
+    CustasFechadas   : Boolean;
+    Protocolo        : String;
     DataCadastro     : TDateTime;
     VlrXimenes       : Double;
     Despachante      : Double;
@@ -35,7 +36,6 @@ type
     DAJ              : Double;
     VlrTotalCustas   : Double;
     Convenio         : String; //CNPJ do Cliente
-    CustasFechadas   : Boolean;
     VlrXimenesGestao : Double;
     VlrXimenesAut    : Double;
     VlrXimenesRec    : Double;
@@ -48,6 +48,7 @@ type
     TipoDocumentoAG  : String;
     Linha            : String;
     NumLinha         : Integer;
+    procedure ValidarCustasFechadas;
     function GetValorVencimento: Double;
     function GetValorRateioServices: Double;
     function GetValorRateioCartorio: Double;
@@ -86,6 +87,7 @@ type
     procedure AtualizarRegistro(const Codigo: String);
     function GetRegistro: TRegistro;
     function GetCodigo: String;
+    function GetTipo: String;
     //
     property Registro: TRegistro read GetRegistro write SetRegistro;
   end;
@@ -120,11 +122,13 @@ type
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
     function GetCodigo: String;
+    function GetTipo: String;
   end;
 
   TImportadorCPG = class(TImportadorBase, IMovimentoFinanceiro)
   private
     FContasaPagar: IContasaPagar;
+    FBaixasaPagar: IBaixaVencimentoaPagar;
     FDadosEST: TEstabelecimentoContasaPagar;
     procedure Popular;
     procedure Append;
@@ -132,9 +136,11 @@ type
     procedure Cancel;
     procedure PopularVencimentosaPagar(Vencimentos: IVencimentosaPagar);
     procedure AtualizarRegistro(const Codigo: String);
+    procedure IncluirBaixaVencimentosaPagar(Vencimento: IVencimentosaPagar);
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
     function GetCodigo: String;
+    function GetTipo: String;
   end;
 
   TImportador = class
@@ -169,6 +175,8 @@ const
   IdxVlrXimenesRec    = 12;
   IdxVlrXimenesOutros = 13;
   IdxRepresentante    = 14;
+  //
+  NEW_LINE = #10#13;
 
 { TLeitorCSV }
 
@@ -360,6 +368,11 @@ begin
   FContasaReceber.Codigo;
 end;
 
+function TImportadorCRE.GetTipo: String;
+begin
+  Result := 'CRE';
+end;
+
 procedure TImportadorBase.PopularListaRegistro(ListaRegistro: TListaRegistros);
 var
   Registro: TRegistro;
@@ -424,11 +437,19 @@ end;
 procedure TImportadorCRE.PopularVencimentosaReceber(Vencimentos: IVencimentosaReceber);
 begin
   Vencimentos.Append;
-  Vencimentos.Vencimento     := FRegistro.DataCadastro;
-  Vencimentos.Valor          := FRegistro.GetValorVencimento;
-  Vencimentos.AgenteCobrador := FRegistro.AgenteCobradorAG;
-  Vencimentos.TipoDocumento  := FRegistro.TipoDocumentoAG;
-  Vencimentos.Post;
+  try
+    Vencimentos.Vencimento     := FContasaReceber.Emissao + 1;
+    Vencimentos.Valor          := FRegistro.GetValorVencimento;
+    Vencimentos.AgenteCobrador := FRegistro.AgenteCobradorAG;
+    Vencimentos.TipoDocumento  := FRegistro.TipoDocumentoAG;
+    Vencimentos.Post;
+  except
+    on E: Exception do
+    begin
+      Vencimentos.Cancel;
+      raise Exception.Create('Erro ao popular o vencimento a receber: ' + E.Message);
+    end;
+  end;
 end;
 
 procedure TImportadorCRE.Post;
@@ -512,6 +533,25 @@ begin
   Result := GetValorContasaPagar + GetValorRateioServices + GetValorRateioCartorio;
 end;
 
+procedure TRegistro.ValidarCustasFechadas;
+var
+  DadosAudit: TDadosAuditoria;
+begin
+  if CustasFechadas and (not Protocolo.IsEmpty) then
+  begin
+    DadosAudit := TDadosAuditoria.Create(EMP_Codigo, IMP_ID);
+    try
+      if DadosAudit.Existe then
+        raise Exception.Create('Este registro já foi enviado com as custas fechadas e portanto não será importado. '+ NEW_LINE +
+                               ' Protocolo: ' +  Protocolo + ' Data: ' + TUtil.FormatarData(DadosAudit.Data) +
+                               ' ID da Importação: ' + DadosAudit.ID_Importacao.ToString + NEW_LINE +
+                               ' Registro original: ' + DadosAudit.RegistroOriginal);
+    finally
+      FreeAndNil(DadosAudit);
+    end;
+  end;
+end;
+
 constructor TImportador.Create(const EMP_Codigo: String);
 begin
   FEmp_Codigo := EMP_Codigo;
@@ -530,6 +570,8 @@ begin
   try
     TDBUtils.MainServer.StartTransaction;
     FFinanceiro.StartTransaction;
+    ImportadorCRE := nil;
+    ImportadorCPG := nil;
     try
       Leitor.LerArquivo(cCaminhoArquivo);
       ImportadorCRE := TImportadorCRE.Create(FFinanceiro, cEMP_Codigo, Leitor.IMP_ID);
@@ -588,6 +630,7 @@ begin
   inherited;
   FDadosEST := TEstabelecimentoContasaPagar.Create(FEMP_Codigo, tidContasaPagar);
   FContasaPagar := Financeiro.GetContasaPagar;
+  FBaixasaPagar := Financeiro.GetBaixaVencimentoaPagar;
 end;
 
 function TImportadorCPG.GetCodigo: String;
@@ -595,26 +638,26 @@ begin
   Result := FContasaPagar.Codigo;
 end;
 
+function TImportadorCPG.GetTipo: String;
+begin
+  Result := 'CPG';
+end;
+
 procedure TImportadorCPG.Popular;
 begin
-  FContasaPagar.Fornecedor            := FDadosEST.FRN_Codigo;
+  FContasaPagar.Fornecedor            := FDadosEST.FRN_CNPJ;
   FContasaPagar.Documento             := FRegistro.Protocolo;
   FContasaPagar.Emissao               := FRegistro.DataCadastro;
-  FContasaPagar.MesAnoComp            := FormatDateTime('mmaaaa', FRegistro.DataCadastro);
-
-//  ContasaPagar.Estabelecimento
-//  ContasaPagar.CentroResultados
-//  ContasaPagar.Despesa               := DadosEstCPG.CRD_Codigo;
-//  ContasaPagar.TipoDocumento
-//  ContasaPagar.Emissao
-//  ContasaPagar.MesAnoComp
-//  ContasaPagar.DtEntrada
-//  ContasaPagar.Valor
+  FContasaPagar.MesAnoComp            := FormatDateTime('mmyyyy', FRegistro.DataCadastro);
+  FContasaPagar.Estabelecimento       := FDadosEST.EST_Codigo;
+  FContasaPagar.CentroResultados      := FDadosEST.CRS_Codigo;
+  FContasaPagar.Despesa               := FDadosEST.CRD_Codigo;
+  FContasaPagar.TipoDocumento         := FDadosEST.TDC_Codigo; //Falta adicionar o campo
+  FContasaPagar.DtEntrada             := FRegistro.DataCadastro;
 //  ContasaPagar.ValorBruto
-//  ContasaPagar.ContaFinanceira
-//  ContasaPagar.ExportaAC
-//  ContasaPagar.Obs                := 'Importação via arquivo Ximenes. Protocolo: ' + FRegistro.Protocolo;
-
+  FContasaPagar.ContaFinanceira       := FDadosEST.CON_Codigo; // Falta adicionar o campo
+  FContasaPagar.ExportaAC              := 0;
+  FContasaPagar.Obs                := 'Importação via arquivo Ximenes. Protocolo: ' + FRegistro.Protocolo;
   FContasaPagar.Origem                := 'C';
 
   PopularVencimentosaPagar(FContasaPagar.VencimentosaPagar);
@@ -622,9 +665,31 @@ end;
 
 procedure TImportadorCPG.PopularVencimentosaPagar(Vencimentos: IVencimentosaPagar);
 begin
-  //Vencimentos.Append;
-  //Vencimentos.Post;
-  //PopularBaixaVencimentosaPagar;
+  Vencimentos.Append;
+  Vencimentos.Vencimento := FRegistro.DataCadastro;
+  Vencimentos.Valor      := FRegistro.GetValorContasaPagar;
+  Vencimentos.Titulo     := FRegistro.Protocolo;
+  Vencimentos.Post;
+  IncluirBaixaVencimentosaPagar(Vencimentos);
+end;
+
+procedure TImportadorCPG.IncluirBaixaVencimentosaPagar(Vencimento: IVencimentosaPagar);
+begin
+  FBaixasaPagar.Append;
+  try
+    FBaixasaPagar.CPG_Codigo           := Vencimento.Codigo;
+    FBaixasaPagar.DataVencimento       := Vencimento.Vencimento;
+    FBaixasaPagar.SequencialVencimento := Vencimento.Sequencial;
+    FBaixasaPagar.Data                 := Vencimento.Vencimento;
+    FBaixasaPagar.Valor                := Vencimento.Valor;
+    FBaixasaPagar.Post;
+  except
+    on E: Exception do
+    begin  
+      FBaixasaPagar.Cancel;
+      raise Exception.Create('Ocorreu um erro ao incluir a baixa do vencimento a pagar. '+ NEW_LINE +'Exceção: ' + E.Message);
+    end;
+  end;
 end;
 
 procedure TImportadorCPG.Post;
@@ -645,18 +710,20 @@ begin
       begin
         Movimento.Append;
         Movimento.Registro := ListaRegistro[I];
-        TAuditor.GravarAuditoria(Movimento.Registro);
         try
+          if Movimento.GetTipo = 'CRE' then
+            Movimento.Registro.ValidarCustasFechadas;
           Movimento.Popular;
           Movimento.Post;
         except
           on E: Exception do
           begin
             Movimento.Cancel;
-            GetLogger.Log(Movimento.Registro, 'Contas a pagar: ' + E.Message);
+            GetLogger.Log(Movimento.Registro, E.Message);
           end;
         end;
         Movimento.AtualizarRegistro(Movimento.GetCodigo);
+        TAuditor.GravarAuditoria(Movimento);
       end;
     finally
       FreeAndNil(ListaRegistro);
@@ -664,7 +731,7 @@ begin
   except
     on E: Exception do
     begin
-      raise Exception.Create('Ocorreu um erro durante a importação dos Contas a Pagar. Exceção: ' + E.Message);
+      raise Exception.Create('Ocorreu um erro durante a importação. Exceção: ' + E.Message);
     end;
   end;
 end;

@@ -41,6 +41,7 @@ type
     procedure btnDesfazerIMPClick(Sender: TObject);
   private
     procedure AtualizarQueries;
+    procedure GravarDadosINI;
     { Private declarations }
   public
     { Public declarations }
@@ -60,6 +61,7 @@ procedure TfrmImportacao.btnImportarClick(Sender: TObject);
 var
   Importador: TImportador;
 begin
+  GravarDadosINI;
   if (dcbEMP.KeyValue = null) or (dcbEMP.KeyValue = '') then
   begin
     ShowMessage('Por favor selecione uma Empresa');
@@ -86,9 +88,14 @@ end;
 
 procedure TfrmImportacao.btnSairClick(Sender: TObject);
 begin
+  GravarDadosINI;
+  Sair;
+end;
+
+procedure TfrmImportacao.GravarDadosINI;
+begin
   TFuncoesIni.GravarIni('CONFIG', 'FileName', edtCaminhoArquivo.Text);
   TFuncoesIni.GravarIni('CONFIG', 'Empresa', dcbEMP.KeyValue);
-  Sair;
 end;
 
 procedure TfrmImportacao.btnDesfazerIMPClick(Sender: TObject);

@@ -16,7 +16,7 @@ type
     function GetSQLCartorio: String;
     function GetSQLServices: String;
   public
-    constructor Create(EMP_Codigo: String; sTipoEst: TIDEstabelecimento);
+    constructor Create(EMP_Codigo: String; sTipoEst: TIDEstabelecimento = tidContasaPagar);
     property EST_Codigo: String read FEST_Codigo;
     property EMP_Codigo: String read FEMP_Codigo;
     property CRS_Codigo: String read FCRS_Codigo;
@@ -26,26 +26,33 @@ type
 
   TEstabelecimentoContasaPagar = class(TEstabelecimento)
   private
-    FFRN_Codigo: String;
+    FFRN_CNPJ: String;
+    FTDC_Codigo: String;
+    FCON_Codigo: String;
     procedure PopularDadosEstabelecimento; override;
   public
     function GetSQLContasaPagar: String;
-    property FRN_Codigo: String read FFRN_Codigo;
+    property FRN_CNPJ: String read FFRN_CNPJ;
+    property TDC_Codigo: String read FTDC_Codigo;
+    property CON_Codigo: String read FCON_Codigo;
   end;
 
   TServico = class
+  public
     SER_Codigo: String;
     MDS_Codigo: String;
+    constructor Create(const EMP_Codigo: String);
   end;
 
   TVencimentoCRE = class
     COB_Codigo: String;
     TDC_Codigo: String;
+    constructor Create(const EMP_Codigo: String);
   end;
 
 implementation
 
-uses System.SysUtils, FireDAC.Comp.Client, uInterfaceQuery;
+uses System.SysUtils, FireDAC.Comp.Client, uInterfaceQuery, uEmpresa;
 
 { TEstabelecimento }
 
@@ -89,7 +96,9 @@ end;
 
 function TEstabelecimentoContasaPagar.GetSQLContasaPagar: String;
 begin
-  Result := ' select CPG_EST as EST, CPG_CRD as CRD, CPG_CRS as CRS, CPG_FRN_CNPJ as FRN from EMP where EMP.Codigo = ' + FEMP_Codigo.QuotedString;
+  Result := ' select CPG_EST as EST, CPG_CRD as CRD, CPG_CRS as CRS, CPG_FRN_CNPJ as FRN, ' +
+            '        CPG_CON_CODIGO AS CON, CPG_TDC_CODIGO AS TDC ' +
+            '   from EMP where EMP.Codigo = ' + FEMP_Codigo.QuotedString;
 end;
 
 procedure TEstabelecimentoContasaPagar.PopularDadosEstabelecimento;
@@ -104,7 +113,37 @@ begin
   FCRD_Codigo := Query.FieldByName('CRD').AsString;
   FCRS_Codigo := Query.FieldByName('CRS').AsString;
   FCRS_Codigo := Query.FieldByName('FRN').AsString;
+  FCON_Codigo := Query.FieldByName('CON').AsString;
+  FTDC_Codigo := Query.FieldByName('TDC').AsString;
   Query.Close;
+end;
+
+{ TServico }
+
+constructor TServico.Create(const EMP_Codigo: String);
+var
+  Query: TFDQuery;
+begin
+  Query := NewQuery;
+  if TEmpresa.GetConsultaEmpresa(EMP_Codigo, Query) then
+  begin
+    SER_Codigo := Query.FieldByName('SER_CODIGO').AsString;
+    MDS_Codigo := Query.FieldByName('MDS_CODIGO').AsString;
+  end;
+end;
+
+{ TVencimentoCRE }
+
+constructor TVencimentoCRE.Create(const EMP_Codigo: String);
+var
+  Query: TFDQuery;
+begin
+  Query := NewQuery;
+  if TEmpresa.GetConsultaEmpresa(EMP_Codigo, Query) then
+  begin
+    COB_Codigo := Query.FieldByName('VDR_COB_CODIGO').AsString;
+    TDC_Codigo := Query.FieldByName('VDR_TDC_CODIGO').AsString;
+  end;
 end;
 
 end.

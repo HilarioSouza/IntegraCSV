@@ -25,9 +25,9 @@ uses
   uAuditoria in 'uAuditoria.pas',
   uLogger in 'Externo\uLogger.pas',
   uFrmLog in 'uFrmLog.pas' {frmLog},
-  uValidador in 'uValidador.pas',
   Vcl.Themes,
-  Vcl.Styles;
+  Vcl.Styles,
+  uEmpresa in 'uEmpresa.pas';
 
 {$R *.res}
 
