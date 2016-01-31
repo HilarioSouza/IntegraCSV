@@ -34,17 +34,18 @@ inherited frmCdEmp: TfrmCdEmp
     ExplicitWidth = 1003
     ExplicitHeight = 466
     inherited tsPsq: TTabSheet
-      ExplicitTop = 27
+      ExplicitLeft = 4
+      ExplicitTop = 24
       ExplicitWidth = 995
-      ExplicitHeight = 435
+      ExplicitHeight = 438
       inherited gridPsq: TDBGrid
         Width = 995
-        Height = 435
+        Height = 438
       end
     end
     inherited tsCad: TTabSheet
       ExplicitWidth = 995
-      ExplicitHeight = 435
+      ExplicitHeight = 438
       inherited lblCodigo: TLabel
         Width = 37
         Caption = 'C'#243'digo:'
@@ -84,7 +85,7 @@ inherited frmCdEmp: TfrmCdEmp
         Left = 0
         Top = 50
         Width = 995
-        Height = 385
+        Height = 388
         ActivePage = tshContasaReceber
         Align = alClient
         TabOrder = 2
@@ -206,12 +207,11 @@ inherited frmCdEmp: TfrmCdEmp
         object tshContasaPagar: TTabSheet
           Caption = 'Contas a Pagar'
           ImageIndex = 1
-          ExplicitTop = 27
           object gbxContasaPagar: TGroupBox
             Left = 11
             Top = 3
-            Width = 177
-            Height = 216
+            Width = 168
+            Height = 310
             Caption = ' Dados: '
             TabOrder = 0
             object Label3: TLabel
@@ -241,6 +241,22 @@ inherited frmCdEmp: TfrmCdEmp
               Width = 118
               Height = 13
               Caption = 'Fornecedor (CNPJ/CPF):'
+            end
+            object lblCPG_CON: TLabel
+              Left = 8
+              Top = 207
+              Width = 85
+              Height = 13
+              Caption = 'Conta Financeira:'
+              FocusControl = detCPG_CON
+            end
+            object lblCPG_TDC: TLabel
+              Left = 8
+              Top = 257
+              Width = 96
+              Height = 13
+              Caption = 'Tipo de Documento:'
+              FocusControl = detCPG_TDC
             end
             object detEstab: TDBEdit
               Left = 8
@@ -278,12 +294,29 @@ inherited frmCdEmp: TfrmCdEmp
               DataSource = dsDados
               TabOrder = 3
             end
+            object detCPG_CON: TDBEdit
+              Left = 8
+              Top = 226
+              Width = 145
+              Height = 21
+              DataField = 'CPG_CON_CODIGO'
+              DataSource = dsDados
+              TabOrder = 4
+            end
+            object detCPG_TDC: TDBEdit
+              Left = 8
+              Top = 272
+              Width = 145
+              Height = 21
+              DataField = 'CPG_TDC_CODIGO'
+              DataSource = dsDados
+              TabOrder = 5
+            end
           end
         end
         object tshServicos: TTabSheet
           Caption = 'Servi'#231'os'
           ImageIndex = 2
-          ExplicitTop = 27
           object GroupBox1: TGroupBox
             Left = 3
             Top = 3
@@ -459,6 +492,16 @@ inherited frmCdEmp: TfrmCdEmp
       FieldName = 'CPG_FRN_CNPJ'
       Origin = 'CPG_FRN_CNPJ'
       Size = 14
+    end
+    object qryMainCPG_CON_CODIGO: TStringField
+      FieldName = 'CPG_CON_CODIGO'
+      Origin = 'CPG_CON_CODIGO'
+      Size = 4
+    end
+    object qryMainCPG_TDC_CODIGO: TStringField
+      FieldName = 'CPG_TDC_CODIGO'
+      Origin = 'CPG_TDC_CODIGO'
+      Size = 3
     end
   end
   inherited dsDados: TDataSource

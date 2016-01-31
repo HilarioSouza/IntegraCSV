@@ -67,7 +67,7 @@ object frmImportacao: TfrmImportacao
       BevelOuter = bvNone
       TabOrder = 1
       object sbtCaminhoArquivo: TSpeedButton
-        Left = 315
+        Left = 322
         Top = 16
         Width = 23
         Height = 21
@@ -88,33 +88,33 @@ object frmImportacao: TfrmImportacao
         OnClick = sbtCaminhoArquivoClick
       end
       object btnImportar: TButton
-        Left = 0
+        Left = 8
         Top = 43
         Width = 75
         Height = 25
         Caption = 'Importar'
-        TabOrder = 0
+        TabOrder = 2
         OnClick = btnImportarClick
       end
       object edtCaminhoArquivo: TLabeledEdit
-        Left = 0
+        Left = 8
         Top = 16
         Width = 313
         Height = 21
         EditLabel.Width = 99
         EditLabel.Height = 13
         EditLabel.Caption = 'Caminho do arquivo:'
-        TabOrder = 1
+        TabOrder = 0
       end
       object dcbEMP: TDBLookupComboBox
-        Left = 348
+        Left = 351
         Top = 16
         Width = 229
         Height = 21
         KeyField = 'CODIGO'
         ListField = 'NOME'
         ListSource = ddsEMP
-        TabOrder = 2
+        TabOrder = 1
       end
     end
   end

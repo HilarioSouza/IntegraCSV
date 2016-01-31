@@ -88,6 +88,7 @@ type
     function GetRegistro: TRegistro;
     function GetCodigo: String;
     function GetTipo: String;
+    procedure TratarRegistroJaImportado;
     //
     property Registro: TRegistro read GetRegistro write SetRegistro;
   end;
@@ -119,6 +120,7 @@ type
     procedure Append;
     Procedure Post;
     procedure Cancel;
+    procedure TratarRegistroJaImportado;
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
     function GetCodigo: String;
@@ -137,6 +139,7 @@ type
     procedure PopularVencimentosaPagar(Vencimentos: IVencimentosaPagar);
     procedure AtualizarRegistro(const Codigo: String);
     procedure IncluirBaixaVencimentosaPagar(Vencimento: IVencimentosaPagar);
+    procedure TratarRegistroJaImportado;
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
     function GetCodigo: String;
@@ -457,6 +460,12 @@ begin
   FContasaReceber.Post;
 end;
 
+procedure TImportadorCRE.TratarRegistroJaImportado;
+begin
+  if FContasaReceber.FindIDWS(FRegistro.Protocolo) then
+    FContasaReceber.Delete;
+end;
+
 procedure TImportadorCRE.PopularServicosaReceber(Servicos: IServicosaReceber);
 begin
   Servicos.Append;
@@ -656,9 +665,10 @@ begin
   FContasaPagar.DtEntrada             := FRegistro.DataCadastro;
 //  ContasaPagar.ValorBruto
   FContasaPagar.ContaFinanceira       := FDadosEST.CON_Codigo; // Falta adicionar o campo
-  FContasaPagar.ExportaAC              := 0;
-  FContasaPagar.Obs                := 'Importação via arquivo Ximenes. Protocolo: ' + FRegistro.Protocolo;
+  FContasaPagar.ExportaAC             := 0;
+  FContasaPagar.Obs                   := 'Importação via arquivo Ximenes. Protocolo: ' + FRegistro.Protocolo;
   FContasaPagar.Origem                := 'C';
+  FContasaPagar.IDWS                  := FRegistro.Protocolo;
 
   PopularVencimentosaPagar(FContasaPagar.VencimentosaPagar);
 end;
@@ -670,7 +680,7 @@ begin
   Vencimentos.Valor      := FRegistro.GetValorContasaPagar;
   Vencimentos.Titulo     := FRegistro.Protocolo;
   Vencimentos.Post;
-  IncluirBaixaVencimentosaPagar(Vencimentos);
+  //IncluirBaixaVencimentosaPagar(Vencimentos);
 end;
 
 procedure TImportadorCPG.IncluirBaixaVencimentosaPagar(Vencimento: IVencimentosaPagar);
@@ -697,6 +707,12 @@ begin
   FContasaPagar.Post;
 end;
 
+procedure TImportadorCPG.TratarRegistroJaImportado;
+begin
+  if FContasaPagar.FindIDWS(FRegistro.Protocolo) then
+    FContasaPagar.Delete;
+end;
+
 procedure TImportador.ImportarMovimento(Movimento: IMovimentoFinanceiro);
 var
   ListaRegistro: TListaRegistros;
@@ -708,8 +724,9 @@ begin
       Movimento.PopularListaRegistro(ListaRegistro);
       for I := 0 to ListaRegistro.Count - 1 do
       begin
-        Movimento.Append;
         Movimento.Registro := ListaRegistro[I];
+        Movimento.TratarRegistroJaImportado;
+        Movimento.Append;
         try
           if Movimento.GetTipo = 'CRE' then
             Movimento.Registro.ValidarCustasFechadas;

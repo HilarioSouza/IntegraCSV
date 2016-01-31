@@ -67,6 +67,12 @@ type
     lblTipoDoc: TLabel;
     lblAgenteCob: TLabel;
     sptHeader: TSplitter;
+    qryMainCPG_CON_CODIGO: TStringField;
+    qryMainCPG_TDC_CODIGO: TStringField;
+    lblCPG_CON: TLabel;
+    detCPG_CON: TDBEdit;
+    lblCPG_TDC: TLabel;
+    detCPG_TDC: TDBEdit;
     procedure FormCreate(Sender: TObject);
     procedure btnSalvarClick(Sender: TObject);
   private

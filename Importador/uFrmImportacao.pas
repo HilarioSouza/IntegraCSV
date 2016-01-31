@@ -78,7 +78,9 @@ begin
     AtualizarQueries;
   end;
   if GetLogger.HasLog then
-    GetLogger.ShowLog;
+    GetLogger.ShowLog
+  else
+    ShowMessage('Importação concluída.');
 end;
 
 procedure TfrmImportacao.sbtCaminhoArquivoClick(Sender: TObject);

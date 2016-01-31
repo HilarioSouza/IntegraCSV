@@ -112,7 +112,7 @@ begin
   FEST_Codigo := Query.FieldByName('EST').AsString;
   FCRD_Codigo := Query.FieldByName('CRD').AsString;
   FCRS_Codigo := Query.FieldByName('CRS').AsString;
-  FCRS_Codigo := Query.FieldByName('FRN').AsString;
+  FFRN_CNPJ   := Query.FieldByName('FRN').AsString;
   FCON_Codigo := Query.FieldByName('CON').AsString;
   FTDC_Codigo := Query.FieldByName('TDC').AsString;
   Query.Close;
