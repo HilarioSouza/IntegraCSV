@@ -44,7 +44,7 @@ type
     constructor Create(const EMP_Codigo: String);
   end;
 
-  TVencimentoCRE = class
+  TDadosVencimentoCRE = class
     COB_Codigo: String;
     TDC_Codigo: String;
     constructor Create(const EMP_Codigo: String);
@@ -132,9 +132,9 @@ begin
   end;
 end;
 
-{ TVencimentoCRE }
+{ TDadosVencimentoCRE }
 
-constructor TVencimentoCRE.Create(const EMP_Codigo: String);
+constructor TDadosVencimentoCRE.Create(const EMP_Codigo: String);
 var
   Query: TFDQuery;
 begin

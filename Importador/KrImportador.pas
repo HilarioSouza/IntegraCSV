@@ -122,6 +122,8 @@ type
     FContasaReceber: IContasaReceber;
     FDadosServices: TEstabelecimento;
     FDadosCartorio: TEstabelecimento;
+    FDadosServico: TServico;
+    FDadosVenc: TDadosVencimentoCRE;
     procedure PopularVencimentosaReceber(Vencimentos: IVencimentosaReceber);
     procedure PopularServicosaReceber(Servicos: IServicosaReceber);
     procedure PopularRateiosaReceber(Rateios: IRateiosaReceber);
@@ -135,6 +137,7 @@ type
     function FindIDWS(const IDWS: String): Boolean;
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
+    destructor Destroy; override;
     function GetCodigo: String;
     function GetTipo: String;
   end;
@@ -155,6 +158,7 @@ type
     procedure TratarRegistroJaImportado;
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
+    destructor Destroy; override;
     function GetCodigo: String;
     function GetTipo: String;
   end;
@@ -177,7 +181,8 @@ type
 implementation
 
 uses System.SysUtils, uUtils, uInterfaceQuery, FireDAC.Comp.Client, iwSystem,
-  uFuncoesIni, System.Math, uDBUtils, udmConnect, uAuditoria, uLogger;
+  uFuncoesIni, System.Math, uDBUtils, udmConnect, uAuditoria, uLogger,
+  Winapi.Windows;
 
 const
   IdxProtocolo        = 0;
@@ -371,14 +376,26 @@ end;
 constructor TMovimentoCRE.Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
 begin
   inherited;
-  FDadosServices := TEstabelecimento.Create(FEMP_Codigo, tidServices);
-  FDadosCartorio := TEstabelecimento.Create(FEMP_Codigo, tidCartorio);
+  FDadosServices  := TEstabelecimento.Create(FEMP_Codigo, tidServices);
+  FDadosCartorio  := TEstabelecimento.Create(FEMP_Codigo, tidCartorio);
+  FDadosVenc      := TDadosVencimentoCRE.Create(FEMP_Codigo);
+  FDadosServico   := TServico.Create(FEMP_Codigo);
   FContasaReceber := Financeiro.GetContasaReceber;
 end;
 
 procedure TMovimentoCRE.Delete;
 begin
   FContasaReceber.Delete;
+end;
+
+destructor TMovimentoCRE.Destroy;
+begin
+  FreeAndNil(FDadosServices);
+  FreeAndNil(FDadosCartorio);
+  FreeAndNil(FDadosVenc);
+  FreeAndNil(FDadosServico);
+  FContasaReceber := nil;
+  inherited;
 end;
 
 function TMovimentoCRE.FindIDWS(const IDWS: String): Boolean;
@@ -463,8 +480,8 @@ begin
   try
     Vencimentos.Vencimento     := FContasaReceber.Emissao + 1;
     Vencimentos.Valor          := FRegistro.GetValorVencimento;
-    Vencimentos.AgenteCobrador := FRegistro.AgenteCobradorAG;
-    Vencimentos.TipoDocumento  := FDadosServices.TipoDocumentoAG;
+    Vencimentos.AgenteCobrador := FDadosVenc.COB_Codigo;
+    Vencimentos.TipoDocumento  := FDadosVenc.TDC_Codigo;
     Vencimentos.Post;
   except
     on E: Exception do
@@ -489,8 +506,8 @@ end;
 procedure TMovimentoCRE.PopularServicosaReceber(Servicos: IServicosaReceber);
 begin
   Servicos.Append;
-  Servicos.Servico    := FRegistro.ServicoAG;
-  Servicos.Modalidade := FRegistro.ModalidadeAG;
+  Servicos.Servico    := FDadosServico.SER_Codigo;
+  Servicos.Modalidade := FDadosServico.MDS_Codigo;
   Servicos.Valor      := FRegistro.GetValorVencimento;
   Servicos.Post;
 //  PopularComissionadosaReceber(Servicos.ComissionadosServicosaReceber);
@@ -599,29 +616,29 @@ begin
   try
     TDBUtils.MainServer.StartTransaction;
     FFinanceiro.StartTransaction;
+    Leitor.LerArquivo(cCaminhoArquivo);
     ImportadorCRE := nil;
     ImportadorCPG := nil;
     try
-      Leitor.LerArquivo(cCaminhoArquivo);
       ImportadorCRE := TMovimentoCRE.Create(FFinanceiro, cEMP_Codigo, Leitor.IMP_ID);
       ImportarMovimento(ImportadorCRE, Leitor.ListaRegistros);
       ImportadorCPG := TMovimentoCPG.Create(FFinanceiro, cEMP_Codigo, Leitor.IMP_ID);
       ImportarMovimento(ImportadorCPG, Leitor.ListaRegistros);
       Leitor.GravarImportacao;
-      if GetLogger.HasLog then
-      begin
-        FFinanceiro.Rollback;
-        TDBUtils.MainServer.Rollback;
-        GetLogger.SaveLog(gsAppPath + gsAppName + '.log');
-      end
-      else
-      begin
-        FFinanceiro.Commit;
-        TDBUtils.MainServer.Commit;
-      end;
     finally
       FreeAndNil(ImportadorCRE);
-      FreeAndNil(ImportadorCPG);
+      FreeAndnil(ImportadorCPG);
+    end;
+    if GetLogger.HasLog then
+    begin
+      FFinanceiro.Rollback;
+      TDBUtils.MainServer.Rollback;
+      GetLogger.SaveLog(gsAppPath + gsAppName + '.log');
+    end
+    else
+    begin
+      FFinanceiro.Commit;
+      TDBUtils.MainServer.Commit;
     end;
   except
     on E: Exception do
@@ -656,6 +673,14 @@ end;
 procedure TMovimentoCPG.Delete;
 begin
   FContasaPagar.Delete;
+end;
+
+destructor TMovimentoCPG.Destroy;
+begin
+  FreeAndNil(FDadosEST);
+  FContasaPagar := nil;
+  FBaixasaPagar := nil;
+  inherited;
 end;
 
 function TMovimentoCPG.FindIDWS(const IDWS: String): Boolean;
@@ -805,19 +830,24 @@ end;
 
 procedure TImportador.DeletarMovimentosImportados;
 var
-  MovimentoCRE: IMovimentoFinanceiro;
-  MovimentoCPG: IMovimentoFinanceiro;
+  MovimentoCRE: TMovimentoCRE;
+  MovimentoCPG: TMovimentoCPG;
 begin
-  MovimentoCRE := nil;
-  MovimentoCPG := nil;
   try
-    MovimentoCRE := TMovimentoCRE.Create(FFinanceiro, FEmp_Codigo, FImportacao_ID);
-    DeletarMovimentos(MovimentoCRE);
-    MovimentoCPG := TMovimentoCRE.Create(FFinanceiro, FEmp_Codigo, FImportacao_ID);
-    DeletarMovimentos(MovimentoCPG);
-  finally
-    FreeAndNil(MovimentoCRE);
-    FreeAndNil(MovimentoCPG);
+    MovimentoCRE := nil;
+    MovimentoCPG := nil;
+    try
+      MovimentoCRE := TMovimentoCRE.Create(FFinanceiro, FEmp_Codigo, FImportacao_ID);
+      DeletarMovimentos(MovimentoCRE);
+      MovimentoCPG := TMovimentoCPG.Create(FFinanceiro, FEmp_Codigo, FImportacao_ID);
+      DeletarMovimentos(MovimentoCPG);
+    finally
+      FreeAndNil(MovimentoCRE);
+      FreeAndNil(MovimentoCPG);
+    end;
+  except
+    on E: Exception do
+      raise Exception.Create('Não foi possível deletar os movimentos importados no Fortes Financeiro. Exceção: ' + e.Message);
   end;
 end;
 
@@ -826,7 +856,7 @@ var
   Lista: TListaRegistros;
   I: Integer;
 begin
-  Lista := TListaRegistros.Create(nil);
+  Lista := TListaRegistros.Create;
   try
     Movimento.PopularListaRegistro(Lista);
     for I := 0 to Lista.Count - 1 do

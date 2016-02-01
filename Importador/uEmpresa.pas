@@ -14,7 +14,7 @@ type
     FEST_Cartorio    : TEstabelecimento;
     FEST_ContasaPagar: TEstabelecimentoContasaPagar;
     FServico         : TServico;
-    FVencimento      : TVencimentoCRE;
+    FVencimento      : TDadosVencimentoCRE;
   public
     constructor Create(const EMP_Codigo: String);
     destructor Destroy; override;
@@ -53,7 +53,7 @@ begin
   FEST_Cartorio := TEstabelecimento.Create(FCodigo, tidCartorio);
   FEST_ContasaPagar := TEstabelecimentoContasaPagar.Create(FCodigo);
   FServico := TServico.Create(FCodigo);
-  FVencimento := TVencimentoCRE.Create(FCodigo);
+  FVencimento := TDadosVencimentoCRE.Create(FCodigo);
 end;
 
 destructor TEmpresa.Destroy;
