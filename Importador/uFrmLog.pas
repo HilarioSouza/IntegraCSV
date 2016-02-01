@@ -50,7 +50,7 @@ end;
 procedure TfrmLog.pnlButtonsResize(Sender: TObject);
 begin
   inherited;
-  btnOk.Left := Trunc((pnlButtons.Width / 2) + 40);
+  btnOk.Left := Trunc((frmLog.Width / 2) + 40);
 end;
 
 procedure TfrmLog.SetText(const Value: String);

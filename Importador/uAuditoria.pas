@@ -17,6 +17,7 @@ type
     Data: TDateTime;
     ID_Importacao: Integer;
     Existe: Boolean;
+    function ImportacaoExiste: Boolean;
     constructor Create(const EMP_Codigo: String; const IMP_ID: Integer);
   end;
 
@@ -60,12 +61,26 @@ begin
              '    AND AUD.ID = ' + IMP_ID.ToString.QuotedString +
              '    AND AUD.TIPO =''CRE'' ');
   Query.First;
-  Existe := not Query.Eof;
+  Existe := (not Query.Eof) and (ImportacaoExiste);
   if Existe then
   begin
     Data := Query.FieldByName('DATA').AsDateTime;
     RegistroOriginal := Query.FieldByName('REGISTRO').AsString;
   end;
+end;
+
+function TDadosAuditoria.ImportacaoExiste: Boolean;
+const
+  cSQL = ' SELECT COUNT(ID) FROM IMP WHERE IMP.EMP_CODIGO = :EMP_CODIGO AND IMP.ID = :IMP_ID ';
+var
+  Query: TFDQuery;
+begin
+  Query := NewQuery;
+  Query.SQL.Text := cSQL;
+  Query.ParamByName('EMP_CODIGO').AsString := Empresa;
+  Query.ParamByName('IMP_ID').AsInteger := ID_Importacao;
+  Query.Open;
+  Result := Query.FieldByName('COUNT').AsInteger = 1;
 end;
 
 end.

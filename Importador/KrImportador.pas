@@ -6,14 +6,6 @@ uses
   Classes, System.Types, System.Generics.Collections, IntfFinanceiro, uEstabelecimento;
 
 type
-  ILeitor = Interface
-    ['{A05F12A1-D8FF-48D2-B039-01A4A7CEECA6}']
-    function GetIMP_ID: Integer;
-    function GetEMP_Codigo: String;
-    property IMP_ID:Integer read GetIMP_ID;
-    property EMP_Codigo: String read GetEMP_Codigo;
-    procedure LerArquivo(Filename: String);
-  end;
 
   TClasseBase = class(TPersistent)
   private
@@ -46,6 +38,8 @@ type
     ModalidadeAG     : String;
     AgenteCobradorAG : String;
     TipoDocumentoAG  : String;
+    CPG_Codigo       : String;
+    CRE_Codigo       : String;
     Linha            : String;
     NumLinha         : Integer;
     procedure ValidarCustasFechadas;
@@ -57,23 +51,39 @@ type
 
   TListaRegistros = class(TObjectList<TRegistro>);
 
+  ILeitor = Interface
+    ['{A05F12A1-D8FF-48D2-B039-01A4A7CEECA6}']
+    function GetIMP_ID: Integer;
+    function GetEMP_Codigo: String;
+    property IMP_ID:Integer read GetIMP_ID;
+    property EMP_Codigo: String read GetEMP_Codigo;
+    procedure LerArquivo(Filename: String);
+    function GravarImportacao: Integer;
+    function GetLista: TListaRegistros;
+    //
+    property ListaRegistros: TListaRegistros read GetLista;
+  end;
+
   TLeitorCSV = class(TClasseBase, ILeitor)
   private
+    FListaRegistros: TListaRegistros;
     FEMP_Codigo: String;
     LinhaRegistro: String;
     FIMP_ID: Integer;
     procedure PopularDadosRegistro(Registro: TRegistro);
-    procedure GravarRegistrosNoBanco(ListaRegistros: TListaRegistros);
+    procedure GravarRegistrosNoBanco;
     procedure GravarRegistro(Registro: TRegistro);
-    function GravarImportacao: Integer;
     function GetIMP_ID: Integer;
     function GetEMP_Codigo: String;
+    function GetLista: TListaRegistros;
   published
+    constructor Create(const EMP_Codigo: String);
+    destructor Destroy; override;
+    procedure LerArquivo(Filename: String);
+    function GravarImportacao: Integer;
     property IMP_ID:Integer read GetIMP_ID;
     property EMP_Codigo: String read GetEMP_Codigo;
-    procedure LerArquivo(Filename: String);
-    constructor Create(const EMP_Codigo: String);
-    class procedure DesfazerImportacao(const EMP_Codigo: String; const IMP_ID: Integer);
+    property ListaRegistros: TListaRegistros read GetLista;
   end;
 
   IMovimentoFinanceiro = Interface
@@ -84,16 +94,17 @@ type
     Procedure Post;
     procedure Cancel;
     procedure SetRegistro(const Value: TRegistro);
-    procedure AtualizarRegistro(const Codigo: String);
     function GetRegistro: TRegistro;
     function GetCodigo: String;
     function GetTipo: String;
     procedure TratarRegistroJaImportado;
+    procedure Delete;
+    function FindIDWS(const IDWS: String): Boolean;
     //
     property Registro: TRegistro read GetRegistro write SetRegistro;
   end;
 
-  TImportadorBase = class(TClasseBase)
+  TMovimentoBase = class(TClasseBase)
   private
     FRegistro: TRegistro;
     FEMP_Codigo: String;
@@ -106,7 +117,7 @@ type
     property Registro: TRegistro read GetRegistro write SetRegistro;
   end;
 
-  TImportadorCRE = class(TImportadorBase, IMovimentoFinanceiro)
+  TMovimentoCRE = class(TMovimentoBase, IMovimentoFinanceiro)
   private
     FContasaReceber: IContasaReceber;
     FDadosServices: TEstabelecimento;
@@ -115,19 +126,20 @@ type
     procedure PopularServicosaReceber(Servicos: IServicosaReceber);
     procedure PopularRateiosaReceber(Rateios: IRateiosaReceber);
     procedure PopularComissionadosaReceber(Comissionados: IComissionadosServicosaReceber);
-    procedure AtualizarRegistro(const Codigo: String);
+    procedure TratarRegistroJaImportado;
     procedure Popular;
     procedure Append;
     Procedure Post;
     procedure Cancel;
-    procedure TratarRegistroJaImportado;
+    procedure Delete;
+    function FindIDWS(const IDWS: String): Boolean;
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
     function GetCodigo: String;
     function GetTipo: String;
   end;
 
-  TImportadorCPG = class(TImportadorBase, IMovimentoFinanceiro)
+  TMovimentoCPG = class(TMovimentoBase, IMovimentoFinanceiro)
   private
     FContasaPagar: IContasaPagar;
     FBaixasaPagar: IBaixaVencimentoaPagar;
@@ -136,8 +148,9 @@ type
     procedure Append;
     Procedure Post;
     procedure Cancel;
+    procedure Delete;
+    function FindIDWS(const IDWS: String): Boolean;
     procedure PopularVencimentosaPagar(Vencimentos: IVencimentosaPagar);
-    procedure AtualizarRegistro(const Codigo: String);
     procedure IncluirBaixaVencimentosaPagar(Vencimento: IVencimentosaPagar);
     procedure TratarRegistroJaImportado;
   public
@@ -149,12 +162,16 @@ type
   TImportador = class
   private
     FEmp_Codigo: String;
+    FImportacao_ID: Integer;
     FFinanceiro: IFinanceiro;
     procedure PopularFinanceiroAG;
+    procedure DeletarMovimentosImportados;
+    procedure DeletarMovimentos(Movimento: IMovimentoFinanceiro);
   public
     constructor Create(const EMP_Codigo: String);
     procedure ImportarArquivo(const cEMP_Codigo, cCaminhoArquivo: String);
-    Procedure ImportarMovimento(Movimento: IMovimentoFinanceiro);
+    Procedure ImportarMovimento(Movimento: IMovimentoFinanceiro; ListaRegistro: TListaRegistros);
+    procedure DesfazerImportacao(const IMP_ID: Integer);
   end;
 
 implementation
@@ -187,7 +204,6 @@ procedure TLeitorCSV.LerArquivo(Filename: String);
 var
   Registro: TRegistro;
   Arquivo: Textfile;
-  Lista: TListaRegistros;
   ArquivoAberto: Boolean;
 begin
   ArquivoAberto := False;
@@ -198,8 +214,7 @@ begin
   AssignFile(Arquivo, FileName);
   try
     try
-      FIMP_ID := GravarImportacao;
-      Lista := TListaRegistros.Create;
+      FIMP_ID := TDBUtils.GetProxID('IMP');
       FileMode := fmOpenRead;
       Reset(Arquivo);
       ArquivoAberto := True;
@@ -208,11 +223,10 @@ begin
       begin
         Readln(Arquivo, LinhaRegistro);
         Registro := TRegistro.Create;
-        Lista.Add(TRegistro(Registro));
+        FListaRegistros.Add(TRegistro(Registro));
         PopularDadosRegistro(Registro);
-        Registro.NumLinha := Lista.Count + 1;
+        Registro.NumLinha := FListaRegistros.Count + 1;
       end;
-      GravarRegistrosNoBanco(Lista);
     finally
       if ArquivoAberto then
         CloseFile(Arquivo);
@@ -223,26 +237,26 @@ begin
   end;
 end;
 
-procedure TLeitorCSV.GravarRegistrosNoBanco(ListaRegistros: TListaRegistros);
+procedure TLeitorCSV.GravarRegistrosNoBanco;
 var
   I: Integer;
 begin
-  for I := 0 to ListaRegistros.Count-1 do
+  for I := 0 to FListaRegistros.Count-1 do
   begin
-    GravarRegistro(ListaRegistros[I]);
+    GravarRegistro(FListaRegistros[I]);
   end;
 end;
 
 constructor TLeitorCSV.Create(const EMP_Codigo: String);
 begin
   Self.FEMP_Codigo := EMP_Codigo;
+  FListaRegistros := TListaRegistros.Create;
 end;
 
-class procedure TLeitorCSV.DesfazerImportacao(const EMP_Codigo: String; const IMP_ID: Integer);
+destructor TLeitorCSV.Destroy;
 begin
-  TDBUtils.QueryExecute(' DELETE FROM IMP '+
-                        '  WHERE IMP.EMP_CODIGO = ' + EMP_Codigo.QuotedString +
-                        '    AND IMP.ID = ' + IMP_ID.ToString);
+  FreeAndNil(FListaRegistros);
+  inherited;
 end;
 
 function TLeitorCSV.GetEMP_Codigo: String;
@@ -255,6 +269,11 @@ begin
   Result := FIMP_ID;
 end;
 
+function TLeitorCSV.GetLista: TListaRegistros;
+begin
+  Result := FListaRegistros;
+end;
+
 function TLeitorCSV.GravarImportacao: Integer;
 var
   ID: Integer;
@@ -262,6 +281,7 @@ begin
   ID := TDBUtils.GetProxID('IMP');
   TDBUtils.QueryExecute(' INSERT INTO IMP (EMP_CODIGO, ID, DATA) '+
                         ' VALUES (' + FEMP_Codigo.QuotedString +',' + ID.ToString + ',' + FormatDateTime('yyyy-mm-dd', Now).QuotedString +')');
+  GravarRegistrosNoBanco;
   Result := ID;
 end;
 
@@ -269,10 +289,10 @@ procedure TLeitorCSV.GravarRegistro(Registro: TRegistro);
 const
   SQL = ' INSERT INTO REG (EMP_Codigo, ID, Protocolo, DataCadastro, ValorXimenes, Despachante, Distribuidor, ValorCartorio, DAJ, '+
         ' ValorTotalCustas, Convenio, CustasFechadas, ValorXimenesGestao, ValorXimenesAut, ValorXimenesRec, '+
-        ' ValorXimenesOutros, Representante, IMP_ID, NumLinha) '+
+        ' ValorXimenesOutros, Representante, IMP_ID, NumLinha, CPG_CODIGO, CRE_CODIGO) '+
         ' values (:EMP_Codigo, :ID, :Protocolo, :DataCadastro, :VlrXimenes, :Despachante, :Distribuidor, :VlrCartorio, :DAJ, '+
         ' :VlrTotalCustas, :Convenio, :CustasFechadas, :VlrXimenesGestao, :VlrXimenesAut, :VlrXimenesRec, '+
-        ' :VlrXimenesOutros, :Representante, :IMP_ID, :NumLinha)';
+        ' :VlrXimenesOutros, :Representante, :IMP_ID, :NumLinha, :CPG_CODIGO, :CRE_CODIGO)';
 var
   Query: TFDQuery;
 begin
@@ -297,6 +317,8 @@ begin
   Query.ParamByName('VlrXimenesOutros').AsFloat := Registro.VlrXimenesOutros;
   Query.ParamByName('Representante').AsString   := Registro.Representante;
   Query.ParamByName('NumLinha').AsInteger       := Registro.NumLinha;
+  Query.ParamByName('CPG_Codigo').AsString      := Registro.CPG_Codigo;
+  Query.ParamByName('CRE_Codigo').AsString      := Registro.CRE_Codigo;
   Query.ExecSQL;
 end;
 
@@ -325,40 +347,28 @@ begin
   Registro.Linha            := LinhaRegistro;
 end;
 
-function TImportadorBase.GetRegistro: TRegistro;
+function TMovimentoBase.GetRegistro: TRegistro;
 begin
   Result := FRegistro;
 end;
 
-constructor TImportadorBase.Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
+constructor TMovimentoBase.Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
 begin
   FEMP_Codigo := EMP_Codigo;
   FIMP_ID := IMP_ID;
 end;
 
-procedure TImportadorCRE.Append;
+procedure TMovimentoCRE.Append;
 begin
   FContasaReceber.Append;
 end;
 
-procedure TImportadorCRE.AtualizarRegistro(const Codigo: String);
-var
-  Query: TFDQuery;
-begin
-  if Codigo.IsEmpty then
-    Exit;
-  Query := NewQuery('UPDATE REG SET REG.CRE_CODIGO = ' + Codigo.QuotedString +
-                    ' WHERE REG.ID = ' + FRegistro.ID.ToString +
-                    ' AND REG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString);
-  Query.ExecSQL;
-end;
-
-procedure TImportadorCRE.Cancel;
+procedure TMovimentoCRE.Cancel;
 begin
   FContasaReceber.Cancel;
 end;
 
-constructor TImportadorCRE.Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
+constructor TMovimentoCRE.Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
 begin
   inherited;
   FDadosServices := TEstabelecimento.Create(FEMP_Codigo, tidServices);
@@ -366,17 +376,27 @@ begin
   FContasaReceber := Financeiro.GetContasaReceber;
 end;
 
-function TImportadorCRE.GetCodigo: String;
+procedure TMovimentoCRE.Delete;
+begin
+  FContasaReceber.Delete;
+end;
+
+function TMovimentoCRE.FindIDWS(const IDWS: String): Boolean;
+begin
+  Result := FContasaReceber.FindIDWS(IDWS);
+end;
+
+function TMovimentoCRE.GetCodigo: String;
 begin
   FContasaReceber.Codigo;
 end;
 
-function TImportadorCRE.GetTipo: String;
+function TMovimentoCRE.GetTipo: String;
 begin
   Result := 'CRE';
 end;
 
-procedure TImportadorBase.PopularListaRegistro(ListaRegistro: TListaRegistros);
+procedure TMovimentoBase.PopularListaRegistro(ListaRegistro: TListaRegistros);
 var
   Registro: TRegistro;
   Query: TFDQuery;
@@ -417,12 +437,12 @@ begin
   end;
 end;
 
-procedure TImportadorBase.SetRegistro(const Value: TRegistro);
+procedure TMovimentoBase.SetRegistro(const Value: TRegistro);
 begin
   FRegistro := Value;
 end;
 
-procedure TImportadorCRE.Popular;
+procedure TMovimentoCRE.Popular;
 begin
   FContasaReceber.Cliente               := FRegistro.Convenio;
   FContasaReceber.Estabelecimento       := FDadosServices.EST_Codigo;//Só porque é obrigatório.
@@ -437,14 +457,14 @@ begin
   PopularRateiosaReceber(FContasaReceber.RateiosaReceber);
 end;
 
-procedure TImportadorCRE.PopularVencimentosaReceber(Vencimentos: IVencimentosaReceber);
+procedure TMovimentoCRE.PopularVencimentosaReceber(Vencimentos: IVencimentosaReceber);
 begin
   Vencimentos.Append;
   try
     Vencimentos.Vencimento     := FContasaReceber.Emissao + 1;
     Vencimentos.Valor          := FRegistro.GetValorVencimento;
     Vencimentos.AgenteCobrador := FRegistro.AgenteCobradorAG;
-    Vencimentos.TipoDocumento  := FRegistro.TipoDocumentoAG;
+    Vencimentos.TipoDocumento  := FDadosServices.TipoDocumentoAG;
     Vencimentos.Post;
   except
     on E: Exception do
@@ -455,18 +475,18 @@ begin
   end;
 end;
 
-procedure TImportadorCRE.Post;
+procedure TMovimentoCRE.Post;
 begin
   FContasaReceber.Post;
 end;
 
-procedure TImportadorCRE.TratarRegistroJaImportado;
+procedure TMovimentoCRE.TratarRegistroJaImportado;
 begin
   if FContasaReceber.FindIDWS(FRegistro.Protocolo) then
     FContasaReceber.Delete;
 end;
 
-procedure TImportadorCRE.PopularServicosaReceber(Servicos: IServicosaReceber);
+procedure TMovimentoCRE.PopularServicosaReceber(Servicos: IServicosaReceber);
 begin
   Servicos.Append;
   Servicos.Servico    := FRegistro.ServicoAG;
@@ -476,7 +496,7 @@ begin
 //  PopularComissionadosaReceber(Servicos.ComissionadosServicosaReceber);
 end;
 
-procedure TImportadorCRE.PopularComissionadosaReceber(Comissionados: IComissionadosServicosaReceber);
+procedure TMovimentoCRE.PopularComissionadosaReceber(Comissionados: IComissionadosServicosaReceber);
 begin
   Comissionados.Append;
   Comissionados.VendedorRepresentante := FRegistro.Representante;
@@ -484,7 +504,7 @@ begin
   Comissionados.Post;
 end;
 
-procedure TImportadorCRE.PopularRateiosaReceber(Rateios: IRateiosaReceber);
+procedure TMovimentoCRE.PopularRateiosaReceber(Rateios: IRateiosaReceber);
 begin
   Rateios.Append;
   Rateios.Estabelecimento    := FDadosServices.EST_Codigo;
@@ -571,8 +591,8 @@ end;
 procedure TImportador.ImportarArquivo(const cEMP_Codigo, cCaminhoArquivo: String);
 var
   Leitor: ILeitor;
-  ImportadorCRE: TImportadorCRE;
-  ImportadorCPG: TImportadorCPG;
+  ImportadorCRE: TMovimentoCRE;
+  ImportadorCPG: TMovimentoCPG;
 begin
   GetLogger.Clear;
   Leitor := TLeitorCSV.Create(cEMP_Codigo);
@@ -583,10 +603,11 @@ begin
     ImportadorCPG := nil;
     try
       Leitor.LerArquivo(cCaminhoArquivo);
-      ImportadorCRE := TImportadorCRE.Create(FFinanceiro, cEMP_Codigo, Leitor.IMP_ID);
-      ImportarMovimento(ImportadorCRE);
-      ImportadorCPG := TImportadorCPG.Create(FFinanceiro, cEMP_Codigo, Leitor.IMP_ID);
-      ImportarMovimento(ImportadorCPG);
+      ImportadorCRE := TMovimentoCRE.Create(FFinanceiro, cEMP_Codigo, Leitor.IMP_ID);
+      ImportarMovimento(ImportadorCRE, Leitor.ListaRegistros);
+      ImportadorCPG := TMovimentoCPG.Create(FFinanceiro, cEMP_Codigo, Leitor.IMP_ID);
+      ImportarMovimento(ImportadorCPG, Leitor.ListaRegistros);
+      Leitor.GravarImportacao;
       if GetLogger.HasLog then
       begin
         FFinanceiro.Rollback;
@@ -612,29 +633,19 @@ begin
   end;
 end;
 
-{ TImportadorCPG }
+{ TMovimentoCPG }
 
-procedure TImportadorCPG.Append;
+procedure TMovimentoCPG.Append;
 begin
   FContasaPagar.Append;
 end;
 
-procedure TImportadorCPG.AtualizarRegistro(const Codigo: String);
-var
-  Query: TFDQuery;
-begin
-  Query := NewQuery('UPDATE REG SET REG.CPG_CODIGO = ' + Codigo.QuotedString +
-                    ' WHERE REG.ID = ' + FRegistro.ID.ToString +
-                    ' AND REG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString);
-  Query.ExecSQL;
-end;
-
-procedure TImportadorCPG.Cancel;
+procedure TMovimentoCPG.Cancel;
 begin
   FContasaPagar.Cancel;
 end;
 
-constructor TImportadorCPG.Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
+constructor TMovimentoCPG.Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
 begin
   inherited;
   FDadosEST := TEstabelecimentoContasaPagar.Create(FEMP_Codigo, tidContasaPagar);
@@ -642,17 +653,27 @@ begin
   FBaixasaPagar := Financeiro.GetBaixaVencimentoaPagar;
 end;
 
-function TImportadorCPG.GetCodigo: String;
+procedure TMovimentoCPG.Delete;
+begin
+  FContasaPagar.Delete;
+end;
+
+function TMovimentoCPG.FindIDWS(const IDWS: String): Boolean;
+begin
+  Result := FContasaPagar.FindIDWS(IDWS);
+end;
+
+function TMovimentoCPG.GetCodigo: String;
 begin
   Result := FContasaPagar.Codigo;
 end;
 
-function TImportadorCPG.GetTipo: String;
+function TMovimentoCPG.GetTipo: String;
 begin
   Result := 'CPG';
 end;
 
-procedure TImportadorCPG.Popular;
+procedure TMovimentoCPG.Popular;
 begin
   FContasaPagar.Fornecedor            := FDadosEST.FRN_CNPJ;
   FContasaPagar.Documento             := FRegistro.Protocolo;
@@ -673,7 +694,7 @@ begin
   PopularVencimentosaPagar(FContasaPagar.VencimentosaPagar);
 end;
 
-procedure TImportadorCPG.PopularVencimentosaPagar(Vencimentos: IVencimentosaPagar);
+procedure TMovimentoCPG.PopularVencimentosaPagar(Vencimentos: IVencimentosaPagar);
 begin
   Vencimentos.Append;
   Vencimentos.Vencimento := FRegistro.DataCadastro;
@@ -683,7 +704,7 @@ begin
   //IncluirBaixaVencimentosaPagar(Vencimentos);
 end;
 
-procedure TImportadorCPG.IncluirBaixaVencimentosaPagar(Vencimento: IVencimentosaPagar);
+procedure TMovimentoCPG.IncluirBaixaVencimentosaPagar(Vencimento: IVencimentosaPagar);
 begin
   FBaixasaPagar.Append;
   try
@@ -702,48 +723,40 @@ begin
   end;
 end;
 
-procedure TImportadorCPG.Post;
+procedure TMovimentoCPG.Post;
 begin
   FContasaPagar.Post;
 end;
 
-procedure TImportadorCPG.TratarRegistroJaImportado;
+procedure TMovimentoCPG.TratarRegistroJaImportado;
 begin
   if FContasaPagar.FindIDWS(FRegistro.Protocolo) then
     FContasaPagar.Delete;
 end;
 
-procedure TImportador.ImportarMovimento(Movimento: IMovimentoFinanceiro);
+procedure TImportador.ImportarMovimento(Movimento: IMovimentoFinanceiro; ListaRegistro: TListaRegistros);
 var
-  ListaRegistro: TListaRegistros;
   I: Integer;
 begin
-  ListaRegistro := TListaRegistros.Create;
   try
-    try
-      Movimento.PopularListaRegistro(ListaRegistro);
-      for I := 0 to ListaRegistro.Count - 1 do
-      begin
-        Movimento.Registro := ListaRegistro[I];
-        Movimento.TratarRegistroJaImportado;
-        Movimento.Append;
-        try
-          if Movimento.GetTipo = 'CRE' then
-            Movimento.Registro.ValidarCustasFechadas;
-          Movimento.Popular;
-          Movimento.Post;
-        except
-          on E: Exception do
-          begin
-            Movimento.Cancel;
-            GetLogger.Log(Movimento.Registro, E.Message);
-          end;
+    for I := 0 to ListaRegistro.Count - 1 do
+    begin
+      Movimento.Registro := ListaRegistro[I];
+      Movimento.TratarRegistroJaImportado;
+      Movimento.Append;
+      try
+        if Movimento.GetTipo = 'CRE' then
+          Movimento.Registro.ValidarCustasFechadas;
+        Movimento.Popular;
+        Movimento.Post;
+      except
+        on E: Exception do
+        begin
+          Movimento.Cancel;
+          GetLogger.Log(Movimento.Registro, E.Message);
         end;
-        Movimento.AtualizarRegistro(Movimento.GetCodigo);
-        TAuditor.GravarAuditoria(Movimento);
       end;
-    finally
-      FreeAndNil(ListaRegistro);
+      TAuditor.GravarAuditoria(Movimento);
     end;
   except
     on E: Exception do
@@ -768,6 +781,59 @@ begin
   except
     on E: Exception do
       raise Exception.Create('Erro ao conectar com a DLL do AG. Exceção: ' + E.Message);
+  end;
+end;
+
+procedure TImportador.DesfazerImportacao(const IMP_ID: Integer);
+begin
+  FFinanceiro.StartTransaction;
+  try
+    FImportacao_ID := IMP_ID;
+    DeletarMovimentosImportados;
+    TDBUtils.QueryExecute(' DELETE FROM IMP '+
+                          '  WHERE IMP.EMP_CODIGO = ' + FEMP_Codigo.QuotedString +
+                          '    AND IMP.ID = ' + FImportacao_ID.ToString);
+    FFinanceiro.Commit;
+  except
+    on E: Exception do
+    begin
+      FFinanceiro.Rollback;
+      raise Exception.Create('Erro: Não foi possível desfazer a importação. Exceção: ' + E.Message);
+    end;
+  end;
+end;
+
+procedure TImportador.DeletarMovimentosImportados;
+var
+  MovimentoCRE: IMovimentoFinanceiro;
+  MovimentoCPG: IMovimentoFinanceiro;
+begin
+  MovimentoCRE := nil;
+  MovimentoCPG := nil;
+  try
+    MovimentoCRE := TMovimentoCRE.Create(FFinanceiro, FEmp_Codigo, FImportacao_ID);
+    DeletarMovimentos(MovimentoCRE);
+    MovimentoCPG := TMovimentoCRE.Create(FFinanceiro, FEmp_Codigo, FImportacao_ID);
+    DeletarMovimentos(MovimentoCPG);
+  finally
+    FreeAndNil(MovimentoCRE);
+    FreeAndNil(MovimentoCPG);
+  end;
+end;
+
+procedure TImportador.DeletarMovimentos(Movimento: IMovimentoFinanceiro);
+var
+  Lista: TListaRegistros;
+  I: Integer;
+begin
+  Lista := TListaRegistros.Create(nil);
+  try
+    Movimento.PopularListaRegistro(Lista);
+    for I := 0 to Lista.Count - 1 do
+      if Movimento.FindIDWS(Lista[I].Protocolo) then
+        Movimento.Delete;
+  finally
+    FreeAndNil(Lista);
   end;
 end;
 

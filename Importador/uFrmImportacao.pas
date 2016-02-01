@@ -101,11 +101,18 @@ begin
 end;
 
 procedure TfrmImportacao.btnDesfazerIMPClick(Sender: TObject);
+var
+  Importador: TImportador;
 begin
   inherited;
   if TMensagem.Confirmar('Deseja desfazer a importação?') then
   begin
-    TLeitorCSV.DesfazerImportacao(fqrIMP.FieldByName('EMP_Codigo').AsString, fqrIMP.FieldByName('ID').AsInteger);
+    try
+      Importador := TImportador.Create(fqrIMP.FieldByName('EMP_Codigo').AsString);
+      Importador.DesfazerImportacao(fqrIMP.FieldByName('ID').AsInteger);
+    finally
+      FreeAndNil(Importador);
+    end;
     ShowMessage('Importação desfeita!');
     AtualizarQueries;
   end

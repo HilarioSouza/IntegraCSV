@@ -15,8 +15,6 @@ inherited frmLog: TfrmLog
     Align = alClient
     ScrollBars = ssBoth
     TabOrder = 0
-    ExplicitWidth = 456
-    ExplicitHeight = 415
   end
   object pnlButtons: TPanel
     Left = 0
@@ -27,8 +25,6 @@ inherited frmLog: TfrmLog
     BevelOuter = bvNone
     TabOrder = 1
     OnResize = pnlButtonsResize
-    ExplicitTop = 415
-    ExplicitWidth = 456
     object btnOk: TButton
       Left = 484
       Top = 4
