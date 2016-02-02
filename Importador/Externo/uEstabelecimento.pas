@@ -50,6 +50,13 @@ type
     constructor Create(const EMP_Codigo: String);
   end;
 
+  TDadosBaixaCPG = class
+    CON_Codigo: String;
+    CRD_Juros: String;
+    CRD_Desc: String;
+    constructor Create(const EMP_Codigo: String);
+  end;
+
 implementation
 
 uses System.SysUtils, FireDAC.Comp.Client, uInterfaceQuery, uEmpresa;
@@ -144,6 +151,19 @@ begin
     COB_Codigo := Query.FieldByName('VDR_COB_CODIGO').AsString;
     TDC_Codigo := Query.FieldByName('VDR_TDC_CODIGO').AsString;
   end;
+end;
+
+{ TDadosBaixaCPG }
+
+constructor TDadosBaixaCPG.Create(const EMP_Codigo: String);
+var
+  Query: TFDQuery;
+begin
+  Query := NewQuery;
+  Query.Open('SELECT EMP.BVP_CRD_DESC, EMP.BVP_CRD_JUROS, EMP.BVP_CON_CODIGO FROM EMP WHERE EMP.CODIGO =' + EMP_Codigo.QuotedString);
+  CON_Codigo := Query.FieldByName('BVP_CON_CODIGO').AsString;
+  CRD_Juros := Query.FieldByName('BVP_CRD_JUROS').AsString;
+  CRD_Desc := Query.FieldByName('BVP_CRD_DESC').AsString;
 end;
 
 end.

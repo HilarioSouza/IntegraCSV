@@ -147,6 +147,7 @@ type
     FContasaPagar: IContasaPagar;
     FBaixasaPagar: IBaixaVencimentoaPagar;
     FDadosEST: TEstabelecimentoContasaPagar;
+    FDadosBaixa: TDadosBaixaCPG;
     procedure Popular;
     procedure Append;
     Procedure Post;
@@ -156,6 +157,7 @@ type
     procedure PopularVencimentosaPagar(Vencimentos: IVencimentosaPagar);
     procedure IncluirBaixaVencimentosaPagar(Vencimento: IVencimentosaPagar);
     procedure TratarRegistroJaImportado;
+    procedure DeletarBaixas;
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
     destructor Destroy; override;
@@ -280,14 +282,13 @@ begin
 end;
 
 function TLeitorCSV.GravarImportacao: Integer;
-var
-  ID: Integer;
 begin
-  ID := TDBUtils.GetProxID('IMP');
+  FIMP_ID := TDBUtils.GetProxID('IMP');
   TDBUtils.QueryExecute(' INSERT INTO IMP (EMP_CODIGO, ID, DATA) '+
-                        ' VALUES (' + FEMP_Codigo.QuotedString +',' + ID.ToString + ',' + FormatDateTime('yyyy-mm-dd', Now).QuotedString +')');
+                        ' VALUES (' + FEMP_Codigo.QuotedString +',' + FIMP_ID.ToString + ',' +
+                                      FormatDateTime('yyyy-mm-dd', Now).QuotedString +')');
   GravarRegistrosNoBanco;
-  Result := ID;
+  Result := FIMP_ID;
 end;
 
 procedure TLeitorCSV.GravarRegistro(Registro: TRegistro);
@@ -478,7 +479,7 @@ procedure TMovimentoCRE.PopularVencimentosaReceber(Vencimentos: IVencimentosaRec
 begin
   Vencimentos.Append;
   try
-    Vencimentos.Vencimento     := FContasaReceber.Emissao + 1;
+    Vencimentos.Vencimento     := FContasaReceber.Emissao;
     Vencimentos.Valor          := FRegistro.GetValorVencimento;
     Vencimentos.AgenteCobrador := FDadosVenc.COB_Codigo;
     Vencimentos.TipoDocumento  := FDadosVenc.TDC_Codigo;
@@ -585,12 +586,12 @@ var
 begin
   if CustasFechadas and (not Protocolo.IsEmpty) then
   begin
-    DadosAudit := TDadosAuditoria.Create(EMP_Codigo, IMP_ID);
+    DadosAudit := TDadosAuditoria.Create(Self);
     try
       if DadosAudit.Existe then
         raise Exception.Create('Este registro já foi enviado com as custas fechadas e portanto não será importado. '+ NEW_LINE +
                                ' Protocolo: ' +  Protocolo + ' Data: ' + TUtil.FormatarData(DadosAudit.Data) +
-                               ' ID da Importação: ' + DadosAudit.ID_Importacao.ToString + NEW_LINE +
+                               ' ID da Importação: ' + IMP_ID.ToString.QuotedString + NEW_LINE +
                                ' Registro original: ' + DadosAudit.RegistroOriginal);
     finally
       FreeAndNil(DadosAudit);
@@ -625,6 +626,7 @@ begin
       ImportadorCPG := TMovimentoCPG.Create(FFinanceiro, cEMP_Codigo, Leitor.IMP_ID);
       ImportarMovimento(ImportadorCPG, Leitor.ListaRegistros);
       Leitor.GravarImportacao;
+      TAuditor.GravarAuditoria(Leitor.ListaRegistros, Leitor.IMP_ID);
     finally
       FreeAndNil(ImportadorCRE);
       FreeAndnil(ImportadorCPG);
@@ -666,18 +668,28 @@ constructor TMovimentoCPG.Create(Financeiro: IFinanceiro; const EMP_Codigo: Stri
 begin
   inherited;
   FDadosEST := TEstabelecimentoContasaPagar.Create(FEMP_Codigo, tidContasaPagar);
+  FDadosBaixa := TDadosBaixaCPG.Create(FEMP_Codigo);
   FContasaPagar := Financeiro.GetContasaPagar;
   FBaixasaPagar := Financeiro.GetBaixaVencimentoaPagar;
 end;
 
+procedure TMovimentoCPG.DeletarBaixas;
+begin
+  //Deletar as baixas do CPG
+  FBaixasaPagar.Find(FContasaPagar.Codigo, FContasaPagar.VencimentosaPagar.Sequencial, FContasaPagar.VencimentosaPagar.Vencimento, 1);
+  FBaixasaPagar.Delete;
+end;
+
 procedure TMovimentoCPG.Delete;
 begin
+  DeletarBaixas;
   FContasaPagar.Delete;
 end;
 
 destructor TMovimentoCPG.Destroy;
 begin
   FreeAndNil(FDadosEST);
+  FreeAndNil(FDadosBaixa);
   FContasaPagar := nil;
   FBaixasaPagar := nil;
   inherited;
@@ -726,7 +738,6 @@ begin
   Vencimentos.Valor      := FRegistro.GetValorContasaPagar;
   Vencimentos.Titulo     := FRegistro.Protocolo;
   Vencimentos.Post;
-  //IncluirBaixaVencimentosaPagar(Vencimentos);
 end;
 
 procedure TMovimentoCPG.IncluirBaixaVencimentosaPagar(Vencimento: IVencimentosaPagar);
@@ -738,6 +749,10 @@ begin
     FBaixasaPagar.SequencialVencimento := Vencimento.Sequencial;
     FBaixasaPagar.Data                 := Vencimento.Vencimento;
     FBaixasaPagar.Valor                := Vencimento.Valor;
+    FBaixasaPagar.LAN_ContaFinanceira  := FDadosBaixa.CON_Codigo;
+    FBaixasaPagar.LAN_Historico        := 'BAIXA AUTOMÁTICA DA INTEGRAÇÃO VIA AGLIB.DLL';
+    FBaixasaPagar.LAN_CRD_Desconto     := FDadosBaixa.CRD_Desc;
+    FBaixasaPagar.LAN_CRD_Juros        := FDadosBaixa.CRD_Juros;
     FBaixasaPagar.Post;
   except
     on E: Exception do
@@ -751,6 +766,7 @@ end;
 procedure TMovimentoCPG.Post;
 begin
   FContasaPagar.Post;
+  IncluirBaixaVencimentosaPagar(FContasaPagar.VencimentosaPagar);
 end;
 
 procedure TMovimentoCPG.TratarRegistroJaImportado;
@@ -781,7 +797,6 @@ begin
           GetLogger.Log(Movimento.Registro, E.Message);
         end;
       end;
-      TAuditor.GravarAuditoria(Movimento);
     end;
   except
     on E: Exception do

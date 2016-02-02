@@ -7,18 +7,20 @@ uses KrImportador;
 type
   TAuditor = class
   public
-    class procedure GravarAuditoria(Movimento: IMovimentoFinanceiro);
+    class procedure GravarAuditoria(Lista: TListaRegistros; const IMP_ID: Integer);
   end;
 
   TDadosAuditoria = class
+  private
+    FRegistro: TRegistro;
+    function ImportacaoExiste: Boolean;
   public
     Empresa: String;
+    ID_Importacao: Integer;
     RegistroOriginal: String;
     Data: TDateTime;
-    ID_Importacao: Integer;
     Existe: Boolean;
-    function ImportacaoExiste: Boolean;
-    constructor Create(const EMP_Codigo: String; const IMP_ID: Integer);
+    constructor Create(Registro: TRegistro);
   end;
 
 implementation
@@ -28,40 +30,43 @@ uses
 
 { TAuditor }
 
-class procedure TAuditor.GravarAuditoria(Movimento: IMovimentoFinanceiro);
+class procedure TAuditor.GravarAuditoria(Lista: TListaRegistros; const IMP_ID: Integer);
 var
   Query: TFDQuery;
   aRegistro: TRegistro;
+  I: Integer;
 begin
-  aRegistro := Movimento.Registro;
-  if aRegistro.CustasFechadas then
+  for I := 0 to Lista.Count - 1 do
   begin
-    Query := NewQuery('INSERT INTO AUD (EMP_CODIGO, ID, PROTOCOLO, REGISTRO, DATA, TIPO) ' +
-                       '        VALUES (:EMP_CODIGO, :ID, :PROTOCOLO, :REGISTRO, :DATA, :TIPO)');
-    Query.ParamByName('EMP_CODIGO').AsString := aRegistro.EMP_Codigo;
-    Query.ParamByName('ID').AsInteger := TDBUtils.GetProxID('AUD');
-    Query.ParamByName('PROTOCOLO').AsString := aRegistro.Protocolo;
-    Query.ParamByName('REGISTRO').AsString := aRegistro.Linha;
-    Query.ParamByName('DATA').AsDateTime := Now;
-    Query.ParamByName('TIPO').AsString := Movimento.GetTipo;
-    Query.ExecSQL;
+    aRegistro := Lista[I];
+    if aRegistro.CustasFechadas then
+    begin
+      Query := NewQuery('INSERT INTO AUD (EMP_CODIGO, ID, PROTOCOLO, REGISTRO, DATA, IMP_ID) ' +
+                         '        VALUES (:EMP_CODIGO, :ID, :PROTOCOLO, :REGISTRO, :DATA, :IMP_ID)');
+      Query.ParamByName('EMP_CODIGO').AsString := aRegistro.EMP_Codigo;
+      Query.ParamByName('ID').AsInteger := TDBUtils.GetProxID('AUD');
+      Query.ParamByName('PROTOCOLO').AsString := aRegistro.Protocolo;
+      Query.ParamByName('REGISTRO').AsString := aRegistro.Linha;
+      Query.ParamByName('DATA').AsDateTime := Now;
+      Query.ParamByName('IMP_ID').AsInteger := IMP_ID;
+      Query.ExecSQL;
+    end;
   end;
 end;
 
 { TDadosAuditoria}
 
-constructor TDadosAuditoria.Create(const EMP_Codigo: String; const IMP_ID: Integer);
+constructor TDadosAuditoria.Create(Registro: TRegistro);
 var
   Query: TFDQuery;
 begin
-  Empresa := EMP_Codigo;
-  ID_Importacao := IMP_ID;
+  FRegistro := Registro;
   Query := NewQuery;
-  Query.Open(' SELECT * FROM AUD WHERE AUD.EMP_CODIGO = ' + EMP_Codigo.QuotedString +
-             '    AND AUD.ID = ' + IMP_ID.ToString.QuotedString +
-             '    AND AUD.TIPO =''CRE'' ');
+  Query.Open(' SELECT * FROM AUD WHERE AUD.EMP_CODIGO = ' + FRegistro.EMP_Codigo.QuotedString +
+             '    AND AUD.PROTOCOLO = ' + FRegistro.Protocolo.QuotedString);
   Query.First;
-  Existe := (not Query.Eof) and (ImportacaoExiste);
+  ID_Importacao := Query.FieldByName('IMP_ID').AsInteger;
+  Existe := (not Query.Eof) and ImportacaoExiste;
   if Existe then
   begin
     Data := Query.FieldByName('DATA').AsDateTime;
@@ -77,7 +82,7 @@ var
 begin
   Query := NewQuery;
   Query.SQL.Text := cSQL;
-  Query.ParamByName('EMP_CODIGO').AsString := Empresa;
+  Query.ParamByName('EMP_CODIGO').AsString := FREgistro.EMP_Codigo;
   Query.ParamByName('IMP_ID').AsInteger := ID_Importacao;
   Query.Open;
   Result := Query.FieldByName('COUNT').AsInteger = 1;
