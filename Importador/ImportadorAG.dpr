@@ -1,7 +1,7 @@
-program PrImportador;
+program ImportadorAG;
 
 uses
-  SimpleShareMem,
+  ShareMem,
   Forms,
   uMain in 'uMain.pas' {frmMain},
   KrImportador in 'KrImportador.pas',

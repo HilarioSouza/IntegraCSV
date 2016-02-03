@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{FFDAD798-50E9-49BA-B33C-61ADCF8D13DC}</ProjectGuid>
-        <MainSource>prImportador.dpr</MainSource>
+        <MainSource>ImportadorAG.dpr</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <TargetedPlatforms>1</TargetedPlatforms>
@@ -45,7 +45,7 @@
         <DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
         <DCC_E>false</DCC_E>
         <DCC_DebugInformation>1</DCC_DebugInformation>
-        <SanitizedProjectName>prImportador</SanitizedProjectName>
+        <SanitizedProjectName>ImportadorAG</SanitizedProjectName>
         <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;Winapi;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Locale>1046</VerInfo_Locale>
         <DCC_F>false</DCC_F>
@@ -75,7 +75,7 @@
         <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <DCC_UnitSearchPath>D:\Projetos\fortesreport-ce\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\..\.\fortesreport-ce\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_ExeOutput>..\..\.\ImportadorBin\bin</DCC_ExeOutput>
         <DCC_DcuOutput>..\..\.\ImportadorBin\dcu</DCC_DcuOutput>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
@@ -156,11 +156,12 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">prImportador.dpr</Source>
+                    <Source Name="MainSource">ImportadorAG.dpr</Source>
                 </Source>
                 <Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp210.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Program Files\FastReports\LibD21\dclfrxtee21.bpl">(untitled)</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>
@@ -174,21 +175,21 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\..\ImportadorBin\bin\prImportador.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\..\ImportadorBin\bin\ImportadorAG.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>prImportador.exe</RemoteName>
+                        <RemoteName>ImportadorAG.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="bin\prImportador.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="bin\ImportadorAG.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>prImportador.exe</RemoteName>
+                        <RemoteName>ImportadorAG.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="prImportador.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="\ImportadorAG.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>prImportador.exe</RemoteName>
+                        <RemoteName>ImportadorAG.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

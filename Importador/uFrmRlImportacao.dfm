@@ -1,7 +1,7 @@
 object FrmRlImport: TFrmRlImport
   Left = 0
   Top = 0
-  Caption = 'FrmRlImport'
+  Caption = 'Relat'#243'rio e Importa'#231#245'es'
   ClientHeight = 698
   ClientWidth = 799
   Color = clBtnFace
@@ -30,12 +30,26 @@ object FrmRlImport: TFrmRlImport
       Left = 38
       Top = 38
       Width = 718
-      Height = 19
+      Height = 24
       BandType = btHeader
+      object lblEmpresa: TRLLabel
+        Left = 6
+        Top = 2
+        Width = 196
+        Height = 19
+        Caption = 'Listagem de Importa'#231#245'es'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -16
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = False
+      end
     end
     object RLBand2: TRLBand
       Left = 38
-      Top = 57
+      Top = 62
       Width = 718
       Height = 24
       BandType = btTitle
@@ -53,7 +67,7 @@ object FrmRlImport: TFrmRlImport
         ParentFont = False
       end
       object rlbDataImportacao: TRLLabel
-        Left = 96
+        Left = 91
         Top = 6
         Width = 72
         Height = 15
@@ -65,8 +79,8 @@ object FrmRlImport: TFrmRlImport
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object RLLabel1: TRLLabel
-        Left = 176
+      object rlbCPG: TRLLabel
+        Left = 181
         Top = 6
         Width = 90
         Height = 15
@@ -78,8 +92,8 @@ object FrmRlImport: TFrmRlImport
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object RLLabel2: TRLLabel
-        Left = 280
+      object rlbCRE: TRLLabel
+        Left = 294
         Top = 6
         Width = 104
         Height = 15
@@ -91,10 +105,10 @@ object FrmRlImport: TFrmRlImport
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object RLLabel3: TRLLabel
-        Left = 394
+      object rlbConvenio: TRLLabel
+        Left = 424
         Top = 6
-        Width = 55
+        Width = 116
         Height = 15
         Caption = 'Conv'#234'nio'
         Font.Charset = DEFAULT_CHARSET
@@ -104,8 +118,8 @@ object FrmRlImport: TFrmRlImport
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object RLLabel4: TRLLabel
-        Left = 506
+      object rlbCustasFechadas: TRLLabel
+        Left = 554
         Top = 6
         Width = 101
         Height = 15
@@ -120,17 +134,17 @@ object FrmRlImport: TFrmRlImport
     end
     object RLBand3: TRLBand
       Left = 38
-      Top = 129
+      Top = 134
       Width = 718
       Height = 21
       BandType = btFooter
     end
     object RLBand4: TRLBand
       Left = 38
-      Top = 81
+      Top = 86
       Width = 718
       Height = 48
-      object RLDBText1: TRLDBText
+      object rdtProtocolo: TRLDBText
         Left = 18
         Top = 16
         Width = 58
@@ -148,8 +162,8 @@ object FrmRlImport: TFrmRlImport
         Text = ''
         Transparent = False
       end
-      object RLDBText2: TRLDBText
-        Left = 96
+      object rdtDataImport: TRLDBText
+        Left = 91
         Top = 16
         Width = 72
         Height = 16
@@ -161,14 +175,15 @@ object FrmRlImport: TFrmRlImport
         Font.Height = -12
         Font.Name = 'Arial'
         Font.Style = []
+        Holder = rlbDataImportacao
         ParentFont = False
         Text = ''
         Transparent = False
       end
-      object RLDBText3: TRLDBText
-        Left = 176
+      object rdtCPG_Codigo: TRLDBText
+        Left = 181
         Top = 16
-        Width = 82
+        Width = 90
         Height = 16
         AutoSize = False
         DataField = 'CPG_CODIGO'
@@ -178,14 +193,15 @@ object FrmRlImport: TFrmRlImport
         Font.Height = -12
         Font.Name = 'Arial'
         Font.Style = []
+        Holder = rlbCPG
         ParentFont = False
         Text = ''
         Transparent = False
       end
-      object RLDBText4: TRLDBText
-        Left = 272
+      object rdtCRE_Codigo: TRLDBText
+        Left = 294
         Top = 16
-        Width = 82
+        Width = 104
         Height = 16
         AutoSize = False
         DataField = 'CRE_CODIGO'
@@ -195,14 +211,15 @@ object FrmRlImport: TFrmRlImport
         Font.Height = -12
         Font.Name = 'Arial'
         Font.Style = []
+        Holder = rlbCRE
         ParentFont = False
         Text = ''
         Transparent = False
       end
-      object RLDBText5: TRLDBText
-        Left = 394
+      object rdtConvenio: TRLDBText
+        Left = 424
         Top = 16
-        Width = 82
+        Width = 116
         Height = 16
         AutoSize = False
         DataField = 'CONVENIO'
@@ -212,14 +229,15 @@ object FrmRlImport: TFrmRlImport
         Font.Height = -12
         Font.Name = 'Arial'
         Font.Style = []
+        Holder = rlbConvenio
         ParentFont = False
         Text = ''
         Transparent = False
       end
-      object RLDBText6: TRLDBText
-        Left = 506
+      object rdtCustasFechadas: TRLDBText
+        Left = 554
         Top = 16
-        Width = 82
+        Width = 101
         Height = 16
         AutoSize = False
         DataField = 'CUSTASFECHADAS'
@@ -229,6 +247,7 @@ object FrmRlImport: TFrmRlImport
         Font.Height = -12
         Font.Name = 'Arial'
         Font.Style = []
+        Holder = rlbCustasFechadas
         ParentFont = False
         Text = ''
         Transparent = False
