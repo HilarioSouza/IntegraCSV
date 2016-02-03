@@ -75,6 +75,7 @@
         <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_UnitSearchPath>D:\Projetos\fortesreport-ce\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_ExeOutput>..\..\.\ImportadorBin\bin</DCC_ExeOutput>
         <DCC_DcuOutput>..\..\.\ImportadorBin\dcu</DCC_DcuOutput>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
@@ -93,39 +94,32 @@
         <DCCReference Include="Externo\cTDI.pas"/>
         <DCCReference Include="uFrmImportacao.pas">
             <Form>frmImportacao</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Externo\ufrmStandard.pas">
             <Form>frmStandard</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Externo\uUtils.pas"/>
         <DCCReference Include="Externo\uMensagem.pas"/>
         <DCCReference Include="IntfFormPrincipal.pas"/>
         <DCCReference Include="Externo\udmConnect.pas">
             <Form>dmConnect</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="Externo\uFuncoesIni.pas"/>
         <DCCReference Include="Externo\ufConfiguracaoBD.pas">
             <Form>fConfiguracaoBD</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Externo\ufrmCrudbasic.pas">
             <Form>frmCrudbasic</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uFrmCdEmp.pas">
             <Form>frmCdEmp</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Externo\uAtualizaBanco.pas"/>
         <DCCReference Include="Externo\uInterfaceQuery.pas"/>
         <DCCReference Include="Externo\IntfFinanceiro.pas"/>
         <DCCReference Include="uFrmPreferencias.pas">
             <Form>frmPreferencias</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Externo\uDBUtils.pas"/>
         <DCCReference Include="Externo\uEstabelecimento.pas"/>
@@ -133,9 +127,16 @@
         <DCCReference Include="Externo\uLogger.pas"/>
         <DCCReference Include="uFrmLog.pas">
             <Form>frmLog</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uEmpresa.pas"/>
+        <DCCReference Include="uFrmRlImportacao.pas">
+            <Form>FrmRlImport</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="uFrmOiRlImport.pas">
+            <Form>frmOiRlImport</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <None Include="Dados\Update.sql"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

@@ -1,6 +1,7 @@
 program PrImportador;
 
 uses
+  SimpleShareMem,
   Forms,
   uMain in 'uMain.pas' {frmMain},
   KrImportador in 'KrImportador.pas',
@@ -27,7 +28,9 @@ uses
   uFrmLog in 'uFrmLog.pas' {frmLog},
   Vcl.Themes,
   Vcl.Styles,
-  uEmpresa in 'uEmpresa.pas';
+  uEmpresa in 'uEmpresa.pas',
+  uFrmRlImportacao in 'uFrmRlImportacao.pas' {FrmRlImport},
+  uFrmOiRlImport in 'uFrmOiRlImport.pas' {frmOiRlImport};
 
 {$R *.res}
 
@@ -35,6 +38,5 @@ begin
   Application.Initialize;
   Application.CreateForm(TdmConnect, dmConnect);
   Application.CreateForm(TfrmMain, frmMain);
-  Application.CreateForm(TfrmLog, frmLog);
   Application.Run;
 end.

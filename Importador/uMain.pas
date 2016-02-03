@@ -17,6 +17,8 @@ type
     Movimentos1: TMenuItem;
     Importao1: TMenuItem;
     Preferncias1: TMenuItem;
+    Relatrio1: TMenuItem;
+    Importaes1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Empresa1Click(Sender: TObject);
@@ -26,6 +28,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure Importao1Click(Sender: TObject);
     procedure Preferncias1Click(Sender: TObject);
+    procedure Importaes1Click(Sender: TObject);
   private
     { Private declarations }
     FFTDI: TFTDI;
@@ -44,7 +47,8 @@ var
 implementation
 
 uses
-  uFrmImportacao, uFrmCdEmp, ufConfiguracaoBD, uAtualizaBanco, uFrmPreferencias;
+  uFrmImportacao, uFrmCdEmp, ufConfiguracaoBD, uAtualizaBanco, uFrmPreferencias,
+  uFrmOiRlImport;
 
 {$R *.dfm}
 
@@ -93,6 +97,18 @@ end;
 function TfrmMain.GetFTDI: TFTDI;
 begin
   Result := FFTDI;
+end;
+
+procedure TfrmMain.Importaes1Click(Sender: TObject);
+var
+  OiRlImport: TfrmOiRlImport;
+begin
+  OiRlImport := TfrmOiRlImport.Create(nil);
+  try
+    OiRlImport.ShowModal;
+  finally
+    FreeAndNil(OiRlImport);
+  end;
 end;
 
 procedure TfrmMain.Importao1Click(Sender: TObject);

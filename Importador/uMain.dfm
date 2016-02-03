@@ -35,6 +35,13 @@ object frmMain: TfrmMain
         OnClick = Importao1Click
       end
     end
+    object Relatrio1: TMenuItem
+      Caption = 'Relat'#243'rio'
+      object Importaes1: TMenuItem
+        Caption = 'Importa'#231#245'es'
+        OnClick = Importaes1Click
+      end
+    end
     object Configuraes1: TMenuItem
       Caption = 'Configura'#231#245'es'
       object Preferncias1: TMenuItem

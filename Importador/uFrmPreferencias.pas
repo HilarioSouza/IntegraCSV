@@ -29,9 +29,11 @@ type
     pnlButtons: TPanel;
     btnOk: TButton;
     btnCancelar: TButton;
+    btnTestarConexao: TButton;
     procedure btnOkClick(Sender: TObject);
     procedure btnCancelarClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure btnTestarConexaoClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -45,7 +47,7 @@ implementation
 
 {$R *.dfm}
 
-uses uDBUtils;
+uses uDBUtils, IntfFinanceiro, iwSystem, System.StrUtils;
 
 
 procedure TfrmPreferencias.btnCancelarClick(Sender: TObject);
@@ -61,6 +63,27 @@ begin
   TDBUtils.SetID(qryCFG, 'CFG');
   qryCFG.Post;
   Sair;
+end;
+
+procedure TfrmPreferencias.btnTestarConexaoClick(Sender: TObject);
+var
+  Financeiro: IFinanceiro;
+begin
+  inherited;
+  Financeiro := nil;
+  try
+    Financeiro := GetFinanceiro(GsAppPath);
+    Financeiro.DriverNameBanco := IfThen(drgServidor.ItemIndex = 0, 'MSSQL', 'INTRBASE');
+    Financeiro.UsuarioBanco    := detUsuarioAG.Text;
+    Financeiro.SenhaBanco      := detSenhaAG.Text;
+    Financeiro.Open(detEnderecoBanco.Text);
+    Financeiro.Empresa := '0001';
+    Financeiro.Close;
+    ShowMessage('Conexão realizada com sucesso.');
+  except
+    on E: Exception do
+      raise Exception.Create('Não foi possível conectar com a dll do Fortes Financeiro: ' + #13#10 + E.Message);
+  end;
 end;
 
 procedure TfrmPreferencias.FormCreate(Sender: TObject);

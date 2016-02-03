@@ -6,6 +6,12 @@ inherited frmCdEmp: TfrmCdEmp
   ExplicitHeight = 589
   PixelsPerInch = 96
   TextHeight = 13
+  object SpeedButton1: TSpeedButton [0]
+    Left = 568
+    Top = 304
+    Width = 23
+    Height = 22
+  end
   inherited pnCaptionTela: TPanel
     Width = 993
     ExplicitWidth = 993
@@ -44,6 +50,8 @@ inherited frmCdEmp: TfrmCdEmp
       end
     end
     inherited tsCad: TTabSheet
+      ExplicitLeft = 4
+      ExplicitTop = 24
       ExplicitWidth = 995
       ExplicitHeight = 438
       inherited lblCodigo: TLabel
@@ -211,7 +219,7 @@ inherited frmCdEmp: TfrmCdEmp
             Left = 11
             Top = 3
             Width = 168
-            Height = 310
+            Height = 286
             Caption = ' Dados: '
             TabOrder = 0
             object Label3: TLabel
@@ -223,28 +231,28 @@ inherited frmCdEmp: TfrmCdEmp
             end
             object Label4: TLabel
               Left = 8
-              Top = 63
+              Top = 56
               Width = 108
               Height = 13
               Caption = 'Centro de Resultados:'
             end
             object Label11: TLabel
               Left = 8
-              Top = 110
+              Top = 96
               Width = 40
               Height = 13
               Caption = 'Receita:'
             end
             object Label12: TLabel
               Left = 8
-              Top = 157
+              Top = 137
               Width = 118
               Height = 13
               Caption = 'Fornecedor (CNPJ/CPF):'
             end
             object lblCPG_CON: TLabel
               Left = 8
-              Top = 207
+              Top = 187
               Width = 85
               Height = 13
               Caption = 'Conta Financeira:'
@@ -252,7 +260,7 @@ inherited frmCdEmp: TfrmCdEmp
             end
             object lblCPG_TDC: TLabel
               Left = 8
-              Top = 257
+              Top = 237
               Width = 96
               Height = 13
               Caption = 'Tipo de Documento:'
@@ -260,7 +268,7 @@ inherited frmCdEmp: TfrmCdEmp
             end
             object detEstab: TDBEdit
               Left = 8
-              Top = 35
+              Top = 32
               Width = 145
               Height = 21
               DataField = 'CPG_EST'
@@ -269,7 +277,7 @@ inherited frmCdEmp: TfrmCdEmp
             end
             object detCRS: TDBEdit
               Left = 8
-              Top = 82
+              Top = 72
               Width = 145
               Height = 21
               DataField = 'CPG_CRS'
@@ -278,7 +286,7 @@ inherited frmCdEmp: TfrmCdEmp
             end
             object detCRD: TDBEdit
               Left = 8
-              Top = 129
+              Top = 112
               Width = 145
               Height = 21
               DataField = 'CPG_CRD'
@@ -287,7 +295,7 @@ inherited frmCdEmp: TfrmCdEmp
             end
             object detFRN_CNPJ: TDBEdit
               Left = 8
-              Top = 176
+              Top = 156
               Width = 145
               Height = 21
               DataField = 'CPG_FRN_CNPJ'
@@ -296,7 +304,7 @@ inherited frmCdEmp: TfrmCdEmp
             end
             object detCPG_CON: TDBEdit
               Left = 8
-              Top = 226
+              Top = 206
               Width = 145
               Height = 21
               DataField = 'CPG_CON_CODIGO'
@@ -305,12 +313,71 @@ inherited frmCdEmp: TfrmCdEmp
             end
             object detCPG_TDC: TDBEdit
               Left = 8
-              Top = 272
+              Top = 252
               Width = 145
               Height = 21
               DataField = 'CPG_TDC_CODIGO'
               DataSource = dsDados
               TabOrder = 5
+            end
+          end
+          object gbxLAN_BVP: TGroupBox
+            Left = 193
+            Top = 3
+            Width = 160
+            Height = 150
+            Caption = ' Lan'#231'amentos das baixas: '
+            TabOrder = 1
+            object lblReceitaDescBVP: TLabel
+              Left = 8
+              Top = 16
+              Width = 103
+              Height = 13
+              Caption = 'Receita de Desconto:'
+              FocusControl = detReceitaDescBVP
+            end
+            object lblDespJurosBVP: TLabel
+              Left = 8
+              Top = 56
+              Width = 89
+              Height = 13
+              Caption = 'Despesa de Juros:'
+              FocusControl = detDespesaJurosBVP
+            end
+            object lblContaFinBVP: TLabel
+              Left = 8
+              Top = 96
+              Width = 80
+              Height = 13
+              Caption = 'Conta Finaneira:'
+              FocusControl = detContaBaixaBVP
+            end
+            object detReceitaDescBVP: TDBEdit
+              Left = 8
+              Top = 32
+              Width = 134
+              Height = 21
+              DataField = 'BVP_CRD_DESC'
+              DataSource = dsDados
+              TabOrder = 0
+            end
+            object detDespesaJurosBVP: TDBEdit
+              Left = 8
+              Top = 72
+              Width = 134
+              Height = 21
+              DataField = 'BVP_CRD_JUROS'
+              DataSource = dsDados
+              TabOrder = 1
+            end
+            object detContaBaixaBVP: TDBEdit
+              Left = 8
+              Top = 112
+              Width = 134
+              Height = 21
+              DataField = 'BVP_CON_CODIGO'
+              DataSource = dsDados
+              TabOrder = 2
             end
           end
         end
@@ -502,6 +569,21 @@ inherited frmCdEmp: TfrmCdEmp
       FieldName = 'CPG_TDC_CODIGO'
       Origin = 'CPG_TDC_CODIGO'
       Size = 3
+    end
+    object qryMainBVP_CRD_DESC: TStringField
+      FieldName = 'BVP_CRD_DESC'
+      Origin = 'BVP_CRD_DESC'
+      Size = 10
+    end
+    object qryMainBVP_CRD_JUROS: TStringField
+      FieldName = 'BVP_CRD_JUROS'
+      Origin = 'BVP_CRD_JUROS'
+      Size = 10
+    end
+    object qryMainBVP_CON_CODIGO: TStringField
+      FieldName = 'BVP_CON_CODIGO'
+      Origin = 'BVP_CON_CODIGO'
+      Size = 4
     end
   end
   inherited dsDados: TDataSource

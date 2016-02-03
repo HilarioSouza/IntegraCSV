@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.StdCtrls, Vcl.Mask,
-  Vcl.DBCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.ComCtrls, Vcl.ExtCtrls;
+  Vcl.DBCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.Buttons;
 
 type
   TfrmCdEmp = class(TfrmCrudbasic)
@@ -73,6 +73,17 @@ type
     detCPG_CON: TDBEdit;
     lblCPG_TDC: TLabel;
     detCPG_TDC: TDBEdit;
+    gbxLAN_BVP: TGroupBox;
+    SpeedButton1: TSpeedButton;
+    qryMainBVP_CRD_DESC: TStringField;
+    qryMainBVP_CRD_JUROS: TStringField;
+    qryMainBVP_CON_CODIGO: TStringField;
+    lblReceitaDescBVP: TLabel;
+    detReceitaDescBVP: TDBEdit;
+    lblDespJurosBVP: TLabel;
+    detDespesaJurosBVP: TDBEdit;
+    lblContaFinBVP: TLabel;
+    detContaBaixaBVP: TDBEdit;
     procedure FormCreate(Sender: TObject);
     procedure btnSalvarClick(Sender: TObject);
   private
@@ -101,6 +112,7 @@ procedure TfrmCdEmp.FormCreate(Sender: TObject);
 begin
   inherited;
   fPrincipal := frmMain;
+  pgcEmpresa.ActivePage := tshContasaReceber;
 end;
 
 procedure TfrmCdEmp.ValidarEmpresa(ID: String);

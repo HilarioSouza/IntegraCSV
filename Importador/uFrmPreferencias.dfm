@@ -22,8 +22,6 @@ object frmPreferencias: TfrmPreferencias
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 796
-    ExplicitHeight = 567
     object PageControl1: TPageControl
       Left = 0
       Top = 0
@@ -32,14 +30,8 @@ object frmPreferencias: TfrmPreferencias
       ActivePage = TabSheet1
       Align = alClient
       TabOrder = 0
-      ExplicitLeft = 8
-      ExplicitTop = 8
-      ExplicitWidth = 704
-      ExplicitHeight = 513
       object TabSheet1: TTabSheet
         Caption = 'Conex'#227'o AG'
-        ExplicitWidth = 696
-        ExplicitHeight = 485
         object pnlConexaoAG: TPanel
           Left = 8
           Top = 8
@@ -113,6 +105,15 @@ object frmPreferencias: TfrmPreferencias
               '1')
           end
         end
+        object btnTestarConexao: TButton
+          Left = 8
+          Top = 160
+          Width = 121
+          Height = 25
+          Caption = 'Testar Conex'#227'o'
+          TabOrder = 1
+          OnClick = btnTestarConexaoClick
+        end
       end
     end
   end
@@ -124,8 +125,6 @@ object frmPreferencias: TfrmPreferencias
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 515
-    ExplicitWidth = 803
     object pnlButtons: TPanel
       Left = 649
       Top = 0
@@ -134,7 +133,6 @@ object frmPreferencias: TfrmPreferencias
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitLeft = 640
       object btnOk: TButton
         Left = 1
         Top = 6

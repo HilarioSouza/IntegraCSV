@@ -406,7 +406,7 @@ end;
 
 function TMovimentoCRE.GetCodigo: String;
 begin
-  FContasaReceber.Codigo;
+  Result := FContasaReceber.Codigo;
 end;
 
 function TMovimentoCRE.GetTipo: String;
@@ -676,13 +676,13 @@ end;
 procedure TMovimentoCPG.DeletarBaixas;
 begin
   //Deletar as baixas do CPG
-  FBaixasaPagar.Find(FContasaPagar.Codigo, FContasaPagar.VencimentosaPagar.Sequencial, FContasaPagar.VencimentosaPagar.Vencimento, 1);
-  FBaixasaPagar.Delete;
+  if FBaixasaPagar.Find(FContasaPagar.Codigo, FContasaPagar.VencimentosaPagar.Sequencial, FContasaPagar.VencimentosaPagar.Vencimento, 1) then
+    FBaixasaPagar.Delete;
 end;
 
 procedure TMovimentoCPG.Delete;
 begin
-  DeletarBaixas;
+//  DeletarBaixas;
   FContasaPagar.Delete;
 end;
 
@@ -766,7 +766,8 @@ end;
 procedure TMovimentoCPG.Post;
 begin
   FContasaPagar.Post;
-  IncluirBaixaVencimentosaPagar(FContasaPagar.VencimentosaPagar);
+  if FRegistro.CustasFechadas then
+    IncluirBaixaVencimentosaPagar(FContasaPagar.VencimentosaPagar);
 end;
 
 procedure TMovimentoCPG.TratarRegistroJaImportado;
@@ -790,6 +791,10 @@ begin
           Movimento.Registro.ValidarCustasFechadas;
         Movimento.Popular;
         Movimento.Post;
+        if Movimento is TMovimentoCRE then
+          Movimento.Registro.CRE_Codigo := Movimento.GetCodigo
+        else
+          Movimento.Registro.CPG_Codigo := Movimento.GetCodigo;
       except
         on E: Exception do
         begin
@@ -801,7 +806,7 @@ begin
   except
     on E: Exception do
     begin
-      raise Exception.Create('Ocorreu um erro durante a importação. Exceção: ' + E.Message);
+      raise Exception.Create('Ocorreu um problema durante a importação. Exceção: ' + E.Message);
     end;
   end;
 end;
@@ -820,7 +825,7 @@ begin
     FFinanceiro.Empresa := FEMP_Codigo;
   except
     on E: Exception do
-      raise Exception.Create('Erro ao conectar com a DLL do AG. Exceção: ' + E.Message);
+      raise Exception.Create('Ocorreu um problema ao conectar com a DLL do AG. Exceção: ' + E.Message);
   end;
 end;
 
@@ -838,7 +843,7 @@ begin
     on E: Exception do
     begin
       FFinanceiro.Rollback;
-      raise Exception.Create('Erro: Não foi possível desfazer a importação. Exceção: ' + E.Message);
+      raise Exception.Create('Não foi possível desfazer a importação. Exceção: ' + E.Message);
     end;
   end;
 end;
