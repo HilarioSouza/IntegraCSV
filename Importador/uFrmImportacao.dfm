@@ -127,22 +127,32 @@ object frmImportacao: TfrmImportacao
     BevelOuter = bvNone
     TabOrder = 1
     object btnDesfazerIMP: TButton
-      Left = 8
-      Top = 102
+      Left = 6
+      Top = 70
       Width = 75
       Height = 25
       Caption = 'Desfazer'
       TabOrder = 0
+      Visible = False
       OnClick = btnDesfazerIMPClick
     end
     object btnSair: TButton
-      Left = 8
-      Top = 135
+      Left = 6
+      Top = 133
       Width = 75
       Height = 25
       Caption = 'Sair'
       TabOrder = 1
       OnClick = btnSairClick
+    end
+    object btnListarImp: TButton
+      Left = 6
+      Top = 102
+      Width = 75
+      Height = 25
+      Caption = 'Listar'
+      TabOrder = 2
+      OnClick = btnListarImpClick
     end
   end
   object ddsIMP: TDataSource

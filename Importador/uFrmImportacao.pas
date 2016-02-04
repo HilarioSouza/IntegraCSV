@@ -33,12 +33,14 @@ type
     edtCaminhoArquivo: TLabeledEdit;
     sbtCaminhoArquivo: TSpeedButton;
     dcbEMP: TDBLookupComboBox;
+    btnListarImp: TButton;
     procedure sbtCaminhoArquivoClick(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure btnDesfazerIMPClick(Sender: TObject);
+    procedure btnListarImpClick(Sender: TObject);
   private
     procedure AtualizarQueries;
     procedure GravarDadosINI;
@@ -53,7 +55,8 @@ var
 implementation
 
 uses
-  KrImportador, uUtils, uMain, uFuncoesIni, uDBUtils, uMensagem, uLogger;
+  KrImportador, uUtils, uMain, uFuncoesIni, uDBUtils, uMensagem, uLogger,
+  uFrmOiRlImport;
 
 {$R *.dfm}
 
@@ -81,6 +84,18 @@ begin
     GetLogger.ShowLog
   else
     ShowMessage('Importação concluída.');
+end;
+
+procedure TfrmImportacao.btnListarImpClick(Sender: TObject);
+var
+  OiRlImport: TfrmOiRlImport;
+begin
+  OiRlImport := TfrmOiRlImport.Create(nil);
+  try
+    OiRlImport.ShowModal;
+  finally
+    FreeAndNil(OiRlImport);
+  end;
 end;
 
 procedure TfrmImportacao.sbtCaminhoArquivoClick(Sender: TObject);
@@ -129,6 +144,9 @@ end;
 procedure TfrmImportacao.FormCreate(Sender: TObject);
 begin
   inherited;
+  {$IFDEF DEBUG}
+    btnDesfazerIMP.Visible := True;
+  {$ENDIF}
   pgcIMP.ActivePage := tshIMP;
   edtCaminhoArquivo.Text := TFuncoesIni.LerIni('CONFIG', 'FileName', ExtractFilePath(ParamStr(0)));
   dcbEMP.KeyValue := TFuncoesIni.LerIni('CONFIG', 'Empresa', '');

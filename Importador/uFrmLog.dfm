@@ -3,6 +3,7 @@ inherited frmLog: TfrmLog
   ClientHeight = 642
   ClientWidth = 1061
   OnClose = FormClose
+  OnCreate = FormCreate
   ExplicitWidth = 1067
   ExplicitHeight = 671
   PixelsPerInch = 96
@@ -24,7 +25,6 @@ inherited frmLog: TfrmLog
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    OnResize = pnlButtonsResize
     object btnOk: TButton
       Left = 484
       Top = 4

@@ -76,7 +76,7 @@ begin
     if FileExists(FileName) then
       Append(LogFile)
     else
-      Reset(LogFile);
+      Rewrite(LogFile);
     WriteLn(LogFile, FLIsta.Text);
   finally
     Close(LogFile);

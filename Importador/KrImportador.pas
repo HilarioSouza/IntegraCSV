@@ -42,11 +42,15 @@ type
     CRE_Codigo       : String;
     Linha            : String;
     NumLinha         : Integer;
+    NovoValorCPG     : Double;
+    NovoValorCRE     : Double;
     procedure ValidarCustasFechadas;
+    procedure PopularNovosValores;
     function GetValorVencimento: Double;
     function GetValorRateioServices: Double;
     function GetValorRateioCartorio: Double;
     function GetValorContasaPagar: Double;
+    function JaImportado(out REG_ID: Integer): Boolean;
   end;
 
   TListaRegistros = class(TObjectList<TRegistro>);
@@ -94,11 +98,11 @@ type
     Procedure Post;
     procedure Cancel;
     procedure SetRegistro(const Value: TRegistro);
+    procedure Delete;
+    function TratarRegistroJaImportado: Boolean;
     function GetRegistro: TRegistro;
     function GetCodigo: String;
     function GetTipo: String;
-    procedure TratarRegistroJaImportado;
-    procedure Delete;
     function FindIDWS(const IDWS: String): Boolean;
     //
     property Registro: TRegistro read GetRegistro write SetRegistro;
@@ -128,13 +132,13 @@ type
     procedure PopularServicosaReceber(Servicos: IServicosaReceber);
     procedure PopularRateiosaReceber(Rateios: IRateiosaReceber);
     procedure PopularComissionadosaReceber(Comissionados: IComissionadosServicosaReceber);
-    procedure TratarRegistroJaImportado;
     procedure Popular;
     procedure Append;
     Procedure Post;
     procedure Cancel;
     procedure Delete;
     function FindIDWS(const IDWS: String): Boolean;
+    function TratarRegistroJaImportado: Boolean;
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
     destructor Destroy; override;
@@ -156,8 +160,8 @@ type
     function FindIDWS(const IDWS: String): Boolean;
     procedure PopularVencimentosaPagar(Vencimentos: IVencimentosaPagar);
     procedure IncluirBaixaVencimentosaPagar(Vencimento: IVencimentosaPagar);
-    procedure TratarRegistroJaImportado;
     procedure DeletarBaixas;
+    function TratarRegistroJaImportado: Boolean;
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
     destructor Destroy; override;
@@ -169,6 +173,7 @@ type
   private
     FEmp_Codigo: String;
     FImportacao_ID: Integer;
+    FTotalRegistrosImportados: Integer;
     FFinanceiro: IFinanceiro;
     procedure PopularFinanceiroAG;
     procedure DeletarMovimentosImportados;
@@ -214,7 +219,7 @@ var
   ArquivoAberto: Boolean;
 begin
   ArquivoAberto := False;
-  if (Filename = '') then
+  if Filename.IsEmpty then
     raise Exception.Create('Arquivo não informado. Por favor informe o caminho do arquivo.');
   if (not FileExists(Filename)) then
     raise Exception.Create('Arquivo não encontrado. Por favor verifique o caminho do arquivo.');
@@ -331,9 +336,10 @@ end;
 procedure TLeitorCSV.PopularDadosRegistro(Registro: TRegistro);
 var
   ArrayDados: TStringDynArray;
+  sIMP_ID: Integer;
 begin
   ArrayDados := TUtil.Split(LinhaRegistro, ';');
-  Registro.EMP_Codigo       := FEMP_Codigo; //Tratar
+  Registro.EMP_Codigo       := FEMP_Codigo;
   Registro.IMP_ID           := IMP_ID;
   Registro.Protocolo        := ArrayDados[IdxProtocolo];
   Registro.DataCadastro     := StrToDateTimeDef(ArrayDados[IdxDataCadastro], 0);
@@ -351,6 +357,7 @@ begin
   Registro.VlrXimenesOutros := StrToFloatDef(ArrayDados[IdxVlrXimenesOutros], 0);
   Registro.Representante    := ArrayDados[IdxRepresentante];
   Registro.Linha            := LinhaRegistro;
+  Registro.PopularNovosValores;
 end;
 
 function TMovimentoBase.GetRegistro: TRegistro;
@@ -402,6 +409,21 @@ end;
 function TMovimentoCRE.FindIDWS(const IDWS: String): Boolean;
 begin
   Result := FContasaReceber.FindIDWS(IDWS);
+end;
+
+function TMovimentoCRE.TratarRegistroJaImportado: Boolean;
+begin
+  Result := False;
+  if FContasaReceber.FindIDWS(FRegistro.Protocolo) then
+  begin
+    Result := True;
+    if (FRegistro.NovoValorCRE > 0) then
+    begin
+      FContasaReceber.Edit;
+      PopularVencimentosaReceber(FContasaReceber.VencimentosaReceber);
+      FContasaReceber.Post;
+    end;
+  end;
 end;
 
 function TMovimentoCRE.GetCodigo: String;
@@ -498,12 +520,6 @@ begin
   FContasaReceber.Post;
 end;
 
-procedure TMovimentoCRE.TratarRegistroJaImportado;
-begin
-  if FContasaReceber.FindIDWS(FRegistro.Protocolo) then
-    FContasaReceber.Delete;
-end;
-
 procedure TMovimentoCRE.PopularServicosaReceber(Servicos: IServicosaReceber);
 begin
   Servicos.Append;
@@ -567,7 +583,10 @@ end;
 
 function TRegistro.GetValorContasaPagar: Double;
 begin
-  Result := Despachante + Distribuidor + VlrCartorio;
+  if (CompareValue(NovoValorCPG, 0) > 0) then
+    Result := NovoValorCPG
+  else
+    Result := Despachante + Distribuidor + VlrCartorio;
 end;
 
 function TRegistro.GetValorRateioServices: Double;
@@ -577,7 +596,53 @@ end;
 
 function TRegistro.GetValorVencimento: Double;
 begin
-  Result := GetValorContasaPagar + GetValorRateioServices + GetValorRateioCartorio;
+  if (CompareValue(NovoValorCPG, 0) > 0) then
+    Result := NovoValorCRE
+  else
+    Result := GetValorContasaPagar + GetValorRateioServices + GetValorRateioCartorio;
+end;
+
+function TRegistro.JaImportado(out REG_ID: Integer): Boolean;
+const
+  SQL = ' SELECT MAX(REG.ID) AS REG_ID FROM REG WHERE REG.EMP_CODIGO = :EMP_CODIGO AND REG.PROTOCOLO = :PROTOCOLO ';
+var
+  Query: TFDQuery;
+begin
+  Query := NewQuery(SQL);
+  Query.ParamByName('EMP_CODIGO').AsString := EMP_Codigo;
+  Query.ParamByName('PROTOCOLO').AsString := Protocolo;
+  Query.Open;
+  REG_ID := Query.FieldByName('REG_ID').AsInteger;
+  Result :=  REG_ID > 0;
+end;
+
+procedure TRegistro.PopularNovosValores;
+const
+  sSQL = ' SELECT * FROM REG WHERE REG.EMP_CODIGO = :EMP_CODIGO ' +
+        '    AND REG.PROTOCOLO = :PROTOCOLO AND REG.ID = :ID ';
+var
+  sID: Integer;
+  Query: TFDQuery;
+  ValorAntigoCPG: Double;
+  ValorAntigoCRE: Double;
+begin
+  NovoValorCPG := 0;
+  NovoValorCRE := 0;
+  if JaImportado(sID) then
+  begin
+    Query := NewQuery(sSQL);
+    Query.ParamByName('EMP_CODIGO').AsString := EMP_Codigo;
+    Query.ParamByName('PROTOCOLO').AsString := Protocolo;
+    Query.ParamByName('ID').AsInteger := sID;
+    Query.Open;
+    ValorAntigoCPG := Query.FieldByName('DESPACHANTE').AsFloat + Query.FieldByName('DISTRIBUIDOR').AsFloat +
+                      Query.FieldByName('VALORCARTORIO').AsFloat;
+    //VlrXimenesGestao + VlrXimenesAut + VlrXimenesRec
+    ValorAntigoCRE := Query.FieldByName('VALORXIMENESGESTAO').AsFloat + Query.FieldByName('VALORXIMENESAUT').AsFloat +
+                      Query.FieldByName('VALORXIMENESREC').AsFloat;
+    NovoValorCPG := GetValorContasaPagar - ValorAntigoCPG;
+    NovoValorCRE := GetValorVencimento - (ValorAntigoCPG + ValorAntigoCRE);
+  end;
 end;
 
 procedure TRegistro.ValidarCustasFechadas;
@@ -625,8 +690,13 @@ begin
       ImportarMovimento(ImportadorCRE, Leitor.ListaRegistros);
       ImportadorCPG := TMovimentoCPG.Create(FFinanceiro, cEMP_Codigo, Leitor.IMP_ID);
       ImportarMovimento(ImportadorCPG, Leitor.ListaRegistros);
-      Leitor.GravarImportacao;
-      TAuditor.GravarAuditoria(Leitor.ListaRegistros, Leitor.IMP_ID);
+      if FTotalRegistrosImportados > 0 then
+      begin
+        Leitor.GravarImportacao;
+        TAuditor.GravarAuditoria(Leitor.ListaRegistros, Leitor.IMP_ID);
+      end
+      else
+        raise Exception.Create('Não houve registros importados.');
     finally
       FreeAndNil(ImportadorCRE);
       FreeAndnil(ImportadorCPG);
@@ -678,6 +748,25 @@ begin
   //Deletar as baixas do CPG
   if FBaixasaPagar.Find(FContasaPagar.Codigo, FContasaPagar.VencimentosaPagar.Sequencial, FContasaPagar.VencimentosaPagar.Vencimento, 1) then
     FBaixasaPagar.Delete;
+end;
+
+function TMovimentoCPG.TratarRegistroJaImportado: Boolean;
+var
+  Vencimentos: IVencimentosaPagar;
+begin
+  Result := False;
+  if FContasaPagar.FindIDWS(FRegistro.Protocolo) then
+  begin
+    Result := True;
+    if (FRegistro.NovoValorCPG > 0) then
+    begin
+      FContasaPagar.Edit;
+      Vencimentos := FContasaPagar.VencimentosaPagar;
+      PopularVencimentosaPagar(Vencimentos);
+      FContasaPagar.Post;
+      IncluirBaixaVencimentosaPagar(Vencimentos);
+    end;
+  end;
 end;
 
 procedure TMovimentoCPG.Delete;
@@ -747,10 +836,10 @@ begin
     FBaixasaPagar.CPG_Codigo           := Vencimento.Codigo;
     FBaixasaPagar.DataVencimento       := Vencimento.Vencimento;
     FBaixasaPagar.SequencialVencimento := Vencimento.Sequencial;
-    FBaixasaPagar.Data                 := Vencimento.Vencimento;
+    FBaixasaPagar.Data                 := Now;
     FBaixasaPagar.Valor                := Vencimento.Valor;
     FBaixasaPagar.LAN_ContaFinanceira  := FDadosBaixa.CON_Codigo;
-    FBaixasaPagar.LAN_Historico        := 'BAIXA AUTOMÁTICA DA INTEGRAÇÃO VIA AGLIB.DLL';
+    FBaixasaPagar.LAN_Historico        := 'PROTOCOLO: '+ FRegistro.Protocolo + ' BAIXA AUTOMÁTICA DA INTEGRAÇÃO VIA AGLIB.DLL';
     FBaixasaPagar.LAN_CRD_Desconto     := FDadosBaixa.CRD_Desc;
     FBaixasaPagar.LAN_CRD_Juros        := FDadosBaixa.CRD_Juros;
     FBaixasaPagar.Post;
@@ -766,14 +855,7 @@ end;
 procedure TMovimentoCPG.Post;
 begin
   FContasaPagar.Post;
-  if FRegistro.CustasFechadas then
-    IncluirBaixaVencimentosaPagar(FContasaPagar.VencimentosaPagar);
-end;
-
-procedure TMovimentoCPG.TratarRegistroJaImportado;
-begin
-  if FContasaPagar.FindIDWS(FRegistro.Protocolo) then
-    FContasaPagar.Delete;
+  IncluirBaixaVencimentosaPagar(FContasaPagar.VencimentosaPagar);
 end;
 
 procedure TImportador.ImportarMovimento(Movimento: IMovimentoFinanceiro; ListaRegistro: TListaRegistros);
@@ -784,7 +866,8 @@ begin
     for I := 0 to ListaRegistro.Count - 1 do
     begin
       Movimento.Registro := ListaRegistro[I];
-      Movimento.TratarRegistroJaImportado;
+      if Movimento.TratarRegistroJaImportado then
+        Exit;
       Movimento.Append;
       try
         if Movimento.GetTipo = 'CRE' then
@@ -795,6 +878,7 @@ begin
           Movimento.Registro.CRE_Codigo := Movimento.GetCodigo
         else
           Movimento.Registro.CPG_Codigo := Movimento.GetCodigo;
+        Inc(FTotalRegistrosImportados);
       except
         on E: Exception do
         begin
