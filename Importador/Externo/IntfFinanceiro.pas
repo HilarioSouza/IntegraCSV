@@ -908,6 +908,7 @@ type
     procedure Open;
     function  Find(Codigo: String): Boolean;
     function FindIDWS(IDWS: String): Boolean;
+    procedure Edit(PermiteMesmoComBaixas: Boolean = False);
     //
     function  GetCodigoWithDocumento(aDocumento: String): String;
     function  GetCodigoWithBoleto(aBoleto: String; aIdBloquete: Integer = 1): String;
