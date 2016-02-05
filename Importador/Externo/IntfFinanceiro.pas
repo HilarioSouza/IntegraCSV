@@ -5363,6 +5363,7 @@ type
     function GetServicos: IServicos;
     function GetCentroDeResultado: ICentroDeResultado;
     function BloqueiaClientesInadimplentesFortes: string;
+    function DesbloqueiaClientesAdimplentesFortes: string;
     function GetTransferenciaEntreContas: ITransferenciaEntreContas;
     function GetListaTipoDocumentoJson(EMP_CODIGO: string): string;
     function GetListaPrazosPagamentoJson(EMP_CODIGO: string): string;
@@ -5408,7 +5409,8 @@ finalization
     if FinanceiroHandle<>0 then
       FreeLibrary(FinanceiroHandle);
   except
-    on E: Exception do
-      Raise Exception.Create('Erro na destruição da instância da DLL.');
+    Raise Exception.Create('Erro na destruição da instância da DLL.');
   end;
 end.
+
+
