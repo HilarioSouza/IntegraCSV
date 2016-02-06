@@ -156,20 +156,32 @@ inherited frmCrudbasic: TfrmCrudbasic
     object tsCad: TTabSheet
       Caption = 'Cadastro'
       ImageIndex = 1
-      object lblCodigo: TLabel
-        Left = 3
-        Top = 7
-        Width = 33
-        Height = 13
-        Caption = 'C'#243'digo'
-      end
-      object edtID: TDBEdit
-        Left = 3
-        Top = 22
-        Width = 46
-        Height = 21
-        DataSource = dsDados
+      object pnlCadastro: TPanel
+        Left = 0
+        Top = 0
+        Width = 609
+        Height = 273
+        Align = alClient
+        BevelOuter = bvNone
         TabOrder = 0
+        ExplicitTop = 3
+        ExplicitWidth = 249
+        ExplicitHeight = 97
+        object lblCodigo: TLabel
+          Left = 3
+          Top = 7
+          Width = 33
+          Height = 13
+          Caption = 'C'#243'digo'
+        end
+        object edtID: TDBEdit
+          Left = 3
+          Top = 22
+          Width = 46
+          Height = 21
+          DataSource = dsDados
+          TabOrder = 0
+        end
       end
     end
   end

@@ -26,8 +26,6 @@ type
     tsCad: TTabSheet;
     gridPsq: TDBGrid;
     qryMain: TFDQuery;
-    lblCodigo: TLabel;
-    edtID: TDBEdit;
     dsDados: TDataSource;
     btnIncluir: TButton;
     btnEditar: TButton;
@@ -35,6 +33,9 @@ type
     btnExcluir: TButton;
     btnSair: TButton;
     btnSalvar: TButton;
+    pnlCadastro: TPanel;
+    lblCodigo: TLabel;
+    edtID: TDBEdit;
     procedure FormCreate(Sender: TObject);
     procedure btnIncluirClick(Sender: TObject);
     procedure btnEditarClick(Sender: TObject);

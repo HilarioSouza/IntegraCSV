@@ -66,7 +66,6 @@ type
     lblModalidade: TLabel;
     lblTipoDoc: TLabel;
     lblAgenteCob: TLabel;
-    sptHeader: TSplitter;
     qryMainCPG_CON_CODIGO: TStringField;
     qryMainCPG_TDC_CODIGO: TStringField;
     lblCPG_CON: TLabel;

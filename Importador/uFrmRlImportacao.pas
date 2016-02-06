@@ -53,13 +53,21 @@ type
     rlbConvenio: TRLLabel;
     rlbCustasFechadas: TRLLabel;
     lblEmpresa: TRLLabel;
+    RLDBText1: TRLDBText;
+    rlbID: TRLLabel;
+    rdtDataCadastro: TRLDBText;
+    RLLabel1: TRLLabel;
     procedure rrpMainBeforePrint(Sender: TObject; var PrintIt: Boolean);
     procedure fqrMainCUSTASFECHADASGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
   private
     { Private declarations }
+    function PossuiFiltros: Boolean;
+    function MontarConsultaSQL: String;
   public
     { Public declarations }
+    EMP_Codigo: String;
+    IMP_ID: Integer;
   end;
 
 var
@@ -74,16 +82,27 @@ uses udmConnect, System.StrUtils;
 procedure TFrmRlImport.fqrMainCUSTASFECHADASGetText(Sender: TField;
   var Text: string; DisplayText: Boolean);
 begin
-  Text := IfThen(Text = '0', 'Não', 'Sim');
+  Text := IfThen(Text = '1', 'Sim', 'Não');
+end;
+
+function TFrmRlImport.PossuiFiltros: Boolean;
+begin
+  Result := (not EMP_Codigo.IsEmpty) or (IMP_ID > 0);
+end;
+
+function TFrmRlImport.MontarConsultaSQL: String;
+begin
+  Result := ' SELECT REG.*, IMP.DATA AS IMP_DATA FROM REG ' +
+            '   LEFT JOIN IMP ON REG.EMP_CODIGO = IMP.EMP_CODIGO AND REG.IMP_ID = IMP.ID ';
+  if PossuiFiltros then
+  Result := Result + ' WHERE REG.EMP_CODIGO = ' + EMP_Codigo.QuotedString;
+  if IMP_ID > 0 then
+    Result := Result + ' AND REG.IMP_ID = ' + IMP_ID.ToString;
 end;
 
 procedure TFrmRlImport.rrpMainBeforePrint(Sender: TObject; var PrintIt: Boolean);
 begin
-  fqrMain.SQL.Text := ' SELECT REG.*, IMP.DATA AS IMP_DATA FROM REG ' +
-                      '   LEFT JOIN IMP ON REG.EMP_CODIGO = IMP.EMP_CODIGO AND REG.IMP_ID = IMP.ID ' +
-                      ' WHERE REG.EMP_CODIGO = :EMP_CODIGO AND REG.IMP_ID = :IMP_ID';
-  fqrMain.ParamByName('EMP_CODIGO').AsString := '0001';
-  fqrMain.ParamByName('IMP_ID').AsInteger := 1;
+  fqrMain.SQL.Text := MontarConsultaSQL;
   fqrMain.Open;
 end;
 

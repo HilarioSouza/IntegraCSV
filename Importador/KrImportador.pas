@@ -419,7 +419,7 @@ begin
     Result := True;
     if (FRegistro.NovoValorCRE > 0) then
     begin
-      FContasaReceber.Edit;
+      FContasaReceber.Edit(True);
       PopularVencimentosaReceber(FContasaReceber.VencimentosaReceber);
       FContasaReceber.Post;
     end;
@@ -760,7 +760,7 @@ begin
     Result := True;
     if (FRegistro.NovoValorCPG > 0) then
     begin
-      FContasaPagar.Edit;
+      FContasaPagar.Edit(True);
       Vencimentos := FContasaPagar.VencimentosaPagar;
       PopularVencimentosaPagar(Vencimentos);
       FContasaPagar.Post;

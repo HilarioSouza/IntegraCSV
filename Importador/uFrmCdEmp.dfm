@@ -54,31 +54,28 @@ inherited frmCdEmp: TfrmCdEmp
       ExplicitTop = 24
       ExplicitWidth = 995
       ExplicitHeight = 438
-      inherited lblCodigo: TLabel
-        Width = 37
-        Caption = 'C'#243'digo:'
-        ExplicitWidth = 37
-      end
-      object lblNome: TLabel [1]
+      object lblNome: TLabel [0]
         Left = 55
         Top = 7
         Width = 31
         Height = 13
         Caption = 'Nome:'
       end
-      object sptHeader: TSplitter [2]
-        Left = 0
-        Top = 0
+      inherited pnlCadastro: TPanel
         Width = 995
-        Height = 50
-        Cursor = crVSplit
+        Height = 438
         Align = alTop
-        Color = clBtnFace
-        ParentColor = False
-        ResizeStyle = rsNone
-      end
-      inherited edtID: TDBEdit
-        DataField = 'CODIGO'
+        ExplicitTop = 50
+        ExplicitWidth = 995
+        ExplicitHeight = 388
+        inherited lblCodigo: TLabel
+          Width = 37
+          Caption = 'C'#243'digo:'
+          ExplicitWidth = 37
+        end
+        inherited edtID: TDBEdit
+          DataField = 'CODIGO'
+        end
       end
       object edtNome: TDBEdit
         Left = 55
@@ -95,7 +92,6 @@ inherited frmCdEmp: TfrmCdEmp
         Width = 995
         Height = 388
         ActivePage = tshContasaReceber
-        Align = alClient
         TabOrder = 2
         object tshContasaReceber: TTabSheet
           Caption = 'Contas a Receber'

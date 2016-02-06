@@ -51,82 +51,108 @@ object FrmRlImport: TFrmRlImport
       Left = 38
       Top = 62
       Width = 718
-      Height = 24
+      Height = 23
       BandType = btTitle
       object rlbProtocolo: TRLLabel
-        Left = 18
-        Top = 6
-        Width = 58
-        Height = 15
+        Left = 178
+        Top = 4
+        Width = 56
+        Height = 14
         Caption = 'Protocolo'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
-        Font.Height = -12
+        Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = [fsBold]
         ParentFont = False
       end
       object rlbDataImportacao: TRLLabel
-        Left = 91
-        Top = 6
-        Width = 72
-        Height = 15
+        Left = 243
+        Top = 4
+        Width = 69
+        Height = 14
         Caption = 'Data Import.'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
-        Font.Height = -12
+        Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = [fsBold]
         ParentFont = False
       end
       object rlbCPG: TRLLabel
-        Left = 181
-        Top = 6
-        Width = 90
-        Height = 15
+        Left = 325
+        Top = 4
+        Width = 85
+        Height = 14
         Caption = 'Contas a Pagar'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
-        Font.Height = -12
+        Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = [fsBold]
         ParentFont = False
       end
       object rlbCRE: TRLLabel
-        Left = 294
-        Top = 6
-        Width = 104
-        Height = 15
+        Left = 422
+        Top = 4
+        Width = 100
+        Height = 14
         Caption = 'Contas a Receber'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
-        Font.Height = -12
+        Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = [fsBold]
         ParentFont = False
       end
       object rlbConvenio: TRLLabel
-        Left = 424
-        Top = 6
-        Width = 116
-        Height = 15
+        Left = 539
+        Top = 4
+        Width = 70
+        Height = 14
         Caption = 'Conv'#234'nio'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
-        Font.Height = -12
+        Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = [fsBold]
         ParentFont = False
       end
       object rlbCustasFechadas: TRLLabel
-        Left = 554
-        Top = 6
-        Width = 101
-        Height = 15
+        Left = 616
+        Top = 4
+        Width = 97
+        Height = 14
         Caption = 'Custas Fechadas'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
-        Font.Height = -12
+        Font.Height = -11
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object rlbID: TRLLabel
+        Left = 8
+        Top = 4
+        Width = 42
+        Height = 14
+        Caption = 'C'#243'digo'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object RLLabel1: TRLLabel
+        Left = 72
+        Top = 4
+        Width = 79
+        Height = 14
+        Caption = 'Data Cadastro'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = [fsBold]
         ParentFont = False
@@ -134,27 +160,28 @@ object FrmRlImport: TFrmRlImport
     end
     object RLBand3: TRLBand
       Left = 38
-      Top = 134
+      Top = 113
       Width = 718
       Height = 21
       BandType = btFooter
     end
     object RLBand4: TRLBand
       Left = 38
-      Top = 86
+      Top = 85
       Width = 718
-      Height = 48
+      Height = 28
       object rdtProtocolo: TRLDBText
-        Left = 18
-        Top = 16
-        Width = 58
+        Left = 178
+        Top = 3
+        Width = 56
         Height = 16
+        Alignment = taCenter
         AutoSize = False
         DataField = 'PROTOCOLO'
         DataSource = ddsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
-        Font.Height = -12
+        Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
         Holder = rlbProtocolo
@@ -163,16 +190,17 @@ object FrmRlImport: TFrmRlImport
         Transparent = False
       end
       object rdtDataImport: TRLDBText
-        Left = 91
-        Top = 16
-        Width = 72
+        Left = 243
+        Top = 3
+        Width = 69
         Height = 16
+        Alignment = taCenter
         AutoSize = False
         DataField = 'IMP_DATA'
         DataSource = ddsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
-        Font.Height = -12
+        Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
         Holder = rlbDataImportacao
@@ -181,16 +209,17 @@ object FrmRlImport: TFrmRlImport
         Transparent = False
       end
       object rdtCPG_Codigo: TRLDBText
-        Left = 181
-        Top = 16
-        Width = 90
+        Left = 325
+        Top = 3
+        Width = 85
         Height = 16
+        Alignment = taCenter
         AutoSize = False
         DataField = 'CPG_CODIGO'
         DataSource = ddsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
-        Font.Height = -12
+        Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
         Holder = rlbCPG
@@ -199,16 +228,17 @@ object FrmRlImport: TFrmRlImport
         Transparent = False
       end
       object rdtCRE_Codigo: TRLDBText
-        Left = 294
-        Top = 16
-        Width = 104
+        Left = 422
+        Top = 3
+        Width = 100
         Height = 16
+        Alignment = taCenter
         AutoSize = False
         DataField = 'CRE_CODIGO'
         DataSource = ddsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
-        Font.Height = -12
+        Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
         Holder = rlbCRE
@@ -217,16 +247,17 @@ object FrmRlImport: TFrmRlImport
         Transparent = False
       end
       object rdtConvenio: TRLDBText
-        Left = 424
-        Top = 16
-        Width = 116
+        Left = 539
+        Top = 3
+        Width = 70
         Height = 16
+        Alignment = taCenter
         AutoSize = False
         DataField = 'CONVENIO'
         DataSource = ddsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
-        Font.Height = -12
+        Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
         Holder = rlbConvenio
@@ -235,22 +266,57 @@ object FrmRlImport: TFrmRlImport
         Transparent = False
       end
       object rdtCustasFechadas: TRLDBText
-        Left = 554
-        Top = 16
-        Width = 101
+        Left = 616
+        Top = 3
+        Width = 97
         Height = 16
+        Alignment = taCenter
         AutoSize = False
         DataField = 'CUSTASFECHADAS'
         DataSource = ddsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
-        Font.Height = -12
+        Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
         Holder = rlbCustasFechadas
         ParentFont = False
         Text = ''
         Transparent = False
+      end
+      object RLDBText1: TRLDBText
+        Left = 23
+        Top = 3
+        Width = 12
+        Height = 14
+        Alignment = taCenter
+        DataField = 'ID'
+        DataSource = ddsMain
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Arial'
+        Font.Style = []
+        Holder = rlbID
+        ParentFont = False
+        Text = ''
+      end
+      object rdtDataCadastro: TRLDBText
+        Left = 72
+        Top = 3
+        Width = 90
+        Height = 14
+        Alignment = taCenter
+        DataField = 'DATACADASTRO'
+        DataSource = ddsMain
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Arial'
+        Font.Style = []
+        Holder = rdtDataCadastro
+        ParentFont = False
+        Text = ''
       end
     end
   end
@@ -288,6 +354,7 @@ object FrmRlImport: TFrmRlImport
     object fqrMainDATACADASTRO: TSQLTimeStampField
       FieldName = 'DATACADASTRO'
       Origin = 'DATACADASTRO'
+      DisplayFormat = 'dd/mm/yyyy'
     end
     object fqrMainDESPACHANTE: TFloatField
       FieldName = 'DESPACHANTE'

@@ -137,6 +137,11 @@
             <Form>frmOiRlImport</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="uFraEmpresa.pas">
+            <Form>frEmpresa</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
         <None Include="Dados\Update.sql"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
@@ -169,9 +174,9 @@
                 <Platform value="Win64">False</Platform>
             </Platforms>
             <Deployment>
-                <DeployFile LocalName="Dados\Update.sql" Configuration="Debug" Class="ProjectFile">
+                <DeployFile LocalName="\ImportadorAG.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
+                        <RemoteName>ImportadorAG.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -187,9 +192,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="\ImportadorAG.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="Dados\Update.sql" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
-                        <RemoteName>ImportadorAG.exe</RemoteName>
+                        <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

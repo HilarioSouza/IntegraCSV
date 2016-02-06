@@ -30,7 +30,8 @@ uses
   Vcl.Styles,
   uEmpresa in 'uEmpresa.pas',
   uFrmRlImportacao in 'uFrmRlImportacao.pas' {FrmRlImport},
-  uFrmOiRlImport in 'uFrmOiRlImport.pas' {frmOiRlImport};
+  uFrmOiRlImport in 'uFrmOiRlImport.pas' {frmOiRlImport},
+  uFraEmpresa in 'uFraEmpresa.pas' {frEmpresa: TFrame};
 
 {$R *.res}
 

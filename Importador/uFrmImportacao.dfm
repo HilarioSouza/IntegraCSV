@@ -93,7 +93,7 @@ object frmImportacao: TfrmImportacao
         Width = 75
         Height = 25
         Caption = 'Importar'
-        TabOrder = 2
+        TabOrder = 1
         OnClick = btnImportarClick
       end
       object edtCaminhoArquivo: TLabeledEdit
@@ -105,16 +105,6 @@ object frmImportacao: TfrmImportacao
         EditLabel.Height = 13
         EditLabel.Caption = 'Caminho do arquivo:'
         TabOrder = 0
-      end
-      object dcbEMP: TDBLookupComboBox
-        Left = 351
-        Top = 16
-        Width = 229
-        Height = 21
-        KeyField = 'CODIGO'
-        ListField = 'NOME'
-        ListSource = ddsEMP
-        TabOrder = 1
       end
     end
   end
@@ -155,6 +145,14 @@ object frmImportacao: TfrmImportacao
       OnClick = btnListarImpClick
     end
   end
+  inline frEmpresa1: TfrEmpresa
+    Left = 351
+    Top = 0
+    Width = 293
+    Height = 36
+    TabOrder = 2
+    ExplicitLeft = 351
+  end
   object ddsIMP: TDataSource
     DataSet = fqrIMP
     Left = 704
@@ -185,17 +183,5 @@ object frmImportacao: TfrmImportacao
       FieldName = 'DATA'
       Origin = '"DATA"'
     end
-  end
-  object fqrEMP: TFDQuery
-    Connection = dmConnect.fdConn
-    SQL.Strings = (
-      'select * from emp')
-    Left = 424
-    Top = 72
-  end
-  object ddsEMP: TDataSource
-    DataSet = fqrEMP
-    Left = 456
-    Top = 80
   end
 end

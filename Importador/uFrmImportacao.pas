@@ -9,7 +9,7 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids, udmConnect, Vcl.ComCtrls,
-  Vcl.DBCtrls;
+  Vcl.DBCtrls, uFraEmpresa;
 
 type
   TfrmImportacao = class(TfrmStandard)
@@ -19,8 +19,6 @@ type
     pnlButtons: TPanel;
     btnDesfazerIMP: TButton;
     btnSair: TButton;
-    fqrEMP: TFDQuery;
-    ddsEMP: TDataSource;
     pnlGrid: TPanel;
     pgcIMP: TPageControl;
     tshIMP: TTabSheet;
@@ -32,8 +30,8 @@ type
     btnImportar: TButton;
     edtCaminhoArquivo: TLabeledEdit;
     sbtCaminhoArquivo: TSpeedButton;
-    dcbEMP: TDBLookupComboBox;
     btnListarImp: TButton;
+    frEmpresa1: TfrEmpresa;
     procedure sbtCaminhoArquivoClick(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
@@ -63,18 +61,21 @@ uses
 procedure TfrmImportacao.btnImportarClick(Sender: TObject);
 var
   Importador: TImportador;
+  EMP_Codigo: String;
 begin
+  if (frEmpresa1.dcbEMP.KeyValue <> null) then
+    EMP_Codigo := frEmpresa1.dcbEMP.KeyValue;
   GravarDadosINI;
-  if (dcbEMP.KeyValue = null) or (dcbEMP.KeyValue = '') then
+  if EMP_Codigo.IsEmpty then
   begin
     ShowMessage('Por favor selecione uma Empresa');
-    TControlUtils.TryFocus(dcbEMP);
+    TControlUtils.TryFocus(frEmpresa1.dcbEMP);
   end
   else
   begin
-    Importador := TImportador.Create(dcbEMP.KeyValue);
+    Importador := TImportador.Create(EMP_Codigo);
     try
-      Importador.ImportarArquivo(dcbEMP.KeyValue, edtCaminhoArquivo.Text);
+      Importador.ImportarArquivo(EMP_Codigo, edtCaminhoArquivo.Text);
     finally
       FreeAndNil(Importador);
     end;
@@ -112,7 +113,7 @@ end;
 procedure TfrmImportacao.GravarDadosINI;
 begin
   TFuncoesIni.GravarIni('CONFIG', 'FileName', edtCaminhoArquivo.Text);
-  TFuncoesIni.GravarIni('CONFIG', 'Empresa', dcbEMP.KeyValue);
+  TFuncoesIni.GravarIni('CONFIG', 'Empresa', frEmpresa1.dcbEMP.KeyValue);
 end;
 
 procedure TfrmImportacao.btnDesfazerIMPClick(Sender: TObject);
@@ -149,9 +150,10 @@ begin
   {$ENDIF}
   pgcIMP.ActivePage := tshIMP;
   edtCaminhoArquivo.Text := TFuncoesIni.LerIni('CONFIG', 'FileName', ExtractFilePath(ParamStr(0)));
-  dcbEMP.KeyValue := TFuncoesIni.LerIni('CONFIG', 'Empresa', '');
+  frEmpresa1.dcbEMP.KeyValue := TFuncoesIni.LerIni('CONFIG', 'Empresa', '');
   AtualizarQueries;
-  fqrEMP.Open;
+  frEmpresa1.AbrirQuery;
+  frEmpresa1.AtualizarEMP_Codigo;
 end;
 
 procedure TfrmImportacao.AtualizarQueries;
