@@ -5,8 +5,8 @@ object dmConnect: TdmConnect
   Width = 465
   object fdConn: TFDConnection
     Params.Strings = (
-      'Database=D:\Projetos\IntegraCSV\Importador\Dados\IB2.GDB'
-      'User_Name=sysdba'
+      'Database=.\Dados\ImportadorAG.FDB'
+      'User_Name=SYSDBA'
       'Password=masterkey'
       'DriverID=FB')
     FetchOptions.AssignedValues = [evDetailOptimize]

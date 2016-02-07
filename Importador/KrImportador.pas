@@ -234,10 +234,13 @@ begin
       while not Eof(Arquivo) do
       begin
         Readln(Arquivo, LinhaRegistro);
-        Registro := TRegistro.Create;
-        FListaRegistros.Add(TRegistro(Registro));
-        PopularDadosRegistro(Registro);
-        Registro.NumLinha := FListaRegistros.Count + 1;
+        if not LinhaRegistro.IsEmpty then
+        begin
+          Registro := TRegistro.Create;
+          FListaRegistros.Add(TRegistro(Registro));
+          PopularDadosRegistro(Registro);
+          Registro.NumLinha := FListaRegistros.Count + 1;
+        end;
       end;
     finally
       if ArquivoAberto then
@@ -867,7 +870,7 @@ begin
     begin
       Movimento.Registro := ListaRegistro[I];
       if Movimento.TratarRegistroJaImportado then
-        Exit;
+        Continue;
       Movimento.Append;
       try
         if Movimento.GetTipo = 'CRE' then
@@ -878,7 +881,7 @@ begin
           Movimento.Registro.CRE_Codigo := Movimento.GetCodigo
         else
           Movimento.Registro.CPG_Codigo := Movimento.GetCodigo;
-        Inc(FTotalRegistrosImportados);
+        Inc(FTotalRegistrosImportados); //2 Movimentos, apenas 1 Registro
       except
         on E: Exception do
         begin

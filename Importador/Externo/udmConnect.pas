@@ -36,7 +36,7 @@ implementation
 
 { %CLASSGROUP 'Vcl.Controls.TControl' }
 
-uses uFuncoesIni, uMensagem;
+uses uFuncoesIni, uMensagem, IWSystem;
 
 {$R *.dfm}
 { TdmConnect }
@@ -45,9 +45,9 @@ procedure TdmConnect.Conectar;
 var
   User, Pass, DataBase: string;
 begin
-  User := TFuncoesIni.LerIni('BANCO', 'User_name');
-  Pass := TFuncoesIni.LerIni('BANCO', 'Pass');
-  DataBase := TFuncoesIni.LerIni('BANCO', 'Database');
+  User := TFuncoesIni.LerIni('BANCO', 'User_name', 'SYSDBA');
+  Pass := TFuncoesIni.LerIni('BANCO', 'Pass', 'masterkey');
+  DataBase := TFuncoesIni.LerIni('BANCO', 'Database', gsAppPath + '\Dados\ImportadorAG.fdb');
   ConfiguraConexao(User, Pass, DataBase);
 end;
 

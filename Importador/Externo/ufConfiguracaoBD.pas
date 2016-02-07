@@ -50,7 +50,7 @@ implementation
 
 {$R *.dfm}
 
-uses uMensagem, uFuncoesIni, uUtils, udmConnect;
+uses uMensagem, uFuncoesIni, uUtils, udmConnect, IWSystem;
 
 procedure TfConfiguracaoBD.btnConectarClick(Sender: TObject);
 begin
@@ -74,9 +74,9 @@ end;
 procedure TfConfiguracaoBD.FormShow(Sender: TObject);
 begin
   inherited;
-  edtUser.Text := TFuncoesIni.LerIni('BANCO', 'User_name');
-  edtSenha.Text := TFuncoesIni.LerIni('BANCO', 'Pass');
-  edtCaminho.Text := TFuncoesIni.LerIni('BANCO', 'Database');
+  edtUser.Text := TFuncoesIni.LerIni('BANCO', 'User_name', 'SYSDBA');
+  edtSenha.Text := TFuncoesIni.LerIni('BANCO', 'Pass', 'masterkey');
+  edtCaminho.Text := TFuncoesIni.LerIni('BANCO', 'Database', gsAppPath + '\Dados\ImportadorAG.fdb');
 end;
 
 procedure TfConfiguracaoBD.SetCaminhoBanco;
