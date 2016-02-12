@@ -141,7 +141,9 @@ type
     procedure Delete;
     function FindIDWS(const IDWS: String): Boolean;
     function TratarRegistroJaImportado: Boolean;
-    procedure EditarRateiosaReceber(Rateios: IRateiosaReceber);
+    procedure EditarRateiosaReceber(Rateios: IRateiosaReceber; DadosEst: TEstabelecimento; NovoValorRateio: Double);
+    function EncontrouRateio(sRateio: IRateiosaReceber;
+      sDadosEst: TEstabelecimento): Boolean;
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
     destructor Destroy; override;
@@ -433,31 +435,33 @@ begin
       FContasaReceber.ServicosaReceber.Valor := FContasaReceber.ServicosaReceber.Valor + FRegistro.NovoValorCRE;
       FContasaReceber.ServicosaReceber.Post;
       PopularVencimentosaReceber(FContasaReceber.VencimentosaReceber);
-      EditarRateiosaReceber(FContasaReceber.RateiosaReceber);
+      EditarRateiosaReceber(FContasaReceber.RateiosaReceber, FDadosServices, FRegistro.NovoValorRateioServices);
+      EditarRateiosaReceber(FContasaReceber.RateiosaReceber, FDadosCartorio, FRegistro.NovoValorRateioCartorio);
       FContasaReceber.Post;
     end;
   end;
 end;
 
-procedure TMovimentoCRE.EditarRateiosaReceber(Rateios: IRateiosaReceber);
+procedure TMovimentoCRE.EditarRateiosaReceber(Rateios: IRateiosaReceber; DadosEst: TEstabelecimento; NovoValorRateio: Double);
 begin
-  if Rateios.Find(FDadosServices.EST_Codigo,
-               FDadosServices.CRD_Codigo,
-               FDadosServices.CRS_Codigo) then
+  Rateios.First;
+  while not Rateios.Eof do
   begin
-    Rateios.Edit;
-    Rateios.Valor := Rateios.Valor + FRegistro.NovoValorRateioServices;
-    Rateios.Post;
+    if EncontrouRateio(Rateios, DadosEst) then
+    begin
+      Rateios.Edit;
+      Rateios.Valor := Rateios.Valor + NovoValorRateio;
+      Rateios.Post;
+    end;
+    Rateios.Next;
   end;
+end;
 
-  if Rateios.Find(FDadosCartorio.EST_Codigo,
-                  FDadosCartorio.CRD_Codigo,
-                  FDadosCartorio.CRS_Codigo) then
-  begin
-    Rateios.Edit;
-    Rateios.Valor := Rateios.Valor + FRegistro.NovoValorRateioCartorio;
-    Rateios.Post;
-  end;
+function TMovimentoCRE.EncontrouRateio(sRateio: IRateiosaReceber; sDadosEst: TEstabelecimento): Boolean;
+begin
+  Result := (sRateio.Estabelecimento = sDadosEst.EST_Codigo) and
+            (sRateio.Receita = sDadosEst.CRD_Codigo) and
+            (sRateio.CentroDeResultados = sDadosEst.CRS_Codigo);
 end;
 
 function TMovimentoCRE.GetCodigo: String;
@@ -681,7 +685,7 @@ begin
     ValorAntigoCRE := ValorAntigoCPG + ValorAntigoServices + ValorAntigoCartorio;
     NovoValorCPG := GetValorContasaPagar - ValorAntigoCPG;
     NovoValorCRE := GetValorVencimento - ValorAntigoCRE;
-    NovoValorRateioServices := GetValorRateioServices - ValorAntigoServices;
+    NovoValorRateioServices := GetValorContasaPagar + GetValorRateioServices - ValorAntigoServices;
     NovoValorRateioCartorio := GetValorRateioCartorio - ValorAntigoCartorio;
   end;
 end;
