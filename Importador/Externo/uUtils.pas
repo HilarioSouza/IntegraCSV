@@ -154,7 +154,10 @@ begin
     odlCaminho.Filter := '*.csv';
     odlCaminho.FilterIndex := 1;
     odlCaminho.Execute;
-    Result := odlCaminho.FileName;
+    if (odlCaminho.FileName = '') then
+      Result := InitialDir
+    else
+      Result := odlCaminho.FileName;
   finally
     FreeAndNil(odlCaminho);
   end;
