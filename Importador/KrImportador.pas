@@ -423,6 +423,11 @@ begin
     if (FRegistro.NovoValorCRE > 0) then
     begin
       FContasaReceber.Edit(True);
+      //Falta tratar o valor no serviço, e nos rateios;
+      FContasaReceber.ServicosaReceber.First;
+      FContasaReceber.ServicosaReceber.Edit;
+      FContasaReceber.ServicosaReceber.Valor := FContasaReceber.ServicosaReceber.Valor + FRegistro.NovoValorCRE;
+      FContasaReceber.ServicosaReceber.Post;
       PopularVencimentosaReceber(FContasaReceber.VencimentosaReceber);
       FContasaReceber.Post;
     end;
@@ -599,7 +604,7 @@ end;
 
 function TRegistro.GetValorVencimento: Double;
 begin
-  if (CompareValue(NovoValorCPG, 0) > 0) then
+  if (CompareValue(NovoValorCRE, 0) > 0) then
     Result := NovoValorCRE
   else
     Result := GetValorContasaPagar + GetValorRateioServices + GetValorRateioCartorio;
@@ -868,6 +873,7 @@ begin
   try
     for I := 0 to ListaRegistro.Count - 1 do
     begin
+      Inc(FTotalRegistrosImportados); //2 Movimentos, apenas 1 Registro
       Movimento.Registro := ListaRegistro[I];
       if Movimento.TratarRegistroJaImportado then
         Continue;
@@ -878,10 +884,11 @@ begin
         Movimento.Popular;
         Movimento.Post;
         if Movimento is TMovimentoCRE then
-          Movimento.Registro.CRE_Codigo := Movimento.GetCodigo
+        begin
+          Movimento.Registro.CRE_Codigo := Movimento.GetCodigo;
+        end
         else
           Movimento.Registro.CPG_Codigo := Movimento.GetCodigo;
-        Inc(FTotalRegistrosImportados); //2 Movimentos, apenas 1 Registro
       except
         on E: Exception do
         begin

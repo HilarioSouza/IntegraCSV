@@ -67,7 +67,7 @@ object frmImportacao: TfrmImportacao
       BevelOuter = bvNone
       TabOrder = 1
       object sbtCaminhoArquivo: TSpeedButton
-        Left = 322
+        Left = 378
         Top = 16
         Width = 23
         Height = 21
@@ -99,7 +99,7 @@ object frmImportacao: TfrmImportacao
       object edtCaminhoArquivo: TLabeledEdit
         Left = 8
         Top = 16
-        Width = 313
+        Width = 368
         Height = 21
         EditLabel.Width = 99
         EditLabel.Height = 13
@@ -146,12 +146,12 @@ object frmImportacao: TfrmImportacao
     end
   end
   inline frEmpresa1: TfrEmpresa
-    Left = 351
+    Left = 407
     Top = 0
     Width = 293
     Height = 36
     TabOrder = 2
-    ExplicitLeft = 351
+    ExplicitLeft = 407
   end
   object ddsIMP: TDataSource
     DataSet = fqrIMP
