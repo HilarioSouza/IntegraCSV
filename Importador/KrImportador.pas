@@ -44,6 +44,8 @@ type
     NumLinha         : Integer;
     NovoValorCPG     : Double;
     NovoValorCRE     : Double;
+    NovoValorRateioServices: Double;
+    NovoValorRateioCartorio: Double;
     procedure ValidarCustasFechadas;
     procedure PopularNovosValores;
     function GetValorVencimento: Double;
@@ -139,6 +141,7 @@ type
     procedure Delete;
     function FindIDWS(const IDWS: String): Boolean;
     function TratarRegistroJaImportado: Boolean;
+    procedure EditarRateiosaReceber(Rateios: IRateiosaReceber);
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
     destructor Destroy; override;
@@ -174,6 +177,7 @@ type
     FEmp_Codigo: String;
     FImportacao_ID: Integer;
     FTotalRegistrosImportados: Integer;
+    FTotalRegistrosReimportados: Integer;
     FFinanceiro: IFinanceiro;
     procedure PopularFinanceiroAG;
     procedure DeletarMovimentosImportados;
@@ -429,8 +433,30 @@ begin
       FContasaReceber.ServicosaReceber.Valor := FContasaReceber.ServicosaReceber.Valor + FRegistro.NovoValorCRE;
       FContasaReceber.ServicosaReceber.Post;
       PopularVencimentosaReceber(FContasaReceber.VencimentosaReceber);
+      EditarRateiosaReceber(FContasaReceber.RateiosaReceber);
       FContasaReceber.Post;
     end;
+  end;
+end;
+
+procedure TMovimentoCRE.EditarRateiosaReceber(Rateios: IRateiosaReceber);
+begin
+  if Rateios.Find(FDadosServices.EST_Codigo,
+               FDadosServices.CRD_Codigo,
+               FDadosServices.CRS_Codigo) then
+  begin
+    Rateios.Edit;
+    Rateios.Valor := Rateios.Valor + FRegistro.NovoValorRateioServices;
+    Rateios.Post;
+  end;
+
+  if Rateios.Find(FDadosCartorio.EST_Codigo,
+                  FDadosCartorio.CRD_Codigo,
+                  FDadosCartorio.CRS_Codigo) then
+  begin
+    Rateios.Edit;
+    Rateios.Valor := Rateios.Valor + FRegistro.NovoValorRateioCartorio;
+    Rateios.Post;
   end;
 end;
 
@@ -607,7 +633,7 @@ begin
   if (CompareValue(NovoValorCRE, 0) > 0) then
     Result := NovoValorCRE
   else
-    Result := GetValorContasaPagar + GetValorRateioServices + GetValorRateioCartorio;
+    Result := Despachante + Distribuidor + VlrCartorio + GetValorRateioServices + GetValorRateioCartorio;
 end;
 
 function TRegistro.JaImportado(out REG_ID: Integer): Boolean;
@@ -633,9 +659,13 @@ var
   Query: TFDQuery;
   ValorAntigoCPG: Double;
   ValorAntigoCRE: Double;
+  ValorAntigoServices: Double;
+  ValorAntigoCartorio: Double;
 begin
   NovoValorCPG := 0;
   NovoValorCRE := 0;
+  NovoValorRateioServices := 0;
+  NovoValorRateioCartorio := 0;
   if JaImportado(sID) then
   begin
     Query := NewQuery(sSQL);
@@ -646,10 +676,13 @@ begin
     ValorAntigoCPG := Query.FieldByName('DESPACHANTE').AsFloat + Query.FieldByName('DISTRIBUIDOR').AsFloat +
                       Query.FieldByName('VALORCARTORIO').AsFloat;
     //VlrXimenesGestao + VlrXimenesAut + VlrXimenesRec
-    ValorAntigoCRE := Query.FieldByName('VALORXIMENESGESTAO').AsFloat + Query.FieldByName('VALORXIMENESAUT').AsFloat +
-                      Query.FieldByName('VALORXIMENESREC').AsFloat;
+    ValorAntigoServices := Query.FieldByName('VALORXIMENESGESTAO').AsFloat;
+    ValorAntigoCartorio := Query.FieldByName('VALORXIMENESAUT').AsFloat + Query.FieldByName('VALORXIMENESREC').AsFloat;
+    ValorAntigoCRE := ValorAntigoCPG + ValorAntigoServices + ValorAntigoCartorio;
     NovoValorCPG := GetValorContasaPagar - ValorAntigoCPG;
-    NovoValorCRE := GetValorVencimento - (ValorAntigoCPG + ValorAntigoCRE);
+    NovoValorCRE := GetValorVencimento - ValorAntigoCRE;
+    NovoValorRateioServices := GetValorRateioServices - ValorAntigoServices;
+    NovoValorRateioCartorio := GetValorRateioCartorio - ValorAntigoCartorio;
   end;
 end;
 
@@ -698,7 +731,7 @@ begin
       ImportarMovimento(ImportadorCRE, Leitor.ListaRegistros);
       ImportadorCPG := TMovimentoCPG.Create(FFinanceiro, cEMP_Codigo, Leitor.IMP_ID);
       ImportarMovimento(ImportadorCPG, Leitor.ListaRegistros);
-      if FTotalRegistrosImportados > 0 then
+      if (FTotalRegistrosImportados > 0) or (FTotalRegistrosReimportados > 0) then
       begin
         Leitor.GravarImportacao;
         TAuditor.GravarAuditoria(Leitor.ListaRegistros, Leitor.IMP_ID);
@@ -873,10 +906,12 @@ begin
   try
     for I := 0 to ListaRegistro.Count - 1 do
     begin
-      Inc(FTotalRegistrosImportados); //2 Movimentos, apenas 1 Registro
       Movimento.Registro := ListaRegistro[I];
       if Movimento.TratarRegistroJaImportado then
+      begin
+        Inc(FTotalRegistrosReimportados);
         Continue;
+      end;
       Movimento.Append;
       try
         if Movimento.GetTipo = 'CRE' then
@@ -889,6 +924,7 @@ begin
         end
         else
           Movimento.Registro.CPG_Codigo := Movimento.GetCodigo;
+        Inc(FTotalRegistrosImportados); //2 Movimentos, apenas 1 Registro
       except
         on E: Exception do
         begin
