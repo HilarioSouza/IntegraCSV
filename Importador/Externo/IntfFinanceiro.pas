@@ -908,7 +908,7 @@ type
     procedure Open;
     function  Find(Codigo: String): Boolean;
     function FindIDWS(IDWS: String): Boolean;
-    procedure Edit(PermiteMesmoComBaixas: Boolean = False);
+    procedure Edit(PermiteMesmoComBaixas: Boolean = False); overload;
     //
     function  GetCodigoWithDocumento(aDocumento: String): String;
     function  GetCodigoWithBoleto(aBoleto: String; aIdBloquete: Integer = 1): String;
@@ -5406,6 +5406,7 @@ initialization
 
 finalization
   //TODO: Ver com Ronaldo problemas de access violation (Teresina)
+  //Adicionar ShareMem ao uses do projeto.
   try
     if FinanceiroHandle<>0 then
       FreeLibrary(FinanceiroHandle);
