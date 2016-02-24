@@ -48,7 +48,7 @@ implementation
 
 uses
   uFrmImportacao, uFrmCdEmp, ufConfiguracaoBD, uAtualizaBanco, uFrmPreferencias,
-  uFrmOiRlImport;
+  uFrmOiRlImport, uUtils;
 
 {$R *.dfm}
 
@@ -70,6 +70,7 @@ end;
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   FFTDI := TFTDI.Create(Self, nil);//TfrmImportacao);
+  frmMain.Caption := frmMain.Caption + ' - Versão: ' + TUtil.GetVersionInfo('FileVersion');
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);

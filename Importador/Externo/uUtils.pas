@@ -16,6 +16,7 @@ type
     class function GetOnlyNumbers(const Text: String): String;
     class function FormatarData(const Data: TDateTime; Formato: String = 'dd/mm/yyyy'): String;
     class function FormatarDataSQL(const Data: TDateTime; Formato: String = 'yyyy-mm-dd'): String;
+    class function GetVersionInfo(aIdent: String): String;
   end;
 
   TUtilArquivo = class
@@ -31,7 +32,7 @@ type
 implementation
 
 uses
-  Dialogs;
+  Dialogs, Winapi.Windows, System.Classes, Math;
 
 class function TUtil.Parse(S: string; Count: Integer;
   char: String = ';'): string;
@@ -90,6 +91,63 @@ begin
   begin
     if CharInSet(Text[I],['0'..'9']) then
       Result := Result + Text[I];
+  end;
+end;
+
+class function TUtil.GetVersionInfo(aIdent: String): String;
+type
+  TLang = packed record
+    Lng, Page: WORD;
+  end;
+
+  TLangs = array [0 .. 10000] of TLang;
+
+  PLangs = ^TLangs;
+
+var
+  BLngs: PLangs;
+  BLngsCnt: Cardinal;
+  BLangId: String;
+  RM: TMemoryStream;
+  RS: TResourceStream;
+  BP: PChar;
+  BL: Cardinal;
+  BId: String;
+
+begin
+  // Assume error
+  Result := '';
+
+  RM := TMemoryStream.Create;
+  try
+    // Load the version resource into memory
+    RS := TResourceStream.CreateFromID(HInstance, 1, RT_VERSION);
+    try
+      RM.CopyFrom(RS, RS.Size);
+    finally
+      FreeAndNil(RS);
+    end;
+
+    // Extract the translations list
+    if not VerQueryValue(RM.Memory, '\\VarFileInfo\\Translation', Pointer(BLngs), BL) then
+      Exit; // Failed to parse the translations table
+    BLngsCnt := BL div sizeof(TLang);
+    if BLngsCnt <= 0 then
+      Exit; // No translations available
+
+    // Use the first translation from the table (in most cases will be OK)
+    with BLngs[0] do
+      BLangId := IntToHex(Lng, 4) + IntToHex(Page, 4);
+
+    // Extract field by parameter
+    BId := '\\StringFileInfo\\' + BLangId + '\\' + AIdent;
+    if not VerQueryValue(RM.Memory, PChar(BId), Pointer(BP), BL) then
+      Exit; // No such field
+
+    // Prepare result
+    Result := BP;
+  finally
+    FreeAndNil(RM);
   end;
 end;
 
