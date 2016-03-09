@@ -8,7 +8,8 @@ uses
   Vcl.ExtCtrls, Vcl.DBCtrls, Vcl.Mask, udmConnect, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.ComCtrls;
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.ComCtrls, uFraEmpresa,
+  Vcl.Buttons;
 
 type
   TfrmPreferencias = class(TfrmStandard)
@@ -30,10 +31,13 @@ type
     btnOk: TButton;
     btnCancelar: TButton;
     btnTestarConexao: TButton;
+    frEmpresa1: TfrEmpresa;
+    sbtCaminhoArquivo: TSpeedButton;
     procedure btnOkClick(Sender: TObject);
     procedure btnCancelarClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnTestarConexaoClick(Sender: TObject);
+    procedure sbtCaminhoArquivoClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -47,7 +51,7 @@ implementation
 
 {$R *.dfm}
 
-uses uDBUtils, IntfFinanceiro, iwSystem, System.StrUtils;
+uses uDBUtils, IntfFinanceiro, iwSystem, System.StrUtils, uUtils;
 
 
 procedure TfrmPreferencias.btnCancelarClick(Sender: TObject);
@@ -61,6 +65,7 @@ procedure TfrmPreferencias.btnOkClick(Sender: TObject);
 begin
   inherited;
   TDBUtils.SetID(qryCFG, 'CFG');
+  qryCFG.FieldByName('EMP_CODIGO').AsString := frEmpresa1.edtCodEmpresa.Text;
   qryCFG.Post;
   Sair;
 end;
@@ -77,7 +82,7 @@ begin
     Financeiro.UsuarioBanco    := detUsuarioAG.Text;
     Financeiro.SenhaBanco      := detSenhaAG.Text;
     Financeiro.Open(detEnderecoBanco.Text);
-    Financeiro.Empresa := '0001';
+    Financeiro.Empresa := frEmpresa1.edtCodEmpresa.Text;
     Financeiro.Close;
     ShowMessage('Conexão realizada com sucesso.');
   except
@@ -89,8 +94,15 @@ end;
 procedure TfrmPreferencias.FormCreate(Sender: TObject);
 begin
   inherited;
+  frEmpresa1.fqrEMP.Open;
   qryCFG.Open;
   qryCFG.Edit;
+end;
+
+procedure TfrmPreferencias.sbtCaminhoArquivoClick(Sender: TObject);
+begin
+  inherited;
+  detEnderecoBanco.Text := TUtilArquivo.GetCaminhoArquivo(detEnderecoBanco.Text);
 end;
 
 end.
