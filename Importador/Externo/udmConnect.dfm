@@ -5,7 +5,7 @@ object dmConnect: TdmConnect
   Width = 465
   object fdConn: TFDConnection
     Params.Strings = (
-      'Database=.\Dados\ImportadorAG.FDB'
+      'Database=.\ImportadorBin\Bin\Dados\ImportadorAG.FDB'
       'User_Name=SYSDBA'
       'Password=masterkey'
       'DriverID=FB')

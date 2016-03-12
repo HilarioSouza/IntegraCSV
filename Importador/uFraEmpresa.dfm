@@ -31,13 +31,14 @@ object frEmpresa: TfrEmpresa
     OnCloseUp = dcbEMPCloseUp
     OnExit = dcbEMPExit
   end
-  object edtCodEmpresa: TEdit
-    Left = 0
+  object edtCodEmpresa: TDBEdit
+    Left = 2
     Top = 15
-    Width = 58
+    Width = 55
     Height = 21
-    Enabled = False
     TabOrder = 1
+    OnChange = edtCodEmpresaChange
+    OnExit = edtCodEmpresaExit
   end
   object ddsEMP: TDataSource
     DataSet = fqrEMP

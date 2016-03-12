@@ -142,6 +142,10 @@ object frmPreferencias: TfrmPreferencias
             Height = 36
             TabOrder = 5
             ExplicitTop = 6
+            inherited edtCodEmpresa: TDBEdit
+              DataField = 'EMP_Codigo'
+              DataSource = dtsCFG
+            end
           end
         end
       end
