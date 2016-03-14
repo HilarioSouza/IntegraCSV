@@ -118,6 +118,7 @@ type
     procedure PopularListaRegistro(ListaRegistro: TListaRegistros);
     function GetRegistro: TRegistro;
     procedure SetRegistro(const Value: TRegistro);
+    function CustasFechadasImportadas: Boolean;
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
     property Registro: TRegistro read GetRegistro write SetRegistro;
@@ -369,6 +370,11 @@ begin
   Registro.PopularNovosValores;
 end;
 
+function TMovimentoBase.CustasFechadasImportadas: Boolean;
+begin
+  Result := TDBUtils.ExisteRegistro('SELECT * FROM AUD WHERE PROTOCOLO := ' + FRegistro.Protocolo.QuotedString);
+end;
+
 function TMovimentoBase.GetRegistro: TRegistro;
 begin
   Result := FRegistro;
@@ -426,7 +432,7 @@ begin
   if FContasaReceber.FindIDWS(FRegistro.Protocolo) then
   begin
     Result := True;
-    if (FRegistro.NovoValorCRE > 0) then
+    if (FRegistro.NovoValorCRE > 0) and (not CustasFechadasImportadas) then
     begin
       FContasaReceber.Edit(True);
       //Falta tratar o valor no serviço, e nos rateios;
@@ -803,7 +809,7 @@ begin
   if FContasaPagar.FindIDWS(FRegistro.Protocolo) then
   begin
     Result := True;
-    if (FRegistro.NovoValorCPG > 0) then
+    if (FRegistro.NovoValorCPG > 0) and (not CustasFechadasImportadas) then
     begin
       FContasaPagar.Edit(True);
       Vencimentos := FContasaPagar.VencimentosaPagar;
@@ -881,7 +887,7 @@ begin
     FBaixasaPagar.CPG_Codigo           := Vencimento.Codigo;
     FBaixasaPagar.DataVencimento       := Vencimento.Vencimento;
     FBaixasaPagar.SequencialVencimento := Vencimento.Sequencial;
-    FBaixasaPagar.Data                 := Now;
+    FBaixasaPagar.Data                 := Vencimento.Vencimento;
     FBaixasaPagar.Valor                := Vencimento.Valor;
     FBaixasaPagar.LAN_ContaFinanceira  := FDadosBaixa.CON_Codigo;
     FBaixasaPagar.LAN_Historico        := 'PROTOCOLO: '+ FRegistro.Protocolo + ' BAIXA AUTOMÁTICA DA INTEGRAÇÃO VIA AGLIB.DLL';
