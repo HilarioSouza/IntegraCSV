@@ -751,12 +751,12 @@ begin
     finally
       FreeAndNil(ImportadorCRE);
       FreeAndnil(ImportadorCPG);
+      GetLogger.SaveLog(gsAppPath + gsAppName + '.log');
     end;
     if GetLogger.HasLog then
     begin
       FFinanceiro.Rollback;
       TDBUtils.MainServer.Rollback;
-      GetLogger.SaveLog(gsAppPath + gsAppName + '.log');
     end
     else
     begin

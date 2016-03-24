@@ -3,7 +3,7 @@ inherited frmCdEmp: TfrmCdEmp
   ClientHeight = 560
   ClientWidth = 1003
   ExplicitWidth = 1009
-  ExplicitHeight = 589
+  ExplicitHeight = 588
   PixelsPerInch = 96
   TextHeight = 13
   object SpeedButton1: TSpeedButton [0]
@@ -65,9 +65,9 @@ inherited frmCdEmp: TfrmCdEmp
         Width = 995
         Height = 438
         Align = alTop
-        ExplicitTop = 50
+        ExplicitTop = 0
         ExplicitWidth = 995
-        ExplicitHeight = 388
+        ExplicitHeight = 438
         inherited lblCodigo: TLabel
           Width = 37
           Caption = 'C'#243'digo:'
@@ -91,7 +91,7 @@ inherited frmCdEmp: TfrmCdEmp
         Top = 50
         Width = 995
         Height = 388
-        ActivePage = tshContasaReceber
+        ActivePage = tshContasaPagar
         TabOrder = 2
         object tshContasaReceber: TTabSheet
           Caption = 'Contas a Receber'
@@ -235,9 +235,9 @@ inherited frmCdEmp: TfrmCdEmp
             object Label11: TLabel
               Left = 8
               Top = 96
-              Width = 40
+              Width = 45
               Height = 13
-              Caption = 'Receita:'
+              Caption = 'Despesa:'
             end
             object Label12: TLabel
               Left = 8

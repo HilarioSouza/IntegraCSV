@@ -54,7 +54,7 @@ implementation
 
 uses
   KrImportador, uUtils, uMain, uFuncoesIni, uDBUtils, uMensagem, uLogger,
-  uFrmOiRlImport;
+  uFrmOiRlImport, IWSystem;
 
 {$R *.dfm}
 
@@ -75,9 +75,14 @@ begin
   begin
     Importador := TImportador.Create(EMP_Codigo);
     try
-      Importador.ImportarArquivo(EMP_Codigo, edtCaminhoArquivo.Text);
-    finally
-      FreeAndNil(Importador);
+      try
+        Importador.ImportarArquivo(EMP_Codigo, edtCaminhoArquivo.Text);
+      finally
+        FreeAndNil(Importador);
+      end;
+    except
+      on E: Exception do
+        GetLogger.SaveLog(gsAppPath + gsAppName + '.log');
     end;
     AtualizarQueries;
   end;
