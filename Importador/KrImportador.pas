@@ -82,6 +82,7 @@ type
     function GetIMP_ID: Integer;
     function GetEMP_Codigo: String;
     function GetLista: TListaRegistros;
+    function LinhaPossuiProtocolo: Boolean;
   published
     constructor Create(const EMP_Codigo: String);
     destructor Destroy; override;
@@ -219,6 +220,11 @@ const
 
 { TLeitorCSV }
 
+function TLeitorCSV.LinhaPossuiProtocolo: Boolean;
+begin
+  Result := not Copy(LinhaRegistro, 1, pos(';', LinhaRegistro) - 1).IsEmpty;
+end;
+
 procedure TLeitorCSV.LerArquivo(Filename: String);
 var
   Registro: TRegistro;
@@ -241,7 +247,7 @@ begin
       while not Eof(Arquivo) do
       begin
         Readln(Arquivo, LinhaRegistro);
-        if not LinhaRegistro.IsEmpty then
+        if (LinhaPossuiProtocolo) then
         begin
           Registro := TRegistro.Create;
           FListaRegistros.Add(TRegistro(Registro));
