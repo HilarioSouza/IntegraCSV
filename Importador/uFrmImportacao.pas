@@ -151,7 +151,7 @@ procedure TfrmImportacao.FormCreate(Sender: TObject);
 begin
   inherited;
   {$IFDEF DEBUG}
-    btnDesfazerIMP.Visible := True;
+//    btnDesfazerIMP.Visible := True;
   {$ENDIF}
   pgcIMP.ActivePage := tshIMP;
   edtCaminhoArquivo.Text := TFuncoesIni.LerIni('CONFIG', 'FileName', ExtractFilePath(ParamStr(0)));

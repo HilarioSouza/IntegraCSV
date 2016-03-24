@@ -45,14 +45,14 @@ type
     Label8: TLabel;
     Label9: TLabel;
     Label10: TLabel;
-    DBEdit2: TDBEdit;
-    DBEdit3: TDBEdit;
-    DBEdit4: TDBEdit;
+    detEstCartorio: TDBEdit;
+    detCRSCartorio: TDBEdit;
+    detCRDCartorio: TDBEdit;
     gbxContasaPagar: TGroupBox;
     Label3: TLabel;
     Label4: TLabel;
     Label11: TLabel;
-    detEstab: TDBEdit;
+    detEstabCPG: TDBEdit;
     detCRS: TDBEdit;
     detCRD: TDBEdit;
     detFRN_CNPJ: TDBEdit;
@@ -85,8 +85,19 @@ type
     detContaBaixaBVP: TDBEdit;
     procedure FormCreate(Sender: TObject);
     procedure btnSalvarClick(Sender: TObject);
+    procedure detEstabCPGExit(Sender: TObject);
+    procedure detCPG_CONExit(Sender: TObject);
+    procedure detContaBaixaBVPExit(Sender: TObject);
+    procedure detCPG_TDCExit(Sender: TObject);
+    procedure detCodServicoExit(Sender: TObject);
+    procedure detCodModalidadeExit(Sender: TObject);
+    procedure detTipoDocExit(Sender: TObject);
+    procedure detEstabelecimentoExit(Sender: TObject);
+    procedure detEstCartorioExit(Sender: TObject);
+    procedure detAgenteCobExit(Sender: TObject);
   private
     procedure ValidarEmpresa(ID: String);
+    procedure TratarCodigoEst(detEst: TDBEdit);
     { Private declarations }
   public
     { Public declarations }
@@ -105,6 +116,71 @@ procedure TfrmCdEmp.btnSalvarClick(Sender: TObject);
 begin
   ValidarEmpresa(edtID.Text);
   inherited;
+end;
+
+procedure TfrmCdEmp.detAgenteCobExit(Sender: TObject);
+begin
+  inherited;
+  detagentecob.text := TUtil.LPad(detAgenteCob.Text, '0', 4);
+end;
+
+procedure TfrmCdEmp.detCodModalidadeExit(Sender: TObject);
+begin
+  inherited;
+  detCodModalidade.Text := TUtil.LPad(detCodModalidade.Text, '0', 2);
+end;
+
+procedure TfrmCdEmp.detCodServicoExit(Sender: TObject);
+begin
+  inherited;
+  detCodServico.Text := TUtil.LPad(detCodServico.Text, '0', 4);
+end;
+
+procedure TfrmCdEmp.detContaBaixaBVPExit(Sender: TObject);
+begin
+  inherited;
+  detContaBaixaBVP.Text := TUtil.LPad(detContaBaixaBVP.Text, '0', 4);
+end;
+
+procedure TfrmCdEmp.detCPG_CONExit(Sender: TObject);
+begin
+  inherited;
+  detCPG_CON.Text := TUtil.LPad(detCPG_CON.Text, '0', 4);
+end;
+
+procedure TfrmCdEmp.detCPG_TDCExit(Sender: TObject);
+begin
+  inherited;
+  detCPG_TDC.Text := TUtil.LPad(detCPG_TDC.Text, '0', 3);
+end;
+
+procedure TfrmCdEmp.TratarCodigoEst(detEst: TDBEdit);
+begin
+  detEst.Text := TUtil.LPad(detEst.Text, '0', 4);
+end;
+
+procedure TfrmCdEmp.detEstabelecimentoExit(Sender: TObject);
+begin
+  inherited;
+  TratarCodigoEst(detEstabelecimento);
+end;
+
+procedure TfrmCdEmp.detEstCartorioExit(Sender: TObject);
+begin
+  inherited;
+  TratarCodigoEst(detEstCartorio);
+end;
+
+procedure TfrmCdEmp.detEstabCPGExit(Sender: TObject);
+begin
+  inherited;
+  TratarCodigoEst(detEstabCPG);
+end;
+
+procedure TfrmCdEmp.detTipoDocExit(Sender: TObject);
+begin
+  inherited;
+  detTipoDoc.Text := TUtil.LPad(detTipoDoc.Text, '0', 3);
 end;
 
 procedure TfrmCdEmp.FormCreate(Sender: TObject);

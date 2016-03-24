@@ -2,6 +2,7 @@ inherited frmCdEmp: TfrmCdEmp
   Caption = 'Cadastro de Empresas'
   ClientHeight = 560
   ClientWidth = 1003
+  ExplicitTop = -45
   ExplicitWidth = 1009
   ExplicitHeight = 588
   PixelsPerInch = 96
@@ -91,7 +92,7 @@ inherited frmCdEmp: TfrmCdEmp
         Top = 50
         Width = 995
         Height = 388
-        ActivePage = tshContasaPagar
+        ActivePage = tshServicos
         TabOrder = 2
         object tshContasaReceber: TTabSheet
           Caption = 'Contas a Receber'
@@ -149,6 +150,7 @@ inherited frmCdEmp: TfrmCdEmp
               DataField = 'SERVICESEST'
               DataSource = dsDados
               TabOrder = 0
+              OnExit = detEstabelecimentoExit
             end
           end
           object gbxCartorioXimenes: TGroupBox
@@ -179,7 +181,7 @@ inherited frmCdEmp: TfrmCdEmp
               Height = 13
               Caption = 'Receita:'
             end
-            object DBEdit2: TDBEdit
+            object detEstCartorio: TDBEdit
               Left = 8
               Top = 35
               Width = 121
@@ -187,8 +189,9 @@ inherited frmCdEmp: TfrmCdEmp
               DataField = 'CARTORIOEST'
               DataSource = dsDados
               TabOrder = 0
+              OnExit = detEstCartorioExit
             end
-            object DBEdit3: TDBEdit
+            object detCRSCartorio: TDBEdit
               Left = 8
               Top = 84
               Width = 121
@@ -197,7 +200,7 @@ inherited frmCdEmp: TfrmCdEmp
               DataSource = dsDados
               TabOrder = 1
             end
-            object DBEdit4: TDBEdit
+            object detCRDCartorio: TDBEdit
               Left = 8
               Top = 133
               Width = 121
@@ -262,7 +265,7 @@ inherited frmCdEmp: TfrmCdEmp
               Caption = 'Tipo de Documento:'
               FocusControl = detCPG_TDC
             end
-            object detEstab: TDBEdit
+            object detEstabCPG: TDBEdit
               Left = 8
               Top = 32
               Width = 145
@@ -270,6 +273,7 @@ inherited frmCdEmp: TfrmCdEmp
               DataField = 'CPG_EST'
               DataSource = dsDados
               TabOrder = 0
+              OnExit = detEstabCPGExit
             end
             object detCRS: TDBEdit
               Left = 8
@@ -306,6 +310,7 @@ inherited frmCdEmp: TfrmCdEmp
               DataField = 'CPG_CON_CODIGO'
               DataSource = dsDados
               TabOrder = 4
+              OnExit = detCPG_CONExit
             end
             object detCPG_TDC: TDBEdit
               Left = 8
@@ -315,6 +320,7 @@ inherited frmCdEmp: TfrmCdEmp
               DataField = 'CPG_TDC_CODIGO'
               DataSource = dsDados
               TabOrder = 5
+              OnExit = detCPG_TDCExit
             end
           end
           object gbxLAN_BVP: TGroupBox
@@ -374,6 +380,7 @@ inherited frmCdEmp: TfrmCdEmp
               DataField = 'BVP_CON_CODIGO'
               DataSource = dsDados
               TabOrder = 2
+              OnExit = detContaBaixaBVPExit
             end
           end
         end
@@ -423,6 +430,7 @@ inherited frmCdEmp: TfrmCdEmp
               DataField = 'SER_CODIGO'
               DataSource = dsDados
               TabOrder = 0
+              OnExit = detCodServicoExit
             end
             object detCodModalidade: TDBEdit
               Left = 11
@@ -432,6 +440,7 @@ inherited frmCdEmp: TfrmCdEmp
               DataField = 'MDS_CODIGO'
               DataSource = dsDados
               TabOrder = 1
+              OnExit = detCodModalidadeExit
             end
             object detTipoDoc: TDBEdit
               Left = 11
@@ -441,6 +450,7 @@ inherited frmCdEmp: TfrmCdEmp
               DataField = 'VDR_TDC_CODIGO'
               DataSource = dsDados
               TabOrder = 2
+              OnExit = detTipoDocExit
             end
             object detAgenteCob: TDBEdit
               Left = 11
@@ -450,6 +460,7 @@ inherited frmCdEmp: TfrmCdEmp
               DataField = 'VDR_COB_CODIGO'
               DataSource = dsDados
               TabOrder = 3
+              OnExit = detAgenteCobExit
             end
           end
         end
