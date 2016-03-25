@@ -32,6 +32,8 @@ type
     sbtCaminhoArquivo: TSpeedButton;
     btnListarImp: TButton;
     frEmpresa1: TfrEmpresa;
+    pgbImportacao: TProgressBar;
+    lblImportacao: TLabel;
     procedure sbtCaminhoArquivoClick(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
@@ -76,6 +78,8 @@ begin
     Importador := TImportador.Create(EMP_Codigo);
     try
       try
+        Importador.lblProgresso := lblImportacao;
+        Importador.pgbImportacao := pgbImportacao;
         Importador.ImportarArquivo(EMP_Codigo, edtCaminhoArquivo.Text);
       finally
         FreeAndNil(Importador);

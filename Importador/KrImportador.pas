@@ -3,8 +3,8 @@ unit KrImportador;
 interface
 
 uses
-  Classes, System.Types, System.Generics.Collections, IntfFinanceiro, uEstabelecimento;
-
+  Classes, System.Types, System.Generics.Collections, IntfFinanceiro, uEstabelecimento,
+  stdCtrls, ComCtrls;
 type
 
   TClasseBase = class(TPersistent)
@@ -116,6 +116,7 @@ type
     FRegistro: TRegistro;
     FEMP_Codigo: String;
     FIMP_ID: Integer;
+    function RegistroImportado:Boolean;
     procedure PopularListaRegistro(ListaRegistro: TListaRegistros);
     function GetRegistro: TRegistro;
     procedure SetRegistro(const Value: TRegistro);
@@ -178,6 +179,8 @@ type
 
   TImportador = class
   private
+    FLblProgresso: TLabel;
+    FpgbImportacao: TProgressBar;
     FEmp_Codigo: String;
     FImportacao_ID: Integer;
     FTotalRegistrosImportados: Integer;
@@ -191,6 +194,8 @@ type
     procedure ImportarArquivo(const cEMP_Codigo, cCaminhoArquivo: String);
     Procedure ImportarMovimento(Movimento: IMovimentoFinanceiro; ListaRegistro: TListaRegistros);
     procedure DesfazerImportacao(const IMP_ID: Integer);
+    property pgbImportacao: TProgressBar read FpgbImportacao write FpgbImportacao;
+    property lblProgresso: TLabel read FLblProgresso write FLblProgresso;
   end;
 
 implementation
@@ -435,13 +440,14 @@ end;
 function TMovimentoCRE.TratarRegistroJaImportado: Boolean;
 begin
   Result := False;
+  if not RegistroImportado then
+    Exit;
   if FContasaReceber.FindIDWS(FRegistro.Protocolo) then
   begin
     Result := True;
     if (FRegistro.NovoValorCRE > 0) and (not CustasFechadasImportadas) then
     begin
       FContasaReceber.Edit(True);
-      //Falta tratar o valor no serviço, e nos rateios;
       FContasaReceber.ServicosaReceber.First;
       FContasaReceber.ServicosaReceber.Edit;
       FContasaReceber.ServicosaReceber.Valor := FContasaReceber.ServicosaReceber.Valor + FRegistro.NovoValorCRE;
@@ -525,6 +531,11 @@ begin
     Registro.NumLinha         := Query.FieldByName('NumLinha').AsInteger;
     Query.Next;
   end;
+end;
+
+function TMovimentoBase.RegistroImportado: Boolean;
+begin
+  Result := TDBUtils.ExisteRegistro('SELECT * FROM REG WHERE REG.EMP_CODIGO = ' + FEMP_Codigo.QuotedString + ' AND REG.PROTOCOLO = ' + FRegistro.Protocolo.QuotedString);
 end;
 
 procedure TMovimentoBase.SetRegistro(const Value: TRegistro);
@@ -812,6 +823,8 @@ var
   Vencimentos: IVencimentosaPagar;
 begin
   Result := False;
+  if not RegistroImportado then
+    Exit;
   if FContasaPagar.FindIDWS(FRegistro.Protocolo) then
   begin
     Result := True;
@@ -916,10 +929,19 @@ begin
 end;
 
 procedure TImportador.ImportarMovimento(Movimento: IMovimentoFinanceiro; ListaRegistro: TListaRegistros);
+const
+  TextoLabel = 'Importando %s: %s de %s';
 var
   I: Integer;
 begin
   try
+//    if Assigned(FLblProgresso) then
+//    begin
+//      FLblProgresso.Visible := True;
+//      FLblProgresso.Caption := Format(TextoLabel, [Movimento.GetTipo, I.ToString, ListaRegistro.Count.ToString]);
+//     // Application.ProcessMessages;
+//    end;
+
     for I := 0 to ListaRegistro.Count - 1 do
     begin
       Movimento.Registro := ListaRegistro[I];

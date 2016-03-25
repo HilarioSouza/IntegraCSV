@@ -87,6 +87,14 @@ object frmImportacao: TfrmImportacao
         NumGlyphs = 2
         OnClick = sbtCaminhoArquivoClick
       end
+      object lblImportacao: TLabel
+        Left = 450
+        Top = 42
+        Width = 65
+        Height = 13
+        Caption = 'lblImportacao'
+        Visible = False
+      end
       object btnImportar: TButton
         Left = 8
         Top = 43
@@ -105,6 +113,14 @@ object frmImportacao: TfrmImportacao
         EditLabel.Height = 13
         EditLabel.Caption = 'Caminho do arquivo:'
         TabOrder = 0
+      end
+      object pgbImportacao: TProgressBar
+        Left = 112
+        Top = 48
+        Width = 332
+        Height = 17
+        TabOrder = 2
+        Visible = False
       end
     end
   end
