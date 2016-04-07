@@ -399,6 +399,7 @@ end;
 
 procedure TMovimentoCRE.Append;
 begin
+  FContasaReceber.Open;
   FContasaReceber.Append;
 end;
 
@@ -414,6 +415,7 @@ begin
   FDadosCartorio  := TEstabelecimento.Create(FEMP_Codigo, tidCartorio);
   FDadosVenc      := TDadosVencimentoCRE.Create(FEMP_Codigo);
   FDadosServico   := TServico.Create(FEMP_Codigo);
+  FContasaReceber := nil;
   FContasaReceber := Financeiro.GetContasaReceber;
 end;
 
@@ -549,9 +551,9 @@ begin
   FContasaReceber.Estabelecimento       := FDadosServices.EST_Codigo;//Só porque é obrigatório.
   FContasaReceber.Documento             := FRegistro.Protocolo;
   FContasaReceber.TipoGeracao           := 'C'; //Aparentemente se for Cargas, não é possível editar no AG...
+  FContasaReceber.MesAno                := FormatDateTime('yyyymm', FRegistro.DataCadastro);
   FContasaReceber.Emissao               := FRegistro.DataCadastro;
   FContasaReceber.Obs                   := 'Importação via arquivo Ximenes. Protocolo: ' + FRegistro.Protocolo;
-  FContasaReceber.MesAno                := FormatDateTime('mmaaaa', FRegistro.DataCadastro);
   FContasaReceber.IDWS                  := FRegistro.Protocolo; //Atualizar AGLib urgente...
   PopularVencimentosaReceber(FContasaReceber.VencimentosaReceber);
   PopularServicosaReceber(FContasaReceber.ServicosaReceber);
@@ -794,6 +796,7 @@ end;
 
 procedure TMovimentoCPG.Append;
 begin
+  FContasaPagar.Open;
   FContasaPagar.Append;
 end;
 
@@ -807,6 +810,8 @@ begin
   inherited;
   FDadosEST := TEstabelecimentoContasaPagar.Create(FEMP_Codigo, tidContasaPagar);
   FDadosBaixa := TDadosBaixaCPG.Create(FEMP_Codigo);
+  FContasaPagar := nil;
+  FBaixasaPagar := nil;
   FContasaPagar := Financeiro.GetContasaPagar;
   FBaixasaPagar := Financeiro.GetBaixaVencimentoaPagar;
 end;
@@ -873,8 +878,8 @@ procedure TMovimentoCPG.Popular;
 begin
   FContasaPagar.Fornecedor            := FDadosEST.FRN_CNPJ;
   FContasaPagar.Documento             := FRegistro.Protocolo;
+  FContasaPagar.MesAnoComp            := FormatDateTime('yyyymm', FRegistro.DataCadastro);
   FContasaPagar.Emissao               := FRegistro.DataCadastro;
-  FContasaPagar.MesAnoComp            := FormatDateTime('mmyyyy', FRegistro.DataCadastro);
   FContasaPagar.Estabelecimento       := FDadosEST.EST_Codigo;
   FContasaPagar.CentroResultados      := FDadosEST.CRS_Codigo;
   FContasaPagar.Despesa               := FDadosEST.CRD_Codigo;
@@ -886,7 +891,6 @@ begin
   FContasaPagar.Obs                   := 'Importação via arquivo Ximenes. Protocolo: ' + FRegistro.Protocolo;
   FContasaPagar.Origem                := 'C';
   FContasaPagar.IDWS                  := FRegistro.Protocolo;
-
   PopularVencimentosaPagar(FContasaPagar.VencimentosaPagar);
 end;
 
