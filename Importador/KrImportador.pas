@@ -580,7 +580,10 @@ end;
 
 procedure TMovimentoCRE.Post;
 begin
-  FContasaReceber.Post;
+  if FContasaReceber.Valor > 0 then
+    FContasaReceber.Post
+  else
+    FContasaReceber.Cancel;
 end;
 
 procedure TMovimentoCRE.PopularServicosaReceber(Servicos: IServicosaReceber);
@@ -928,8 +931,13 @@ end;
 
 procedure TMovimentoCPG.Post;
 begin
-  FContasaPagar.Post;
-  IncluirBaixaVencimentosaPagar(FContasaPagar.VencimentosaPagar);
+  if FContasaPagar.Valor > 0 then
+  begin
+    FContasaPagar.Post;
+    IncluirBaixaVencimentosaPagar(FContasaPagar.VencimentosaPagar);
+  end
+  else
+    FContasaPagar.Cancel;
 end;
 
 procedure TImportador.ImportarMovimento(Movimento: IMovimentoFinanceiro; ListaRegistro: TListaRegistros);
