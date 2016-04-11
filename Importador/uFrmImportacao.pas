@@ -86,7 +86,10 @@ begin
       end;
     except
       on E: Exception do
+      begin
+        GetLogger.Log(E.Message);
         GetLogger.SaveLog(gsAppPath + gsAppName + '.log');
+      end;
     end;
     AtualizarQueries;
   end;
