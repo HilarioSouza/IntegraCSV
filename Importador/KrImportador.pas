@@ -113,6 +113,7 @@ type
 
   TMovimentoBase = class(TClasseBase)
   private
+    FValorTotal: Double;
     FRegistro: TRegistro;
     FEMP_Codigo: String;
     FIMP_ID: Integer;
@@ -569,6 +570,7 @@ begin
     Vencimentos.AgenteCobrador := FDadosVenc.COB_Codigo;
     Vencimentos.TipoDocumento  := FDadosVenc.TDC_Codigo;
     Vencimentos.Post;
+    FValorTotal := FValorTotal + Vencimentos.Valor;
   except
     on E: Exception do
     begin
@@ -580,7 +582,7 @@ end;
 
 procedure TMovimentoCRE.Post;
 begin
-  if FContasaReceber.Valor > 0 then
+  if FValorTotal > 0 then
     FContasaReceber.Post
   else
     FContasaReceber.Cancel;
@@ -904,6 +906,7 @@ begin
   Vencimentos.Valor      := FRegistro.GetValorContasaPagar;
   Vencimentos.Titulo     := FRegistro.Protocolo;
   Vencimentos.Post;
+  FValorTotal := FValorTotal + Vencimentos.Valor;
 end;
 
 procedure TMovimentoCPG.IncluirBaixaVencimentosaPagar(Vencimento: IVencimentosaPagar);
@@ -931,7 +934,7 @@ end;
 
 procedure TMovimentoCPG.Post;
 begin
-  if FContasaPagar.Valor > 0 then
+  if FValorTotal > 0 then
   begin
     FContasaPagar.Post;
     IncluirBaixaVencimentosaPagar(FContasaPagar.VencimentosaPagar);
