@@ -383,7 +383,7 @@ end;
 
 function TMovimentoBase.CustasFechadasImportadas: Boolean;
 begin
-  Result := TDBUtils.ExisteRegistro('SELECT * FROM AUD WHERE PROTOCOLO := ' + FRegistro.Protocolo.QuotedString);
+  Result := TDBUtils.ExisteRegistro('SELECT * FROM AUD WHERE PROTOCOLO = ' + FRegistro.Protocolo.QuotedString);
 end;
 
 function TMovimentoBase.GetRegistro: TRegistro;
