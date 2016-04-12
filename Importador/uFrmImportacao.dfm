@@ -19,33 +19,37 @@ object frmImportacao: TfrmImportacao
     Left = 0
     Top = 0
     Width = 1018
-    Height = 689
+    Height = 671
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitHeight = 689
     object pnlGrid: TPanel
       Left = 0
       Top = 78
       Width = 1018
-      Height = 611
+      Height = 593
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitHeight = 611
       object pgcIMP: TPageControl
         Left = 0
         Top = 0
         Width = 1018
-        Height = 611
+        Height = 593
         ActivePage = tshIMP
         Align = alClient
         TabOrder = 0
+        ExplicitHeight = 611
         object tshIMP: TTabSheet
           Caption = 'Importa'#231#245'es'
+          ExplicitHeight = 583
           object dgrIMP: TDBGrid
             Left = 0
             Top = 0
             Width = 1010
-            Height = 583
+            Height = 565
             Align = alClient
             DataSource = ddsIMP
             TabOrder = 0
@@ -114,24 +118,17 @@ object frmImportacao: TfrmImportacao
         EditLabel.Caption = 'Caminho do arquivo:'
         TabOrder = 0
       end
-      object pgbImportacao: TProgressBar
-        Left = 112
-        Top = 48
-        Width = 332
-        Height = 17
-        TabOrder = 2
-        Visible = False
-      end
     end
   end
   object pnlButtons: TPanel
     Left = 1018
     Top = 0
     Width = 87
-    Height = 689
+    Height = 671
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitHeight = 689
     object btnDesfazerIMP: TButton
       Left = 6
       Top = 70
@@ -168,6 +165,28 @@ object frmImportacao: TfrmImportacao
     Height = 36
     TabOrder = 2
     ExplicitLeft = 407
+  end
+  object pnlBase: TPanel
+    Left = 0
+    Top = 671
+    Width = 1105
+    Height = 18
+    Align = alBottom
+    BevelOuter = bvNone
+    TabOrder = 3
+    Visible = False
+    object pgbImportacao: TProgressBar
+      Left = 0
+      Top = 0
+      Width = 1105
+      Height = 18
+      Align = alClient
+      TabOrder = 0
+      Visible = False
+      ExplicitLeft = 2
+      ExplicitWidth = 332
+      ExplicitHeight = 17
+    end
   end
   object ddsIMP: TDataSource
     DataSet = fqrIMP

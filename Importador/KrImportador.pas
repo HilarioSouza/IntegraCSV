@@ -190,6 +190,9 @@ type
     procedure PopularFinanceiroAG;
     procedure DeletarMovimentosImportados;
     procedure DeletarMovimentos(Movimento: IMovimentoFinanceiro);
+    procedure InicializarProgresso(cTotalRegistros: Integer);
+    procedure IncrementarProgresso;
+    procedure FinalizarProgresso;
   public
     constructor Create(const EMP_Codigo: String);
     procedure ImportarArquivo(const cEMP_Codigo, cCaminhoArquivo: String);
@@ -758,6 +761,7 @@ begin
     TDBUtils.MainServer.StartTransaction;
     FFinanceiro.StartTransaction;
     Leitor.LerArquivo(cCaminhoArquivo);
+    InicializarProgresso(Leitor.ListaRegistros.Count * 2);
     ImportadorCRE := nil;
     ImportadorCPG := nil;
     try
@@ -959,6 +963,7 @@ begin
 
     for I := 0 to ListaRegistro.Count - 1 do
     begin
+      IncrementarProgresso;
       Movimento.Registro := ListaRegistro[I];
       if Movimento.TratarRegistroJaImportado then
       begin
@@ -991,6 +996,23 @@ begin
     begin
       raise Exception.Create('Ocorreu um problema durante a importação. Exceção: ' + E.Message);
     end;
+  end;
+end;
+
+procedure TImportador.IncrementarProgresso;
+const
+  ctTamanhoProgresso = 1;
+begin
+  if Assigned(FpgbImportacao) then
+    FpgbImportacao.StepBy(ctTamanhoProgresso);
+end;
+
+procedure TImportador.InicializarProgresso(cTotalRegistros: Integer);
+begin
+  if Assigned(FpgbImportacao) then
+  begin
+    FpgbImportacao.Min := 0;
+    FpgbImportacao.Max := (cTotalRegistros);
   end;
 end;
 
@@ -1029,6 +1051,12 @@ begin
       raise Exception.Create('Não foi possível desfazer a importação. Exceção: ' + E.Message);
     end;
   end;
+end;
+
+procedure TImportador.FinalizarProgresso;
+begin
+  if Assigned(FpgbImportacao) then
+    FpgbImportacao.Visible := False;
 end;
 
 procedure TImportador.DeletarMovimentosImportados;
