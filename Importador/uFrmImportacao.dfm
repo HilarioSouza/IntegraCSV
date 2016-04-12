@@ -23,7 +23,6 @@ object frmImportacao: TfrmImportacao
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitHeight = 689
     object pnlGrid: TPanel
       Left = 0
       Top = 78
@@ -32,7 +31,6 @@ object frmImportacao: TfrmImportacao
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitHeight = 611
       object pgcIMP: TPageControl
         Left = 0
         Top = 0
@@ -41,10 +39,8 @@ object frmImportacao: TfrmImportacao
         ActivePage = tshIMP
         Align = alClient
         TabOrder = 0
-        ExplicitHeight = 611
         object tshIMP: TTabSheet
           Caption = 'Importa'#231#245'es'
-          ExplicitHeight = 583
           object dgrIMP: TDBGrid
             Left = 0
             Top = 0
@@ -91,14 +87,6 @@ object frmImportacao: TfrmImportacao
         NumGlyphs = 2
         OnClick = sbtCaminhoArquivoClick
       end
-      object lblImportacao: TLabel
-        Left = 450
-        Top = 42
-        Width = 65
-        Height = 13
-        Caption = 'lblImportacao'
-        Visible = False
-      end
       object btnImportar: TButton
         Left = 8
         Top = 43
@@ -128,7 +116,6 @@ object frmImportacao: TfrmImportacao
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitHeight = 689
     object btnDesfazerIMP: TButton
       Left = 6
       Top = 70
@@ -175,6 +162,14 @@ object frmImportacao: TfrmImportacao
     BevelOuter = bvNone
     TabOrder = 3
     Visible = False
+    object lblImportacao: TLabel
+      Left = 450
+      Top = 5
+      Width = 65
+      Height = 13
+      Caption = 'lblImportacao'
+      Visible = False
+    end
     object pgbImportacao: TProgressBar
       Left = 0
       Top = 0
@@ -183,9 +178,6 @@ object frmImportacao: TfrmImportacao
       Align = alClient
       TabOrder = 0
       Visible = False
-      ExplicitLeft = 2
-      ExplicitWidth = 332
-      ExplicitHeight = 17
     end
   end
   object ddsIMP: TDataSource

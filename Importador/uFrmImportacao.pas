@@ -32,9 +32,9 @@ type
     sbtCaminhoArquivo: TSpeedButton;
     btnListarImp: TButton;
     frEmpresa1: TfrEmpresa;
-    lblImportacao: TLabel;
     pnlBase: TPanel;
     pgbImportacao: TProgressBar;
+    lblImportacao: TLabel;
     procedure sbtCaminhoArquivoClick(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);

@@ -1004,13 +1004,19 @@ const
   ctTamanhoProgresso = 1;
 begin
   if Assigned(FpgbImportacao) then
+  begin
     FpgbImportacao.StepBy(ctTamanhoProgresso);
+    FLblProgresso.Caption := FpgbImportacao.Position.ToString + ' de ' + FpgbImportacao.Max.ToString;
+  end;
 end;
 
 procedure TImportador.InicializarProgresso(cTotalRegistros: Integer);
 begin
   if Assigned(FpgbImportacao) then
   begin
+    FLblProgresso.Parent := FpgbImportacao;
+    FLblProgresso.Visible := True;
+    FLblProgresso.Alignment := tacenter;
     FpgbImportacao.Min := 0;
     FpgbImportacao.Max := (cTotalRegistros);
   end;
