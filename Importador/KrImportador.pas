@@ -206,7 +206,7 @@ implementation
 
 uses System.SysUtils, uUtils, uInterfaceQuery, FireDAC.Comp.Client, iwSystem,
   uFuncoesIni, System.Math, uDBUtils, udmConnect, uAuditoria, uLogger,
-  Winapi.Windows;
+  Winapi.Windows, Dialogs;
 
 const
   IdxProtocolo        = 0;
@@ -403,6 +403,7 @@ end;
 
 procedure TMovimentoCRE.Append;
 begin
+  FValorTotal := 0;
   FContasaReceber.Open;
   FContasaReceber.Append;
 end;
@@ -554,7 +555,7 @@ begin
   FContasaReceber.Cliente               := FRegistro.Convenio;
   FContasaReceber.Estabelecimento       := FDadosServices.EST_Codigo;//Só porque é obrigatório.
   FContasaReceber.Documento             := FRegistro.Protocolo;
-  FContasaReceber.TipoGeracao           := 'C'; //Aparentemente se for Cargas, não é possível editar no AG...
+  FContasaReceber.TipoGeracao           := 'M'; //Aparentemente se for Cargas, não é possível editar no AG...
   FContasaReceber.MesAno                := FormatDateTime('yyyymm', FRegistro.DataCadastro);
   FContasaReceber.Emissao               := FRegistro.DataCadastro;
   FContasaReceber.Obs                   := 'Importação via arquivo Ximenes. Protocolo: ' + FRegistro.Protocolo;
@@ -805,6 +806,7 @@ end;
 
 procedure TMovimentoCPG.Append;
 begin
+  FValorTotal := 0;
   FContasaPagar.Open;
   FContasaPagar.Append;
 end;
@@ -898,7 +900,7 @@ begin
   FContasaPagar.ContaFinanceira       := FDadosEST.CON_Codigo; // Falta adicionar o campo
   FContasaPagar.ExportaAC             := 0;
   FContasaPagar.Obs                   := 'Importação via arquivo Ximenes. Protocolo: ' + FRegistro.Protocolo;
-  FContasaPagar.Origem                := 'C';
+  FContasaPagar.Origem                := 'M';
   FContasaPagar.IDWS                  := FRegistro.Protocolo;
   PopularVencimentosaPagar(FContasaPagar.VencimentosaPagar);
 end;
