@@ -54,7 +54,7 @@ object FrmRlImport: TFrmRlImport
       Height = 23
       BandType = btTitle
       object rlbProtocolo: TRLLabel
-        Left = 178
+        Left = 171
         Top = 4
         Width = 56
         Height = 14
@@ -67,7 +67,7 @@ object FrmRlImport: TFrmRlImport
         ParentFont = False
       end
       object rlbDataImportacao: TRLLabel
-        Left = 243
+        Left = 236
         Top = 4
         Width = 69
         Height = 14
@@ -80,7 +80,7 @@ object FrmRlImport: TFrmRlImport
         ParentFont = False
       end
       object rlbCPG: TRLLabel
-        Left = 325
+        Left = 318
         Top = 4
         Width = 85
         Height = 14
@@ -93,7 +93,7 @@ object FrmRlImport: TFrmRlImport
         ParentFont = False
       end
       object rlbCRE: TRLLabel
-        Left = 422
+        Left = 415
         Top = 4
         Width = 100
         Height = 14
@@ -106,9 +106,9 @@ object FrmRlImport: TFrmRlImport
         ParentFont = False
       end
       object rlbConvenio: TRLLabel
-        Left = 539
-        Top = 4
-        Width = 70
+        Left = 521
+        Top = 3
+        Width = 91
         Height = 14
         Caption = 'Conv'#234'nio'
         Font.Charset = DEFAULT_CHARSET
@@ -171,7 +171,7 @@ object FrmRlImport: TFrmRlImport
       Width = 718
       Height = 28
       object rdtProtocolo: TRLDBText
-        Left = 178
+        Left = 171
         Top = 3
         Width = 56
         Height = 16
@@ -190,7 +190,7 @@ object FrmRlImport: TFrmRlImport
         Transparent = False
       end
       object rdtDataImport: TRLDBText
-        Left = 243
+        Left = 236
         Top = 3
         Width = 69
         Height = 16
@@ -209,7 +209,7 @@ object FrmRlImport: TFrmRlImport
         Transparent = False
       end
       object rdtCPG_Codigo: TRLDBText
-        Left = 325
+        Left = 318
         Top = 3
         Width = 85
         Height = 16
@@ -228,7 +228,7 @@ object FrmRlImport: TFrmRlImport
         Transparent = False
       end
       object rdtCRE_Codigo: TRLDBText
-        Left = 422
+        Left = 415
         Top = 3
         Width = 100
         Height = 16
@@ -247,9 +247,9 @@ object FrmRlImport: TFrmRlImport
         Transparent = False
       end
       object rdtConvenio: TRLDBText
-        Left = 539
+        Left = 521
         Top = 3
-        Width = 70
+        Width = 91
         Height = 16
         Alignment = taCenter
         AutoSize = False

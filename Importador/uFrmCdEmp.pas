@@ -83,6 +83,7 @@ type
     detDespesaJurosBVP: TDBEdit;
     lblContaFinBVP: TLabel;
     detContaBaixaBVP: TDBEdit;
+    BalloonHint1: TBalloonHint;
     procedure FormCreate(Sender: TObject);
     procedure btnSalvarClick(Sender: TObject);
     procedure detEstabCPGExit(Sender: TObject);
@@ -95,9 +96,12 @@ type
     procedure detEstabelecimentoExit(Sender: TObject);
     procedure detEstCartorioExit(Sender: TObject);
     procedure detAgenteCobExit(Sender: TObject);
+    procedure edtIDExit(Sender: TObject);
+    procedure detFRN_CNPJClick(Sender: TObject);
   private
     procedure ValidarEmpresa(ID: String);
     procedure TratarCodigoEst(detEst: TDBEdit);
+    procedure ShowBalloonHintFRNCNPJ;
     { Private declarations }
   public
     { Public declarations }
@@ -171,6 +175,23 @@ begin
   TratarCodigoEst(detEstCartorio);
 end;
 
+procedure TfrmCdEmp.ShowBalloonHintFRNCNPJ;
+var
+  Point: TPoint;
+begin
+  //Criar uma classe numa unit separada.
+  BalloonHint1.Title := 'Informação:';
+  BalloonHint1.Description := 'Se este campo for deixado em branco o CNPJ do Fornecedor será o mesmo do Convênio importado do arquivo.';
+  BalloonHint1.ShowHint(detFRN_CNPJ);
+end;
+
+procedure TfrmCdEmp.detFRN_CNPJClick(Sender: TObject);
+begin
+  inherited;
+  if detFRN_CNPJ.Text = '' then
+    ShowBalloonHintFRNCNPJ;
+end;
+
 procedure TfrmCdEmp.detEstabCPGExit(Sender: TObject);
 begin
   inherited;
@@ -181,6 +202,12 @@ procedure TfrmCdEmp.detTipoDocExit(Sender: TObject);
 begin
   inherited;
   detTipoDoc.Text := TUtil.LPad(detTipoDoc.Text, '0', 3);
+end;
+
+procedure TfrmCdEmp.edtIDExit(Sender: TObject);
+begin
+  inherited;
+  edtID.Text := TUtil.LPad(edtID.Text, '0', 4);
 end;
 
 procedure TfrmCdEmp.FormCreate(Sender: TObject);

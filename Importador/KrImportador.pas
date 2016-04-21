@@ -171,6 +171,7 @@ type
     procedure IncluirBaixaVencimentosaPagar(Vencimento: IVencimentosaPagar);
     procedure DeletarBaixas;
     function TratarRegistroJaImportado: Boolean;
+    function GetCNPJFornecedor: String;
   public
     constructor Create(Financeiro: IFinanceiro; const EMP_Codigo: String; const IMP_ID: Integer);
     destructor Destroy; override;
@@ -875,6 +876,14 @@ begin
   Result := FContasaPagar.FindIDWS(IDWS);
 end;
 
+function TMovimentoCPG.GetCNPJFornecedor: String;
+begin
+  if FDadosEST.FRN_CNPJ.IsEmpty then
+    Result := FRegistro.Convenio
+  else
+    Result := FDadosEST.FRN_CNPJ;
+end;
+
 function TMovimentoCPG.GetCodigo: String;
 begin
   Result := FContasaPagar.Codigo;
@@ -887,7 +896,7 @@ end;
 
 procedure TMovimentoCPG.Popular;
 begin
-  FContasaPagar.Fornecedor            := FDadosEST.FRN_CNPJ;
+  FContasaPagar.Fornecedor            := GetCNPJFornecedor;//FDadosEST.FRN_CNPJ;
   FContasaPagar.Documento             := FRegistro.Protocolo;
   FContasaPagar.MesAnoComp            := FormatDateTime('yyyymm', FRegistro.DataCadastro);
   FContasaPagar.Emissao               := FRegistro.DataCadastro;

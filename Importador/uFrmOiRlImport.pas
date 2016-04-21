@@ -15,8 +15,10 @@ type
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
+    FIMP_ID: Integer;
   public
     { Public declarations }
+    property IDImportacao: Integer read FIMP_ID write FIMP_ID;
   end;
 
 var
@@ -42,7 +44,7 @@ begin
   Relatorio := TFrmRlImport.Create(nil);
   try
     Relatorio.EMP_Codigo := frEmpresa1.dcbEMP.KeyValue;
-//    Relatorio.IMP_ID := 1;
+    Relatorio.IMP_ID := FIMP_ID;
     Relatorio.rrpMain.Preview;
   finally
     FreeAndNil(Relatorio);
@@ -53,6 +55,7 @@ procedure TfrmOiRlImport.FormCreate(Sender: TObject);
 begin
   inherited;
   frEmpresa1.AbrirQuery;
+  FIMP_ID := 0;
 end;
 
 end.

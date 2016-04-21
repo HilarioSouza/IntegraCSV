@@ -2,9 +2,8 @@ inherited frmCdEmp: TfrmCdEmp
   Caption = 'Cadastro de Empresas'
   ClientHeight = 560
   ClientWidth = 1003
-  ExplicitTop = -45
   ExplicitWidth = 1009
-  ExplicitHeight = 588
+  ExplicitHeight = 589
   PixelsPerInch = 96
   TextHeight = 13
   object SpeedButton1: TSpeedButton [0]
@@ -75,7 +74,10 @@ inherited frmCdEmp: TfrmCdEmp
           ExplicitWidth = 37
         end
         inherited edtID: TDBEdit
+          Top = 23
           DataField = 'CODIGO'
+          OnExit = edtIDExit
+          ExplicitTop = 23
         end
       end
       object edtNome: TDBEdit
@@ -92,7 +94,7 @@ inherited frmCdEmp: TfrmCdEmp
         Top = 50
         Width = 995
         Height = 388
-        ActivePage = tshServicos
+        ActivePage = tshContasaPagar
         TabOrder = 2
         object tshContasaReceber: TTabSheet
           Caption = 'Contas a Receber'
@@ -301,6 +303,7 @@ inherited frmCdEmp: TfrmCdEmp
               DataField = 'CPG_FRN_CNPJ'
               DataSource = dsDados
               TabOrder = 3
+              OnClick = detFRN_CNPJClick
             end
             object detCPG_CON: TDBEdit
               Left = 8
@@ -596,5 +599,11 @@ inherited frmCdEmp: TfrmCdEmp
   inherited dsDados: TDataSource
     Left = 552
     Top = 240
+  end
+  object BalloonHint1: TBalloonHint
+    Delay = 300
+    HideAfter = 5000
+    Left = 280
+    Top = 400
   end
 end

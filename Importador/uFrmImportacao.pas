@@ -110,6 +110,7 @@ var
 begin
   OiRlImport := TfrmOiRlImport.Create(nil);
   try
+    OiRlImport.IDImportacao := fqrIMPID.AsInteger;
     OiRlImport.ShowModal;
   finally
     FreeAndNil(OiRlImport);
